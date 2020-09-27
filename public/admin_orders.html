@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders</title>
+
+  <link rel="icon" href="img_logo.png">
+
+  <!-- Font Awesome JS -->
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+    integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+    crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+    integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+    crossorigin="anonymous"></script>
+
+
+  <style>
+    .myBorder {
+      border: 2px black solid;
+      background-color: pink;
+    }
+  </style>
+
+  <!-- CSS only -->
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;900&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="myStyle.css">
+  <link rel="stylesheet" href="table.css">
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #020001;">
+    <a class="navbar-brand" href="#"><img src ="img_logo.png" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="ml-auto">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+      <ul class="navbar-nav">
+
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Orders
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
+            <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
+            <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
+            <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
+            <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
+            <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Sellers
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For Approval</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended Sellers</a>
+           
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Products
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
+            <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
+           
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Videos
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
+            <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
+           
+          </div>
+        </li>
+
+
+        <button type="submit" id="btnHome" value="Home" class="btn mr-3" style="width: 100px; background-color: #e95807; color:white">Home</button>
+        <button type="submit" id="btnLogout" value="Logout" class="btn" style="width: 100px; background-color: #e95807; color:white">
+         
+          Logout
+        </button> 
+      </ul>
+    </div>
+  </div>
+  </nav>
+
+
+  <div class="d-flex justify-content-center">
+    <h3 class="d-flex justify-content-center text-muted" id="errorMsg"></h3>
+    <!-- <br />
+  <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
+
+  </div>
+  
+  <div id="divProgress">
+    
+
+    <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+      style="width: 100%; height: 500px;">
+      <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
+      <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+     
+    </div>
+  </div>
+
+  <div id="divContent" class="m-2" style="display: none;">
+
+    <div class="container">
+
+      <div>
+        <h1 class="d-flex justify-content-center" id="pageHeader"></h1>
+        <hr />
+      </div>
+
+      <form>
+        <div class="form-group">
+          <input type="text" class="form-control" id="txtSearch" placeholder="Enter Order Id">
+          <button type="button" class="btn btn-info mt-2" id="btnSearch">Search</button>
+        </div>
+    </div>
+
+    </form>
+
+    <table id="tblPendingOrders">
+    </table>
+  </div>
+
+
+
+  <div id="nextPreviousDiv" class=" d-flex justify-content-center">
+    <button id="previous" class="btn btn-success m-3" style="display: none; width: 100px;">Previous</button>
+    <button id="next" class="btn btn-info m-3" style="width: 100px; display: none;">Next</button>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/7.15.5/firebase-app.js"></script>
+
+  <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+           https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+  <!-- <script type="text/javascript" src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script> -->
+  <script type="text/javascript" src="common.js"></script>
+  <script type="text/javascript" src="email.js"></script>
+  <script type="text/javascript" src="admin_orders.js"></script>
+</body>
+
+</html>

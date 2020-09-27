@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Listing</title>
+
+    <link rel="icon" href="img_logo.png">
+
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+        integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+        integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+        crossorigin="anonymous"></script>
+
+
+    <style>
+        .myBorder {
+            border: 1px lightgray solid;
+        }
+    </style>
+
+    <!-- CSS only -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;900&display=swap" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="myStyle.css">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #020001;">
+        <a class="navbar-brand" href="#"><img src ="img_logo.png" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="ml-auto">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    
+    
+          <ul class="navbar-nav">
+    
+    
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Orders
+              </a>
+              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
+                <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
+                <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
+                <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
+                <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
+                <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
+              </div>
+            </li>
+    
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Sellers
+              </a>
+              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For Approval</a>
+                <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
+                <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
+                <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended Sellers</a>
+               
+              </div>
+            </li>
+    
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Products
+              </a>
+              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
+                <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
+               
+              </div>
+            </li>
+    
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Videos
+              </a>
+              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
+                <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
+               
+              </div>
+            </li>
+    
+    
+            <button type="submit" id="btnHome" value="Home" class="btn mr-3" style="width: 100px; background-color: #e95807; color:white">Home</button>
+            <button type="submit" id="btnLogout" value="Logout" class="btn" style="width: 100px; background-color: #e95807; color:white">
+             
+              Logout
+            </button> 
+          </ul>
+        </div>
+      </div>
+      </nav>
+    
+
+
+    <div id="divProgress" style="display: none;">
+        <div class="d-flex justify-content-center">
+            <h3 class="d-flex justify-content-center text-muted" id="errorMsg"></h3>
+            <!-- <br />
+    <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
+
+        </div>
+
+        <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+            style="width: 100%; height: 500px;">
+            <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
+            <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+            <!-- </div> -->
+        </div>
+    </div>
+
+    <div id="divContent" class="d-flex justify-content-center mt-3">
+        <div class="container myBorder">
+            <div>
+                <h1 class="d-flex justify-content-center" id="pageHeading">Dashboard Settings</h1>
+                <hr />
+            </div>
+
+            <form>
+                <div id="divFeatured"> 
+                    <h3>Featured</h3>
+
+                    <div class="form-group">
+                        <label for="txtImag1Tag_grp1">Image1 Tag</label>
+                        <input type="text" class="form-control" id="txtImag1Tag_featured">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Tag_grp1">Image2 Tag</label>
+                        <input type="text" class="form-control" id="txtImag2Tag_featured">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Tag_grp1">Image3 Tag</label>
+                        <input type="text" class="form-control" id="txtImag3Tag_featured">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_grp1">Image4 Tag</label>
+                        <input type="text" class="form-control" id="txtImag4Tag_featured">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_grp1">Image5 Tag</label>
+                        <input type="text" class="form-control" id="txtImag5Tag_featured">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_FeaturedImage1" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_FeaturedImage1">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Featured Image 1</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadFeaturedImage1">Upload</button>
+                            <img id="imgProgressFeaturedImage1" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgFeaturedImage1" style="display: none;">Upload Successful</span>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_FeaturedImage2">
+                            <br />
+                            <div class="image-preview" id="imagePreview_FeaturedImage2">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Featured Image 2</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadFeaturedImage2">Upload</button>
+                            <img id="imgProgressFeaturedImage2" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgFeaturedImage2" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_FeaturedImage3">
+                            <br />
+                            <div class="image-preview" id="imagePreview_FeaturedImage3">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Featured Image 3</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadFeaturedImage3">Upload</button>
+                            <img id="imgProgressFeaturedImage3" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgFeaturedImage3" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_FeaturedImage4" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_FeaturedImage4">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Featured Image 4</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadFeaturedImage4">Upload</button>
+                            <img id="imgProgressFeaturedImage4" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgFeaturedImage4" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_FeaturedImage5" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_FeaturedImage5">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Featured Image 5</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadFeaturedImage5">Upload</button>
+                            <img id="imgProgressFeaturedImage5" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgFeaturedImage5" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="divgroup1"> 
+                    <h3>Group 1</h3>
+                    <div class="form-group">
+                        <label for="txtGroupNameGrp1">Group Name</label>
+                        <input type="text" class="form-control" id="txtGroupNameGrp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Tag_grp1">Image1 Tag</label>
+                        <input type="text" class="form-control" id="txtImag1Tag_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Name_grp1">Image1 Name</label>
+                        <input type="text" class="form-control" id="txtImag1Name_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Tag_grp1">Image2 Tag</label>
+                        <input type="text" class="form-control" id="txtImag2Tag_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Name_grp1">Image2 Name</label>
+                        <input type="text" class="form-control" id="txtImag2Name_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Tag_grp1">Image3 Tag</label>
+                        <input type="text" class="form-control" id="txtImag3Tag_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Name_grp1">Image3 Name</label>
+                        <input type="text" class="form-control" id="txtImag3Name_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_grp1">Image4 Tag</label>
+                        <input type="text" class="form-control" id="txtImag4Tag_grp1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Name_grp1">Image4 Name</label>
+                        <input type="text" class="form-control" id="txtImag4Name_grp1">
+                    </div>
+                    
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group1Image1" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group1Image1">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 1 Image 1</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup1Image1">Upload</button>
+                            <img id="imgProgressGroup1Image1" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup1Image1" style="display: none;">Upload Successful</span>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group1Image2">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group1Image2">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 1 Image 2</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup1Image2">Upload</button>
+                            <img id="imgProgressGroup1Image2" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup1Image2" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group1Image3">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group1Image3">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 1 Image 3</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup1Image3">Upload</button>
+                            <img id="imgProgressGroup1Image3" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup1Image3" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group1Image4" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group1Image4">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 1 Image 4</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup1Image4">Upload</button>
+                            <img id="imgProgressGroup1Image4" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup1Image4" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div id="divgroup2">
+                    <hr />
+                    <h3>Group 2</h3>
+                    <div class="form-group">
+                        <label for="txtGroupNameGrp2">Group Name</label>
+                        <input type="text" class="form-control" id="txtGroupNameGrp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Tag_grp2">Image1 Tag</label>
+                        <input type="text" class="form-control" id="txtImag1Tag_grp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Name_grp2">Image1 Name</label>
+                        <input type="text" class="form-control" id="txtImag1Name_grp2">
+                    </div>
+                    
+
+                    <div class="form-group">
+                        <label for="txtImag2Tag_grp2">Image2 Tag</label>
+                        <input type="text" class="form-control" id="txtImag2Tag_grp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Name_grp2">Image2 Name</label>
+                        <input type="text" class="form-control" id="txtImag2Name_grp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Tag_grp2">Image3 Tag</label>
+                        <input type="text" class="form-control" id="txtImag3Tag_grp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Name_grp2">Image3 Name</label>
+                        <input type="text" class="form-control" id="txtImag3Name_grp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_grp2">Image4 Tag</label>
+                        <input type="text" class="form-control" id="txtImag4Tag_grp2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Name_grp2">Image4 Name</label>
+                        <input type="text" class="form-control" id="txtImag4Name_grp2">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group2Image1" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group2Image1">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 2 Image 1</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup2Image1">Upload</button>
+                            <img id="imgProgressGroup2Image1" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup2Image1" style="display: none;">Upload Successful</span>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group2Image2">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group2Image2">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 2 Image 2</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup2Image2">Upload</button>
+                            <img id="imgProgressGroup2Image2" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup2Image2" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group2Image3">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group2Image3">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 2 Image 3</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup2Image3">Upload</button>
+                            <img id="imgProgressGroup2Image3" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup2Image3" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group2Image4" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group2Image4">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 2 Image 4</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup2Image4">Upload</button>
+                            <img id="imgProgressGroup2Image4" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup2Image4" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="divgroup3">
+                    <hr />
+                    <h3>Group 3</h3>
+                    <div class="form-group">
+                        <label for="txtGroupNameGrp3">Group Name</label>
+                        <input type="text" class="form-control" id="txtGroupNameGrp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Tag_grp3">Image1 Tag</label>
+                        <input type="text" class="form-control" id="txtImag1Tag_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Name_grp3">Image1 Name</label>
+                        <input type="text" class="form-control" id="txtImag1Name_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Tag_grp3">Image2 Tag</label>
+                        <input type="text" class="form-control" id="txtImag2Tag_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Name_grp3">Image2 Name</label>
+                        <input type="text" class="form-control" id="txtImag2Name_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Tag_grp3">Image3 Tag</label>
+                        <input type="text" class="form-control" id="txtImag3Tag_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Name_grp3">Image3 Name</label>
+                        <input type="text" class="form-control" id="txtImag3Name_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_grp3">Image4 Tag</label>
+                        <input type="text" class="form-control" id="txtImag4Tag_grp3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Name_grp3">Image4 Name</label>
+                        <input type="text" class="form-control" id="txtImag4Name_grp3">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group3Image1" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group3Image1">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 3 Image 1</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup3Image1">Upload</button>
+                            <img id="imgProgressGroup3Image1" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup3Image1" style="display: none;">Upload Successful</span>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group3Image2">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group3Image2">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 3 Image 2</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup3Image2">Upload</button>
+                            <img id="imgProgressGroup3Image2" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup3Image2" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group3Image3">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group3Image3">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 3 Image 3</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup3Image3">Upload</button>
+                            <img id="imgProgressGroup3Image3" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup3Image3" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group3Image4" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group3Image4">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 3 Image 4</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup3Image4">Upload</button>
+                            <img id="imgProgressGroup3Image4" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup3Image4" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                
+                <div id="divgroup4">
+                    <hr />
+                    <h3>Group 4</h3>
+                    <div class="form-group">
+                        <label for="txtGroupNameGrp4">Group Name</label>
+                        <input type="text" class="form-control" id="txtGroupNameGrp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Tag_grp4">Image1 Tag</label>
+                        <input type="text" class="form-control" id="txtImag1Tag_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag1Name_grp4">Image1 Name</label>
+                        <input type="text" class="form-control" id="txtImag1Name_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Tag_grp4">Image2 Tag</label>
+                        <input type="text" class="form-control" id="txtImag2Tag_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Name_grp4">Image2 Name</label>
+                        <input type="text" class="form-control" id="txtImag2Name_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Tag_grp4">Image3 Tag</label>
+                        <input type="text" class="form-control" id="txtImag3Tag_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Name_grp4">Image3 Name</label>
+                        <input type="text" class="form-control" id="txtImag3Name_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_grp4">Image4 Tag</label>
+                        <input type="text" class="form-control" id="txtImag4Tag_grp4">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Name_grp4">Image4 Name</label>
+                        <input type="text" class="form-control" id="txtImag4Name_grp4">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group4Image1" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group4Image1">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 4 Image 1</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup4Image1">Upload</button>
+                            <img id="imgProgressGroup4Image1" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup4Image1" style="display: none;">Upload Successful</span>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group4Image2">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group4Image2">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 4 Image 2</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup4Image2">Upload</button>
+                            <img id="imgProgressGroup4Image2" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup4Image2" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group4Image3">
+                            <br />
+                            <div class="image-preview" id="imagePreview_Group4Image3">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 4 Image 3</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadGroup4Image3">Upload</button>
+                            <img id="imgProgressGroup4Image3" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup4Image3" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_Group4Image4" accept="image/*"
+                                capture="camera">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_Group4Image4">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Group 4 Image 4</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadGroup4Image4">Upload</button>
+                            <img id="imgProgressGroup4Image4" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgGroup4Image4" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+
+
+                <div class="mt-2 mb-5">
+                    <button type="button" class="btn btn-success" id="btnSubmit" style="width: 150px;">Submit</button>
+
+                    <button type="button" class="btn btn-success" id="btnUpdate"
+                        style="display: none; width: 150px;">Update Listing</button>
+
+                    <image id="imgSaving" src="img_progress.gif" style="width: 70px; height: 70px; display: none;" />
+
+                </div>
+            </form>
+
+            <div style="width: 100%; height: auto; display: none;" class="msgBorder mt-2 mb-3" id="msgHeader">
+                <image src="img_ok.png" style="width: 20px; height: 20px;" class="ml-2" id="imgHeader" />
+                <span id="actionMsg">Message</span>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="/__/firebase/7.15.5/firebase-app.js"></script>
+
+    <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script src="/__/firebase/init.js"></script>
+
+    <script type="text/javascript" src="common.js"></script>
+    <script type="text/javascript" src="admin_dashboard.js"></script>
+
+
+</body>
+
+</html>

@@ -1244,7 +1244,7 @@ function addPendingOrdersToTable() {
             var index = parseInt(this.id);
             var order = pendingOrders[index];
             var user = ordersUsersMap.get(order.order_id);
-            var address = ordersAddressMap.get(ordre.order_id);
+            var address = ordersAddressMap.get(order.order_id);
 
             var products = ordersProductMap.get(order.order_id);
 

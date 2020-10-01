@@ -62,7 +62,7 @@ function loadInvoice() {
  //var txtAmountInWords = document.getElementById("txtAmountInWords");
 
 
-  txtOrderId.textContent = localStorage.getItem("orderid");
+  txtOrderId.textContent = invoice.order_id;
 
   txtSellerName.textContent = invoice.seller_name;
   txtSelleraddressLine1.textContent = invoice.txtSelleraddressLine1;

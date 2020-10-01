@@ -421,7 +421,7 @@ async function loadLast7DaysOrderMap() {
                         for (var i = 0; i < productList.length; i++) {
                             var product = productList[i];
                             qty += product.Qty;
-                            sales += product.Offer_Price;
+                            sales += product.Offer_Price * product.Qty;
                         }
                         var mapQty = mapUnits7Days.get(formattedDay);
                         mapQty += qty;

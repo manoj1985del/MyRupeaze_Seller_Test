@@ -1,9 +1,9 @@
-
-
 var sellerId = localStorage.getItem("sellerid");
 var mSeller;
 var sellerName = localStorage.getItem("sellerName");
 var nav = document.getElementById("nav");
+
+
 
 var update = false;
 
@@ -16,6 +16,7 @@ var Img4Url = null;
 var Img5Url = null;
 
 var productFeatures;
+var qtyDiscounts;
 var productVariants = null;
 let arrBullets = [];
 var tags;
@@ -49,6 +50,7 @@ var divVariant = document.getElementById("divVariant");
 var btnMapVariant = document.getElementById("btnMapVariant");
 var spanMapVariant = document.getElementById("spanMapVariant");
 var txtReturnWindow = document.getElementById("txtReturnWindow");
+var divQtyDiscounts = document.getElementById("divQtyDiscounts");
 
 
 
@@ -129,6 +131,11 @@ var msgHeader = document.getElementById("msgHeader");
 var imgHeader = document.getElementById("imgHeader");
 var actionMsg = document.getElementById("actionMsg");
 
+var txtQtyDiscountQty = document.getElementById("txtQtyDiscountQty");
+var txtQtyDiscountPrice = document.getElementById("txtQtyDiscountPrice");
+var btnAddQtyDiscount = document.getElementById("btnAddQtyDiscount");
+var ulQtyDiscount = document.getElementById("ulQtyDiscount");
+
 var fileCover;
 var fileImg1;
 var fileImg2;
@@ -150,12 +157,15 @@ var bullets = [];
 let bulletMap = new Map();
 let featureMap = new Map();
 let variantMap = new Map();
+let qtyDiscountMap = new Map();
 var variantList = [];
 var mProduct;
 
 getSellerDetails();
 
 var bUpdate = false;
+
+
 
 btnUploadCover.addEventListener("click", function () {
     if (fileCover == null) {
@@ -394,7 +404,16 @@ var admin = getQueryVariable("admin");
 
 if (productId != null) {
     bUpdate = true;
-    console.log("here");
+    loadUI();
+   
+}
+else{
+    bUpdate = false;
+    productId = generateUUID();
+}
+
+function loadUI(){
+
     btnSubmit.style.display = "none";
     btnUpdate.style.display = "block";
     pageHeading.innerHTML = "<h1>Edit Listing</h1>";
@@ -448,6 +467,14 @@ if (productId != null) {
                     var propertyName = `${property}`;
                     var propertyValue = `${pf[property]}`;
                     addfeatures(propertyName, propertyValue);
+                }
+
+        
+                var qd = product.qty_discounts;
+                for (const property in qd) {
+                    var propertyName = `${property}`;
+                    var propertyValue = `${qd[property]}`;
+                    addQtyDiscount(propertyName, propertyValue);
                 }
 
                 if (variantsAvailable) {
@@ -545,10 +572,7 @@ if (productId != null) {
         .catch(function (error) {
             console.log("Error getting documents: ", error);
         });
-}
-else{
-    bUpdate = false;
-    productId = generateUUID();
+
 }
 
 rbVariantYes.addEventListener("change", function () {
@@ -929,6 +953,48 @@ function addBullets(data) {
     txtBulletPoints.value = "";
 }
 
+btnAddQtyDiscount.addEventListener("click", function(){
+    if(txtQtyDiscountQty.value == ""){
+        alert("Please specify Quantity");
+        txtQtyDiscountQty.focus();
+        return;
+    }
+
+    if(txtQtyDiscountPrice.value == ""){
+        alert("Please specify discount price");
+        txtQtyDiscountPrice.focus();
+        return;
+    }
+
+    if(txtQtyDiscountQty.value == "1"){
+        alert("Value of discount quantity should be greater than 1");
+        txtQtyDiscountQty.focus();
+        return;
+    }
+
+    var value = qtyDiscountMap.get(txtQtyDiscountQty.value);
+    if(value != null){
+        alert("Discount has already been defined on this quantity");
+        return;
+    }
+
+    addQtyDiscount(txtQtyDiscountQty.value, txtQtyDiscountPrice.value);
+    txtQtyDiscountQty.value = "";
+    txtQtyDiscountPrice.value = "";
+})
+
+function addQtyDiscount(quantity, price) {
+    if (quantity === "" || price == "") {
+        return;
+    }
+
+    var elementId = quantity;
+
+    qtyDiscountMap.set(quantity, price);
+    addElement("ulQtyDiscount", "li", elementId, price, qtyDiscountMap, true);
+}
+
+
 function addfeatures(featureName, featureValue) {
     if (featureName === "" || featureValue == "") {
         return;
@@ -1079,6 +1145,15 @@ function saveProductDetails() {
         }
     }
 
+    qtyDiscounts = null;
+    if(qtyDiscountMap.size > 0){
+        qtyDiscounts = new Object();
+        for (let [key, value] of qtyDiscountMap) {
+            qtyDiscounts[key] = parseInt(value);
+        }
+    }
+
+
     arrBullets = [];
     for (let [key, value] of bulletMap) {
         arrBullets.push(value);
@@ -1113,6 +1188,7 @@ function saveProductDetails() {
         GST: parseInt(txtGST.value),
         MRP: parseFloat(txtMRP.value),
         Offer_Price: parseFloat(txtOfferPrice.value),
+        qty_discounts: qtyDiscounts,
         Product_Id: productId,
         Tags: tags,
         Title: txtProductTitle.value,
@@ -1186,6 +1262,14 @@ function updateProductDetails() {
         }
     }
 
+    qtyDiscounts = null;
+    if(qtyDiscountMap.size > 0){
+        qtyDiscounts = new Object();
+        for (let [key, value] of qtyDiscountMap) {
+            qtyDiscounts[key] =  parseInt(value);
+        }
+    }
+
 
 
 
@@ -1198,6 +1282,7 @@ function updateProductDetails() {
         GST: parseInt(txtGST.value),
         MRP: parseFloat(txtMRP.value),
         Offer_Price: parseFloat(txtOfferPrice.value),
+        qty_discounts: qtyDiscounts,
         Product_Id: productId,
         Tags: tags,
         Title: txtProductTitle.value,

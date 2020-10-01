@@ -1,39 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Listing</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Listing</title>
 
-    <link rel="icon" href="img_logo.png">
+  <link rel="icon" href="img_logo.png">
 
-     <!-- Font Awesome JS -->
+  <!-- Font Awesome JS -->
   <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
-  integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
-  crossorigin="anonymous"></script>
-<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
-  integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
-  crossorigin="anonymous"></script>
+    integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+    crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+    integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+    crossorigin="anonymous"></script>
 
 
-<style>
-  .myBorder {
-    border: 1px lightgray solid;
-  }
-</style>
+  <style>
+    .myBorder {
+      border: 1px lightgray solid;
+    }
+  </style>
 
-<!-- CSS only -->
-<!-- <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;900&display=swap" rel="stylesheet"> -->
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- CSS only -->
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;900&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-<link rel="stylesheet" href="myStyle.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="myStyle.css">
 
 </head>
+
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #020001;">
-    <a class="navbar-brand" href="#"><img src ="img_logo.png" alt="">
+    <a class="navbar-brand" href="#"><img src="img_logo.png" alt="">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,90 +43,97 @@
     </button>
 
     <div class="ml-auto">
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
 
-      <ul class="navbar-nav">
+        <ul class="navbar-nav">
 
-        <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Listings
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="AddListing.html">Add New Product</a>
-            <a class="dropdown-item" href="showListing.html">Show Listing</a>
-          </div>
-        </li>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Listings
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="AddListing.html">Add New Product</a>
+              <a class="dropdown-item" href="showListing.html">Show Listing</a>
+            </div>
+          </li>
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Orders
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="orders.html?type=pending">Pending Orders</a>
-            <a class="dropdown-item" href="orders.html?type=today">Today Orders</a>
-            <a class="dropdown-item" href="orders.html?type=all">Order History</a>
-            <a class="dropdown-item" href="orders.html?type=unsettled">Unsettled Orders</a>
-            <a class="dropdown-item" href="orders.html?type=settled">Settled History</a>
-           
-          </div>
-        </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Orders
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="orders.html?type=pending">Pending Orders</a>
+              <a class="dropdown-item" href="orders.html?type=today">Today Orders</a>
+              <a class="dropdown-item" href="orders.html?type=all">Order History</a>
+              <a class="dropdown-item" href="orders.html?type=unsettled">Unsettled Orders</a>
+              <a class="dropdown-item" href="orders.html?type=settled">Settled History</a>
 
-
-        <li class="nav-item dropdown" id="navCity">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Others
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="seller_videos.html">Videos</a>
-            <a class="dropdown-item" id="linkSubscription">Subscription</a>
-          </div>
-        </li>
+            </div>
+          </li>
 
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Help
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="Terms.html">Terms and Conditions</a>
-            <a class="dropdown-item" target="_blank" href="https://firebasestorage.googleapis.com/v0/b/my-rupeaze.appspot.com/o/policies%2FReturns%20Policy%20My%20Rupeaze.pdf?alt=media&token=e891ef3e-9540-4e34-b9a7-35fa320d0b81">Return and Refund Policy</a>
-            <a class="dropdown-item" href="Aboutus.html">About us</a>
-            <a class="dropdown-item" href="privacy_policy.html">Privacy Policy</a>
-            <a class="dropdown-item" target="_blank" href="https://firebasestorage.googleapis.com/v0/b/my-rupeaze.appspot.com/o/policies%2FSelling%20Charges.pdf?alt=media&token=e2a40057-226c-457b-8862-258339f79a5d">Selling Charges - Doc2</a>
-            <a class="dropdown-item" href="contact_us.html">Contact Us</a>
-          </div>
-        </li>
+          <li class="nav-item dropdown" id="navCity">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Others
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="seller_videos.html">Videos</a>
+              <a class="dropdown-item" id="linkSubscription">Subscription</a>
+            </div>
+          </li>
 
-        <button type="submit" id="btnHome" value="Home" class="btn mr-3" style="width: 100px; background-color: #e95807; color:white">Home</button>
-        <button type="submit" id="btnLogout" value="Logout" class="btn" style="width: 100px; background-color: #e95807; color:white">
-         
-          Logout
-        </button> 
-      </ul>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Help
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="Terms.html">Terms and Conditions</a>
+              <a class="dropdown-item" target="_blank"
+                href="https://firebasestorage.googleapis.com/v0/b/my-rupeaze.appspot.com/o/policies%2FReturns%20Policy%20My%20Rupeaze.pdf?alt=media&token=e891ef3e-9540-4e34-b9a7-35fa320d0b81">Return
+                and Refund Policy</a>
+              <a class="dropdown-item" href="Aboutus.html">About us</a>
+              <a class="dropdown-item" href="privacy_policy.html">Privacy Policy</a>
+              <a class="dropdown-item" target="_blank"
+                href="https://firebasestorage.googleapis.com/v0/b/my-rupeaze.appspot.com/o/policies%2FSelling%20Charges.pdf?alt=media&token=e2a40057-226c-457b-8862-258339f79a5d">Selling
+                Charges - Doc2</a>
+              <a class="dropdown-item" href="contact_us.html">Contact Us</a>
+            </div>
+          </li>
+
+          <button type="submit" id="btnHome" value="Home" class="btn mr-3"
+            style="width: 100px; background-color: #e95807; color:white">Home</button>
+          <button type="submit" id="btnLogout" value="Logout" class="btn"
+            style="width: 100px; background-color: #e95807; color:white">
+
+            Logout
+          </button>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div id="divProgress" style="display: none;">
+    <div class="d-flex justify-content-center">
+      <h3 class="d-flex justify-content-center text-muted" id="errorMsg"></h3>
+      <!-- <br />
+    <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
+
+    </div>
+
+    <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+      style="width: 100%; height: 500px;">
+      <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
+      <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+      <!-- </div> -->
     </div>
   </div>
-  </nav>
-  
-
-  <div id = "divProgress" style="display: none;">
-  <div class="d-flex justify-content-center">
-    <h3 class="d-flex justify-content-center text-muted" id="errorMsg"></h3>
-    <!-- <br />
-    <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
-   
-  </div>
-
-  <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center " style="width: 100%; height: 500px;">
-  <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
-    <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
-  <!-- </div> -->
-</div>
-</div>
 
   <div id="divContent" class="d-flex justify-content-center mt-3">
     <div class="container myBorder">
@@ -132,316 +141,335 @@
         <h1 class="d-flex justify-content-center" id="pageHeading">Add Your Listing</h1>
         <hr />
       </div>
-  
+
       <form>
 
         <div class="form-group">
           <label for="productCategory">Category</label>
           <!-- <input type="text" class="form-control" id="txtState"> -->
-          <select name="productCategory" id="productCategory"  class="form-control">
-              <option selected disabled hidden value=null>Select Category</option>
-              <option value="Electronics and Appliances">Electronics and Appliances</option>
-              <option value="Fashion and apparels">Fashion and apparels</option>
-              <option value="Books, Toys, Games, Baby products">Books, Toys, Games, Baby products</option>
-              <option value="Footwears">Footwears</option>
-              <option value="Pandemic Needs">Pandemic Needs</option>
-              <option value="Groceries">Groceries</option>
-              <option value="Home, Kitchen, pets, Furniture">Home, Kitchen, pets, Furniture</option>
-              <option value="Mobiles, Computers">Mobiles, Computers</option>
-              <option value="Sports, Fitness, Bags & Luggage">Sports, Fitness, Bags & Luggage</option>
-              <option value="Cakes, Sweets and Confectionaries">Cakes, Sweets and Confectionaries</option>  
-            </select>
+          <select name="productCategory" id="productCategory" class="form-control">
+            <option selected disabled hidden value=null>Select Category</option>
+            <option value="Electronics and Appliances">Electronics and Appliances</option>
+            <option value="Fashion and apparels">Fashion and apparels</option>
+            <option value="Books, Toys, Games, Baby products">Books, Toys, Games, Baby products</option>
+            <option value="Footwears">Footwears</option>
+            <option value="Pandemic Needs">Pandemic Needs</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Home, Kitchen, pets, Furniture">Home, Kitchen, pets, Furniture</option>
+            <option value="Mobiles, Computers">Mobiles, Computers</option>
+            <option value="Sports, Fitness, Bags & Luggage">Sports, Fitness, Bags & Luggage</option>
+            <option value="Cakes, Sweets and Confectionaries">Cakes, Sweets and Confectionaries</option>
+          </select>
         </div>
 
         <div class="form-group">
           <label for="txtProductTitle">Product Title *</label>
           <input type="text" class="form-control" id="txtProductTitle" aria-describedby="protuctTitleHelp" required>
-          <small id="protuctTitleHelp" class="form-text text-muted">Tip: Product title should be clear and crisp and not very long.</small>
+          <small id="protuctTitleHelp" class="form-text text-muted">Tip: Product title should be clear and crisp and not
+            very long.</small>
         </div>
         <div class="form-group">
           <label for="txtOfferPrice">Offer Price *</label>
           <input type="number" class="form-control" id="txtOfferPrice" required>
         </div>
-  
+
         <div class="form-group">
           <label for="txtMRP">MRP *</label>
           <input type="number" class="form-control" id="txtMRP" required>
         </div>
-        
+
+
+
+        <div class="form-group" id="divQtyDiscounts" style="display: none;">
+          <h3>Quantity Discounts</h3>
+          <label for="txtQtyDiscountQty">Quantity</label>
+          <input type="number" class="form-control" id="txtQtyDiscountQty">
+
+          <label for="txtQtyDiscountPrice">Price</label>
+          <input type="number" class="form-control" id="txtQtyDiscountPrice">
+          <button type="button" class="btn btn-primary mt-2" id="btnAddQtyDiscount">Add</button>
+          <ul class="mt-3" id="ulQtyDiscount"></ul>
+        </div>
+
 
         <div class="form-group">
           <label for="txtMRP">Return Window (in days) *</label>
           <input type="number" class="form-control" id="txtReturnWindow" required>
-          <small id="protuctTitleHelp" class="form-text text-muted">Note: Return window will start from the date of delivery and not from order date.<br/>Enter 0 for non-returnable Items</small>
+          <small id="protuctTitleHelp" class="form-text text-muted">Note: Return window will start from the date of
+            delivery and not from order date.<br />Enter 0 for non-returnable Items</small>
         </div>
-  
-  
+
+
         <div>
           <div class="form-group">
             <label for="txtGST">GST(%) *</label>
             <input type="number" class="form-control" id="txtGST" required>
-        </div>
-  
-  
-        <div>
-          <div class="form-group">
-            <label for="txtBrand">Brand *</label>
-            <input type="text" class="form-control" id="txtBrand" required>
           </div>
 
-          <div class="form-group">
-            <label for="txtcoo">Country Of Origin *</label>
-            <input type="text" class="form-control" id="txtcoo" required>
-          </div>
 
-          <div class="form-group">
-            <label for="txtExpiryDate">Expiry Date</label>
-            <input type="date" class="form-control" id="txtExpiryDate">
-          </div>
-
-          
-  
-          <div class="form-group">
-            <label for="txtProductTitle">Tags</label>
-            <input type="text" class="form-control" id="txtTags" aria-describedby="tagsHelp" required>
-            <small id="tagsHelp" class="form-text text-muted"><b>Tip:</b> Each tag should be separated by comma. Tags are helpful while searching product</small>
-          </div>
-  
-        <div>
-          <div class="form-group">
-            <label for="txtBulletPoints">Bullet Points</label>
-            <input type="text" class="form-control" id="txtBulletPoints">
-            <small id="protuctTitleHelp" class="form-text text-muted">Add some nice features of your product that will be
-              highlited in the app</small>
-          </div>
-  
-        </div>
-        <button type="button" class="btn btn-primary" id="btnBulletPoints">Add</button>
-        <br />
-        <div>
-          <ul id="ulBulletPoints">
-          </ul>
-        </div>
-  
-        <div class="form-group">
-          <label for="txtStockQty">Stock Qty</label>
-          <input type="number" class="form-control" id="txtStockQty" required>
-        </div>
-  
-        <div class="form-group">
-          <label for="txtProductDescription">Product Description (500 words max)</label>
-          <textarea style="height: 200px;" class="form-control" id="txtProductDescription" required></textarea>
-        </div>
-  
-        <div class="form-group">
-        <label for="rbYes">COD Available</label>
-        <hr />
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="exampleRadios" id="rbYes" value="Yes" checked>
-          <label class="form-check-label" for="rbYes">
-            Yes
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="exampleRadios" id="rbNo" value="No">
-          <label class="form-check-label" for="rbNo">
-            No
-          </label>
-        </div>
-      </div>
-  
-        <div class="form-group">
-          <label for="rbVariantsNo">Feature and Details</label>
-          <label for="txtFeatureName">Feature Name</label>
-          <input type="text" class="form-control" id="txtFeatureName" placeholder="Ex. weight">
-  
-          <label for="txtFeatureDetail">Feature Detail</label>
-          <input type="text" class="form-control" id="txtFeatureDetail" placeholder="Ex. 50 grams">
-  
-          <button type="button" class="btn btn-primary mt-2" id="btnAddFeature">Add Feature</button>
-  
-          <ul class="mt-3" id="ulfeatures"></ul>
-        </div>
-
-        <div class="form-group">
-          <h3>Variants</h3>
-          <hr />
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="variantRadios" id="rbVariantsYes" value="Yes">
-            <label class="form-check-label" for="rbVariantsYes">
-              Yes
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="variantRadios" id="rbVariantsNo" value="No" checked>
-            <label class="form-check-label" for="rbVariantsNo">
-              No
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group" id="divVariant" style="display: none;">
-          <h3>Variant Details</h3>
-          <label for="txtVariantName">Variant Name</label>
-          <input type="text" class="form-control" id="txtVariantName" placeholder="Ex. Color, Size etc">
-  
-          <label for="txtVariantValue">Variant Value</label>
-          <input type="text" class="form-control" id="txtVariantValue">
-          
           <div>
-          <button type="button" class="btn btn-info mt-2" id="btnMapVariant">Map Variant</button>
-          <span id="spanMapVariant"></span>
-        </div>
-  
-          <button type="button" class="btn btn-primary mt-2" id="btnAddVariant">Add Variant</button>
-  
-          <ul class="mt-3" id="ulVariants"></ul>
-        </div>
-  
-        <!-- Images to be uploaded -->
-        <h3>Upload Images</h3>
-        <hr />
-  
-        <div class="row">
-          <div class="col-md-4">
-            <input type="file" name="inpFile" id="inpFile_Cover"  accept="image/*" capture="camera">
-            <br />
-          
-            <div class="image-preview" id="imagePreview_Cover">
-              <img src="" alt="Image Preview" class="image-preview_image" />
-              <span class="image-preview_default-text">Cover Image Preview</span>
+            <div class="form-group">
+              <label for="txtBrand">Brand *</label>
+              <input type="text" class="form-control" id="txtBrand" required>
             </div>
-            <button type="button" class="mt-2" id="btnUploadCover">Upload</button>
-            <img id="imgProgressCover" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
-            <span id="uploadMsgCover" style="display: none;">Upload Successful</span>
-          </div>
 
-         
-          <div class="col-md-4">
-            <input type="file" name="inpFile" id="inpFile_Img1">
-            <br />
-            <div class="image-preview" id="imagePreview_Img1">
-              <img src="" alt="Image Preview" class="image-preview_image" />
-              <span class="image-preview_default-text">Image Preview</span>
+            <div class="form-group">
+              <label for="txtcoo">Country Of Origin *</label>
+              <input type="text" class="form-control" id="txtcoo" required>
             </div>
-            <button class="mt-2" type="button"  id="btnUploadImg1">Upload</button>
-            <img id="imgProgressImg1" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
-            <span id="uploadMsgImg1" style="display: none;">Upload Successful</span>
-          </div>
-  
-          <div class="col-md-4">
-            <input type="file" name="inpFile" id="inpFile_Img2">
-            <br />
-            <div class="image-preview" id="imagePreview_Img2">
-              <img src="" alt="Image Preview" class="image-preview_image" />
-              <span class="image-preview_default-text">Cover Image Preview</span>
+
+            <div class="form-group">
+              <label for="txtExpiryDate" id="labelExpiryDate">Expiry Date</label>
+              <input type="date" class="form-control" id="txtExpiryDate">
             </div>
-            <button class="mt-2" type="button"  id="btnUploadImg2">Upload</button>
-            <img id="imgProgressImg2" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
-            <span id="uploadMsgImg2" style="display: none;">Upload Successful</span>
-          </div>
-         
-        </div>
-  
-        <div class="row mt-5">
-          <div class="col-md-4">
-            <input type="file" name="inpFile" id="inpFile_Img3">
-            <br />
-            <div class="image-preview" id="imagePreview_Img3">
-              <img src="" alt="Image Preview" class="image-preview_image" />
-              <span class="image-preview_default-text">Cover Image Preview</span>
-              
+
+
+
+            <div class="form-group">
+              <label for="txtProductTitle">Tags</label>
+              <input type="text" class="form-control" id="txtTags" aria-describedby="tagsHelp" required>
+              <small id="tagsHelp" class="form-text text-muted"><b>Tip:</b> Each tag should be separated by comma. Tags
+                are helpful while searching product</small>
             </div>
-            <button class="mt-2" type="button"  id="btnUploadImg3">Upload</button>
-            <img id="imgProgressImg3" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
-            <span id="uploadMsgImg3" style="display: none;">Upload Successful</span>
-          </div>
-  
-          <div class="col-md-4">
-            <input type="file" name="inpFile" id="inpFile_Img4">
-            <br />
-            <div class="image-preview" id="imagePreview_Img4">
-              <img src="" alt="Image Preview" class="image-preview_image" />
-              <span class="image-preview_default-text">Cover Image Preview</span>
+
+            <div>
+              <div class="form-group">
+                <label for="txtBulletPoints">Bullet Points</label>
+                <input type="text" class="form-control" id="txtBulletPoints">
+                <small id="protuctTitleHelp" class="form-text text-muted">Add some nice features of your product that
+                  will be
+                  highlited in the app</small>
+              </div>
+
             </div>
-            <button class="mt-2" type="button" id="btnUploadImg4">Upload</button>
-            <img id="imgProgressImg4" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
-            <span id="uploadMsgImg4" style="display: none;">Upload Successful</span>
-          </div>
-  
-          <div class="col-md-4">
-            <input type="file" name="inpFile" id="inpFile_Img5">
+            <button type="button" class="btn btn-primary" id="btnBulletPoints">Add</button>
             <br />
-            <div class="image-preview" id="imagePreview_Img5">
-              <img src="" alt="Image Preview" class="image-preview_image" />
-              <span class="image-preview_default-text">Cover Image Preview</span>
+            <div>
+              <ul id="ulBulletPoints">
+              </ul>
             </div>
-            <button class="mt-2" type="button" id="btnUploadImg5">Upload</button>
-            <img id="imgProgressImg5" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
-            <span id="uploadMsgImg5" style="display: none;">Upload Successful</span>
-          </div>
-         
-        </div>
-  
-        <!-- <div class="form-group form-check">
+
+            <div class="form-group">
+              <label for="txtStockQty">Stock Qty</label>
+              <input type="number" class="form-control" id="txtStockQty" required>
+            </div>
+
+            <div class="form-group">
+              <label for="txtProductDescription">Product Description (500 words max)</label>
+              <textarea style="height: 200px;" class="form-control" id="txtProductDescription" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="rbYes">COD Available</label>
+              <hr />
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="rbYes" value="Yes" checked>
+                <label class="form-check-label" for="rbYes">
+                  Yes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="rbNo" value="No">
+                <label class="form-check-label" for="rbNo">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="rbVariantsNo">Feature and Details</label>
+              <label for="txtFeatureName">Feature Name</label>
+              <input type="text" class="form-control" id="txtFeatureName" placeholder="Ex. weight">
+
+              <label for="txtFeatureDetail">Feature Detail</label>
+              <input type="text" class="form-control" id="txtFeatureDetail" placeholder="Ex. 50 grams">
+
+              <button type="button" class="btn btn-primary mt-2" id="btnAddFeature">Add Feature</button>
+
+              <ul class="mt-3" id="ulfeatures"></ul>
+            </div>
+
+            <div class="form-group">
+              <h3>Variants</h3>
+              <hr />
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="variantRadios" id="rbVariantsYes" value="Yes">
+                <label class="form-check-label" for="rbVariantsYes">
+                  Yes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="variantRadios" id="rbVariantsNo" value="No" checked>
+                <label class="form-check-label" for="rbVariantsNo">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" id="divVariant" style="display: none;">
+              <h3>Variant Details</h3>
+              <label for="txtVariantName">Variant Name</label>
+              <input type="text" class="form-control" id="txtVariantName" placeholder="Ex. Color, Size etc">
+
+              <label for="txtVariantValue">Variant Value</label>
+              <input type="text" class="form-control" id="txtVariantValue">
+
+              <div>
+                <button type="button" class="btn btn-info mt-2" id="btnMapVariant">Map Variant</button>
+                <span id="spanMapVariant"></span>
+              </div>
+
+              <button type="button" class="btn btn-primary mt-2" id="btnAddVariant">Add Variant</button>
+
+              <ul class="mt-3" id="ulVariants"></ul>
+            </div>
+
+            <!-- Images to be uploaded -->
+            <h3>Upload Images</h3>
+            <hr />
+
+            <div class="row">
+              <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_Cover">
+                <br />
+
+                <div class="image-preview" id="imagePreview_Cover">
+                  <img src="" alt="Image Preview" class="image-preview_image" />
+                  <span class="image-preview_default-text">Cover Image Preview</span>
+                </div>
+                <button type="button" class="mt-2" id="btnUploadCover">Upload</button>
+                <img id="imgProgressCover" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                <span id="uploadMsgCover" style="display: none;">Upload Successful</span>
+              </div>
+
+
+              <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_Img1">
+                <br />
+                <div class="image-preview" id="imagePreview_Img1">
+                  <img src="" alt="Image Preview" class="image-preview_image" />
+                  <span class="image-preview_default-text">Image Preview</span>
+                </div>
+                <button class="mt-2" type="button" id="btnUploadImg1">Upload</button>
+                <img id="imgProgressImg1" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                <span id="uploadMsgImg1" style="display: none;">Upload Successful</span>
+              </div>
+
+              <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_Img2">
+                <br />
+                <div class="image-preview" id="imagePreview_Img2">
+                  <img src="" alt="Image Preview" class="image-preview_image" />
+                  <span class="image-preview_default-text">Cover Image Preview</span>
+                </div>
+                <button class="mt-2" type="button" id="btnUploadImg2">Upload</button>
+                <img id="imgProgressImg2" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                <span id="uploadMsgImg2" style="display: none;">Upload Successful</span>
+              </div>
+
+            </div>
+
+            <div class="row mt-5">
+              <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_Img3">
+                <br />
+                <div class="image-preview" id="imagePreview_Img3">
+                  <img src="" alt="Image Preview" class="image-preview_image" />
+                  <span class="image-preview_default-text">Cover Image Preview</span>
+
+                </div>
+                <button class="mt-2" type="button" id="btnUploadImg3">Upload</button>
+                <img id="imgProgressImg3" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                <span id="uploadMsgImg3" style="display: none;">Upload Successful</span>
+              </div>
+
+              <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_Img4">
+                <br />
+                <div class="image-preview" id="imagePreview_Img4">
+                  <img src="" alt="Image Preview" class="image-preview_image" />
+                  <span class="image-preview_default-text">Cover Image Preview</span>
+                </div>
+                <button class="mt-2" type="button" id="btnUploadImg4">Upload</button>
+                <img id="imgProgressImg4" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                <span id="uploadMsgImg4" style="display: none;">Upload Successful</span>
+              </div>
+
+              <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_Img5">
+                <br />
+                <div class="image-preview" id="imagePreview_Img5">
+                  <img src="" alt="Image Preview" class="image-preview_image" />
+                  <span class="image-preview_default-text">Cover Image Preview</span>
+                </div>
+                <button class="mt-2" type="button" id="btnUploadImg5">Upload</button>
+                <img id="imgProgressImg5" style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                <span id="uploadMsgImg5" style="display: none;">Upload Successful</span>
+              </div>
+
+            </div>
+
+            <!-- <div class="form-group form-check">
           <input type="checkbox" class="form-check-input" id="exampleCheck1">
           <label class="form-check-label" for="exampleCheck1">Check me out</label>
         </div> -->
 
-        <div class="mt-2 mb-5" >
-        <button type="button" class="btn btn-success" id="btnSubmit" style="width: 150px;">Submit</button>
+            <div class="mt-2 mb-5">
+              <button type="button" class="btn btn-success" id="btnSubmit" style="width: 150px;">Submit</button>
 
-        <button type="button" class="btn btn-success" id="btnUpdate" style="display: none; width: 150px;">Update Listing</button>
+              <button type="button" class="btn btn-success" id="btnUpdate" style="display: none; width: 150px;">Update
+                Listing</button>
 
-        <image id="imgSaving" src="img_progress.gif" style="width: 70px; height: 70px; display: none;" />
+              <image id="imgSaving" src="img_progress.gif" style="width: 70px; height: 70px; display: none;" />
 
-      </div>
+            </div>
       </form>
 
       <div style="width: 100%; height: auto; display: none;" class="msgBorder mt-2 mb-3" id="msgHeader">
         <image src="img_ok.png" style="width: 20px; height: 20px;" class="ml-2" id="imgHeader" />
         <span id="actionMsg">Message</span>
       </div>
-  
-  
-  
-  
+
+
+
+
     </div>
   </div>
-  
-  
-  
-  
-    
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-      crossorigin="anonymous"></script>
-  
-      <!-- The core Firebase JS SDK is always required and must be listed first -->
+
+
+
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="/__/firebase/7.15.5/firebase-app.js"></script>
-  
+
   <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
   <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
   <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
   <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
   <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
-  
+
   <!-- TODO: Add SDKs for Firebase products that you want to use
        https://firebase.google.com/docs/web/setup#available-libraries -->
   <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
-  
+
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
 
-   <script type="text/javascript" src="common.js"></script>
+  <script type="text/javascript" src="common.js"></script>
   <script type="text/javascript" src="addlisting.js"></script>
-  
-  
-  </body>
+
+
+</body>
+
 </html>

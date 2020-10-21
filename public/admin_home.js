@@ -58,6 +58,9 @@ var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
 var cardPendingElecPayouts = document.getElementById("cardPendingElecPayouts");
 var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
 
+var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsProduct");
+var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
+
 localStorage.setItem("adminLogin", "true");
 
 var todayOrdersMap = new Map();
@@ -75,6 +78,7 @@ var elec_commission_admin = 0;
 
 
 Last7Days();
+getPendingProducts();
 loadSellerDetails(sellerId);
 loadTotalSellers();
 loadTotalUsers();
@@ -190,6 +194,20 @@ cardTotalUsers.addEventListener("click", function () {
 btnUpdate.addEventListener("click", function(){
     window.location.href = "RegisterUser.html?sellerid=" + sellerId;
 })
+
+//pending for approval products
+cardPendingApprovalsProduct.addEventListener("mouseenter", function(){
+    cardPendingApprovalsProduct.classList.add("cardHover");
+})
+
+cardPendingApprovalsProduct.addEventListener("mouseleave", function(){
+    cardPendingApprovalsProduct.classList.remove("cardHover");
+})
+
+cardPendingApprovalsProduct.addEventListener("click", function(){
+    window.location.href = "admin_show_listing.html?type=pending";
+})
+
 
 function getMonthNmae(index) {
     var monthName;
@@ -1041,6 +1059,18 @@ function mapCurrentMonthsProductAgainstOrder(order) {
             });
 
     })
+}
+
+function getPendingProducts(){
+    firebase.firestore().collection("products")
+        .where("status", "==", "pending")
+        .get()
+        .then(function (querySnapshot) {
+            hPendingApprovalProducts.textContent = querySnapshot.docs.length;
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
 }
 
 

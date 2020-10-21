@@ -1,6 +1,5 @@
 
-
-var docLimit = 10;
+var docLimit = 25;
 
 var rupeeSymbol = "₹ ";
 
@@ -25,6 +24,10 @@ var productList = [];
 
 
 var nextQuery;
+var type = getQueryVariable("type");
+if (type == null || type == undefined) {
+    type = "all";
+}
 
 btnNext.addEventListener("click", function () {
 
@@ -45,22 +48,32 @@ btnNext.addEventListener("click", function () {
             var product = productList[i];
             promiseList.push(mapProductWithSeller(product));
         }
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
 
-            nextQuery = firebase.firestore()
-            .collection('products')
-            .orderBy('timestamp', 'desc')
-            .startAfter(lastVisibleDoc)
-            .limit(docLimit);
+            if (type == "pending") {
+                nextQuery = firebase.firestore()
+                    .collection('products')
+                    .where("status", "==", "pending")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            } else {
+                nextQuery = firebase.firestore()
+                    .collection('products')
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
 
 
-        pageIndex++;
-        queryList.push(nextQuery);
 
-        addRecordToTable();
+            pageIndex++;
+            queryList.push(nextQuery);
+
+            addRecordToTable();
 
         });
-       
+
 
     })
 
@@ -93,11 +106,23 @@ btnPrevious.addEventListener("click", function () {
 
         Promise.all(promiseList).then(() => {
 
-            nextQuery = firebase.firestore()
-                .collection('products')
-                .orderBy('timestamp', 'desc')
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+            if (type == "pending") {
+                nextQuery = firebase.firestore()
+                    .collection('products')
+                    .where("status", "==", "pending")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            } else {
+                nextQuery = firebase.firestore()
+                    .collection('products')
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+
+
 
             pageIndex--;
             if (pageIndex == 0) {
@@ -115,14 +140,30 @@ btnPrevious.addEventListener("click", function () {
 });
 
 
+//doTest();
+//alert("updating the tags");
 
 showData();
 
 function showData() {
-    var query = firebase.firestore()
-        .collection('products')
-        .orderBy('timestamp', 'desc')
-        .limit(docLimit);
+    var query;
+
+    if (type == "pending") {
+
+        query = firebase.firestore()
+            .collection('products')
+            .where("status", "==", "pending")
+            .orderBy('timestamp', 'desc')
+            .limit(docLimit);
+
+    }
+    else {
+        query = firebase.firestore()
+            .collection('products')
+            .orderBy('timestamp', 'desc')
+            .limit(docLimit);
+    }
+
 
     queryList.push(query);
 
@@ -178,7 +219,7 @@ function showListing(query) {
 
                 if (snapshot.docs.length == 0) {
                     divErrorMsg.style.display = "block";
-                    errMsg.textContent = "You don't have an active listing";
+                    errMsg.textContent = "No Records Found";
                     return;
                 }
 
@@ -264,6 +305,7 @@ function createTableHeaders() {
     var tr = document.createElement('tr');
 
     var imageHeader = document.createElement("th");
+    var productIdHeader = document.createElement('th');
     var productTitleHeader = document.createElement('th');
     var sellerHeader = document.createElement('th');
     var stockQtyHeader = document.createElement('th');
@@ -337,12 +379,34 @@ function addRecordToTable() {
         var anchorProductTitle = document.createElement("a");
         var href = "AddListing.html?productid=" + productId + "&admin=true";
         anchorProductTitle.setAttribute("href", href);
+        anchorProductTitle.setAttribute("target", "_blank");
+
         anchorProductTitle.textContent = productTitle;
+
+        var spanProductId = document.createElement("span");
+        spanProductId.innerHTML = "<br />Product Id: " + product.Product_Id + "</br>";
+
+        var spanReturnWindow = document.createElement("span");
+        spanReturnWindow.innerHTML = "<br />Returning Window: " + product.returning_window + "</br>";
+
+        var spanGST = document.createElement("span");
+        spanGST.innerHTML = "GST: " + product.GST + "%</br>";
         divProductTitle.appendChild(anchorProductTitle);
+        divProductTitle.appendChild(spanProductId);
+        divProductTitle.appendChild(spanReturnWindow);
+        divProductTitle.appendChild(spanGST);
+
+
         if (!product.Active) {
             var divSpan = document.createElement("span");
             var span = document.createElement("span");
-            span.innerHTML = "<br />This product is not available for buyers. You need to activate this listing.";
+            if(product.status == "pending"){
+                span.innerHTML =  "<br />This product is not available for buyers. You need to approve this listing.";
+            }
+            else{
+                span.innerHTML = "<br />This product is not available for buyers. You need to activate this listing.";
+            }
+           
             span.style.color = "#ff0000";
             divSpan.appendChild(span);
             divProductTitle.appendChild(divSpan);
@@ -352,9 +416,9 @@ function addRecordToTable() {
         var divSellerDetails = document.createElement("div");
         var spanSeller = document.createElement("span");
         spanSeller.innerHTML = "Seller Name : " + seller.company_name
-                         + "<br />Merchant Id: " + seller.merchant_id
-                         + "<br />Phone: " + seller.mobile
-                         + "<br />Email: " + seller.email;
+            + "<br />Merchant Id: " + seller.merchant_id
+            + "<br />Phone: " + seller.mobile
+            + "<br />Email: " + seller.email;
 
         divSellerDetails.appendChild(spanSeller);
         tdSeller.appendChild(divSellerDetails);
@@ -378,15 +442,29 @@ function addRecordToTable() {
         tdMRP.appendChild(divMRP);
 
         var divAction = document.createElement("div");
+        var divDelete = document.createElement("div");
         var btnDeleteListing = document.createElement("button");
-
         btnDeleteListing.setAttribute("id", i.toString());
         btnDeleteListing.textContent = "Delete Listing";
-        divAction.appendChild(btnDeleteListing);
+        btnDeleteListing.style.width = "150px";
+        divDelete.appendChild(btnDeleteListing);
+        divAction.appendChild(divDelete);
+
+        var divApprove = document.createElement("div");
+        divApprove.style.marginTop = "10px";
+        var btnApprove = document.createElement("button");
+        btnApprove.setAttribute("id", i.toString());
+        btnApprove.textContent = "Approve Listing";
+        btnApprove.style.width = "150px";
+        divApprove.appendChild(btnApprove);
+        divAction.appendChild(divApprove);
         tdAction.appendChild(divAction);
-       
 
-
+        if(product.status == "pending"){
+            divApprove.style.display = "block";
+        }else{
+            divApprove.style.display = "none";
+        }
 
         tr.appendChild(tdImage);
         tr.appendChild(tdTitle);
@@ -397,7 +475,7 @@ function addRecordToTable() {
         tr.appendChild(tdAction);
         table.appendChild(tr);
 
-        btnDeleteListing.addEventListener("click", function(){
+        btnDeleteListing.addEventListener("click", function () {
             var index = parseInt(this.id);
             var product = productList[index];
 
@@ -406,36 +484,65 @@ function addRecordToTable() {
                 return;
             }
 
-            deleteListing(product.Product_Id).then(()=>{
+            deleteListing(product.Product_Id).then(() => {
 
                 sendProductDeletionMail(product, reason);
                 window.location.href = "admin_show_listing.html";
 
             })
 
-
-        
-
         })
 
+        btnApprove.addEventListener("click", function () {
+            var index = parseInt(this.id);
+            var product = productList[index];
+
+            approveListing(product).then(()=>{
+                sendProductApprovalMail(product);
+                window.location.href = "admin_show_listing.html";
+            })
+        })
     }
 }
 
 
 function deleteListing(productId) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
 
-        firebase.firestore().collection("products").doc(productId).delete().then(function() {
+        firebase.firestore().collection("products").doc(productId).delete().then(function () {
             resolve();
-        }).catch(function(error) {
-           reject();
+        }).catch(function (error) {
+            reject();
         });
 
     })
-   
+
 
 }
+
+function approveListing(product) {
+    
+    return new Promise((resolve, reject)=>{
+
+        var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
+
+        // Set the "capital" field of the city 'DC'
+        return washingtonRef.update({
+            status: "approved",
+            Active: true
+        }).then(function () {
+            console.log("Update tags for proudct" + product.Title);
+            resolve();
+        }).catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+            reject();
+        });
+
+    });
+}
+
 
 
 function sendProductDeletionMail(product, reason) {
@@ -453,6 +560,23 @@ function sendProductDeletionMail(product, reason) {
         + "My Rupeaze Team </p>";
 
     sendEmail(seller.email, "My Rupeaze Product Deletion Notice", body);
+}
+
+function sendProductApprovalMail(product) {
+
+    var seller = productAndSellerMap.get(product.Product_Id);
+    console.log(seller);
+
+    var body = "<h3>Hello " + seller.company_name + "</h3>"
+        + "<p>Greetings from My Rupeaze!!</p>"
+        + "<p> Congratulations!! Your listing with product id " + product.Product_Id + " has been approved."
+        + "<br/>Product Name: " + product.Title 
+        + "</p><p>In case of any questions please feel free to revert us back. </p>"
+        + "<p>Keep Selling!!</p>"
+        + "<p>With Kind Regards,<br/>"
+        + "My Rupeaze Team </p>";
+
+    sendEmail(seller.email, "My Rupeaze: Product Approval Notice for Product Id - " + product.Product_Id, body);
 }
 
 function mapProductWithSeller(product) {
@@ -482,3 +606,39 @@ function mapProductWithSeller(product) {
 
 
 }
+
+var allProducts = [];
+function doTest() {
+    firebase.firestore().collection("products").get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            var product = doc.data();
+            updateTags(product);
+
+        });
+    });
+}
+
+function updateTags(product) {
+
+    var tmpTags = [];
+    var tags = [];
+
+    for (var i = 0; i < product.Tags.length; i++) {
+        var tag = product.Tags[i].trim();
+        tags.push(tag);
+    }
+
+    var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
+
+    // Set the "capital" field of the city 'DC'
+    return washingtonRef.update({
+        status: "approved"
+    }).then(function () {
+        console.log("Update tags for proudct" + product.Title);
+    }).catch(function (error) {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+    });
+
+}
+

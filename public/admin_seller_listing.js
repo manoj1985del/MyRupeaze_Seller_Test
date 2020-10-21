@@ -518,7 +518,16 @@ function drawTable() {
         btnSettleAccount.style.marginBottom = "10px";
         divSettleAccount.appendChild(btnSettleAccount);
         divUnsettledOrders.appendChild(divSettleAccount);
+        divAction.appendChild(divUnsettledOrders);
 
+        var divOfflineOrders = document.createElement("div");
+        var btnOfflineInvoices = document.createElement("button");
+        btnOfflineInvoices.textContent = "Offline Orders";
+        btnOfflineInvoices.style.width = "150px";
+        btnOfflineInvoices.setAttribute("id", i.toString());
+        btnOfflineInvoices.style.marginBottom = "10px";
+        divOfflineOrders.appendChild(btnOfflineInvoices);
+        divUnsettledOrders.appendChild(divOfflineOrders);
         divAction.appendChild(divUnsettledOrders);
 
         if (seller.status == "pending" || seller.status == "suspended" || seller.status == "rejected") {
@@ -602,6 +611,13 @@ function drawTable() {
         table.appendChild(tr);
 
         //Click Handlers
+
+        btnOfflineInvoices.addEventListener("click", function(){
+            var index = parseInt(this.id);
+            var seller = sellerList[index];
+            var href = "admin_offline_invoice.html?sellerid=" + seller.seller_id;
+            window.location.href = href;
+        })
 
         btnSuspendAccount.addEventListener("click", function () {
 

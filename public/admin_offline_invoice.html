@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Show Listing</title>
+  <title>Orders</title>
 
   <link rel="icon" href="img_logo.png">
 
@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link rel="stylesheet" href="myStyle.css">
+  <link rel="stylesheet" href="table.css">
 
 </head>
 
@@ -116,73 +117,83 @@
   </nav>
 
 
-  <div style="display: none;" id="divErrorMsg">
-    <div class="d-flex justify-content-center">
-      <h3 class="d-flex justify-content-center text-muted" id="errMsg">No Records Found</h3>
-      <!-- <br />
-    <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
+  <div class="d-flex justify-content-center">
+    <h3 class="d-flex justify-content-center text-muted" id="errorMsg"></h3>
+    <!-- <br />
+  <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
 
-    </div>
   </div>
+  
+  <div id="divProgress">
+    
 
-
-    <div class="container d-flex justify-content-center align-items-center" id="divLoadingGif" style="width: 100%; height: 500px;">
+    <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+      style="width: 100%; height: 500px;">
       <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
-      <img id="imgLoading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+      <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
      
     </div>
-
-
-  <div id="divContent" style="display: none;">
-    <div>
-      <h1 class="d-flex justify-content-center">View Listing</h1>
-      <hr />
-    </div>
   </div>
 
-  <table id="tblshowlisting">
-    <!-- <tr>
-            <th>Image</th>
-            <th>Product Title</th>
-            <th>Stock Qty</th>
-            <th>Offer Price</th>
-            <th>MRP</th>
-          </tr> -->
+  <div id="divContent" class="m-2" style="display: none;">
 
-  </table>
+    <div class="container">
+
+      <div>
+        <h1 class="d-flex justify-content-center" id="pageHeader"></h1>
+        <hr />
+      </div>
+
+      <form>
+        <!-- <div class="form-group">
+          <input type="text" class="form-control" id="txtSearch" placeholder="Enter Order Id">
+          <button type="button" class="btn btn-info mt-2" id="btnSearch">Search</button>
+        </div> -->
+    </div>
+
+    </form>
+
+    <table id="tblInvoices">
+    </table>
+  </div>
+
+
 
   <div id="nextPreviousDiv" class=" d-flex justify-content-center">
     <button id="previous" class="btn btn-success m-3" style="display: none; width: 100px;">Previous</button>
     <button id="next" class="btn btn-info m-3" style="width: 100px; display: none;">Next</button>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-      crossorigin="anonymous"></script>
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="/__/firebase/7.15.5/firebase-app.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
 
-    <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
-    <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
-    <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
-    <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
-    <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/7.15.5/firebase-app.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
+  <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
            https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
 
-    <!-- Initialize Firebase -->
-    <script src="/__/firebase/init.js"></script>
-    <script type="text/javascript" src="common.js"></script>
-    <script type="text/javascript" src="email.js"></script>
-    <script type="text/javascript" src="admin_show_listing.js"></script>
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+  <!-- <script type="text/javascript" src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script> -->
+  <script type="text/javascript" src="common.js"></script>
+  <script type="text/javascript" src="email.js"></script>
+  <script type="text/javascript" src="admin_offline_invoice.js"></script>
 </body>
 
 </html>

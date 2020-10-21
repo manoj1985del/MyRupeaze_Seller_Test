@@ -488,10 +488,10 @@ function addPendingOrdersToTable() {
             if (product.return_processed == false) {
                 returnRequestedAndNotProcessed = true;
 
-                spanReturn.innerHTML = "<br/><b>Return Requested</b>"
+                spanReturn.innerHTML = "<br/><b>Return Requested (Qty : " + product.return_qty + ")</b>"
             }
             else {
-                spanReturn.innerHTML = "<br/><b>Return Requested</b>"
+                spanReturn.innerHTML = "<br/><b>Return Requested (Qty : " + product.return_qty + ")</b>"
             }
             spanReturn.style.color = "#ff0000";
 
@@ -513,7 +513,10 @@ function addPendingOrdersToTable() {
 
         var divAmtPayableLocal = document.createElement("div");
         divAmtPayableLocal.style.marginBottom = "10px";
-        var amtPayable = product.Qty * product.Offer_Price;
+
+
+        var offerPrice = getOfferPrice(product);
+        var amtPayable = product.return_qty * offerPrice;
         var formattedAmtPayable = rupeeSymbol + numberWithCommas(amtPayable);
         var amountPayable = document.createElement("span");
         amountPayable.textContent = formattedAmtPayable;
@@ -553,6 +556,16 @@ function addPendingOrdersToTable() {
 
 }
 
+function getOfferPrice(product){
+    console.log(mOrder.payment_id);
+    if(mOrder.replacement_order){
+        return product.Original_Offer_Price;
+    }
+    else{
+       return product.Offer_Price;
+    }
+}
+
 function getPayableAmount() {
 
 
@@ -567,13 +580,15 @@ function getPayableAmount() {
 
     for (var i = 0; i < productList.length; i++) {
         var product = productList[i];
+        var offerPrice = getOfferPrice(product);
         if (mOrder.cancelled) {
-            amtPayable += product.Qty * product.Offer_Price;
+            amtPayable += product.return_qty * offerPrice;
             returnableProducts.push(product);
         }
         else {
             if (product.return_requested == true && product.return_processed == false) {
-                amtPayable += product.Qty * product.Offer_Price;
+               
+                amtPayable += product.return_qty * offerPrice;
                 returnableProducts.push(product);
             }
         }

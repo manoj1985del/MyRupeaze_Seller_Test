@@ -1,5 +1,5 @@
 
-var docLimit = 10;
+var docLimit = 25;
 
 var rupeeSymbol = "₹ ";
 
@@ -145,7 +145,7 @@ function showListing(query) {
 
         if (snapshot.docs.length == 0) {
           divErrorMsg.style.display = "block";
-          errMsg.textContent = "You don't have an active listing";
+          errMsg.textContent = "No Records Found";
           return;
         }
 
@@ -298,7 +298,9 @@ function addRecordToTable() {
     var anchorProductTitle = document.createElement("a");
     var href = "AddListing.html?productid=" + productId;
     anchorProductTitle.setAttribute("href", href);
-    anchorProductTitle.textContent = productTitle;
+    anchorProductTitle.setAttribute("target", "_blank");
+    anchorProductTitle.innerHTML = productTitle;
+
     divProductTitle.appendChild(anchorProductTitle);
     if(!product.Active){
       var divSpan = document.createElement("span");
@@ -391,3 +393,4 @@ function ActivateListing(productId, activate) {
     });
 
 }
+

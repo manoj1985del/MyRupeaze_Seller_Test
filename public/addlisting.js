@@ -534,31 +534,31 @@ function loadUI(){
                 console.log(admin);
                 if(admin == "true"){
                     console.log("here");
-                    nav.style.display = "none";
+                    //nav.style.display = "none";
                     pageHeading.innerHTML = "<h1>View Product Details</h1>";
 
-                    productCategory.disabled = true;
-                    txtProductTitle.disabled = true;
-                    txtOfferPrice.disabled = true;
-                    txtMRP.disabled = true;
-                    txtReturnWindow.disabled = true;
-                    txtGST.disabled = true;
-                    txtBrand.disabled = true;
-                    txtCountryOfOrigin.disabled = true;
-                    txtExpiryDate.disabled = true;
-                    //txtTags.disabled = true;
-                    txtBulletPoints.disabled = true;
-                    txtStockQty.disabled = true;
-                    txtProductDescription.disabled = true;
-                  //  rbYes.disabled = true;
-                    txtFeatureName.disabled = true;
-                    txtFeatureValue.disabled = true;
-                    btnUploadCover.style.display = "none";
-                    btnUploadImg1.style.display = "none";
-                    btnUploadImg2.style.display = "none";
-                    btnUploadImg3.style.display = "none";
-                    btnUploadImg4.style.display = "none";
-                    btnUploadImg5.style.display = "none";
+                //     productCategory.disabled = true;
+                //     txtProductTitle.disabled = true;
+                //     txtOfferPrice.disabled = true;
+                //     txtMRP.disabled = true;
+                //     txtReturnWindow.disabled = true;
+                //     txtGST.disabled = true;
+                //     txtBrand.disabled = true;
+                //     txtCountryOfOrigin.disabled = true;
+                //     txtExpiryDate.disabled = true;
+                //     //txtTags.disabled = true;
+                //     txtBulletPoints.disabled = true;
+                //     txtStockQty.disabled = true;
+                //     txtProductDescription.disabled = true;
+                //   //  rbYes.disabled = true;
+                //     txtFeatureName.disabled = true;
+                //     txtFeatureValue.disabled = true;
+                //     btnUploadCover.style.display = "none";
+                //     btnUploadImg1.style.display = "none";
+                //     btnUploadImg2.style.display = "none";
+                //     btnUploadImg3.style.display = "none";
+                //     btnUploadImg4.style.display = "none";
+                //     btnUploadImg5.style.display = "none";
 
                     console.log(mSeller);
 
@@ -615,8 +615,18 @@ function validateFormDetails() {
         errorFound = true;
     }
 
+    if(!isNumber(txtOfferPrice.value)){
+        errorMsg += "Offer Price has to be numeric";
+        errorFound = true;
+    }
+
     if (txtMRP.value == "") {
         errorMsg += "Please Enter MRP<br/>"
+        errorFound = true;
+    }
+
+    if(!isNumber(txtMRP.value)){
+        errorMsg += "MRP has to be numeric<br/>"
         errorFound = true;
     }
 
@@ -625,8 +635,18 @@ function validateFormDetails() {
         errorFound = true;
     }
 
+    if(!isNumber(txtReturnWindow.value)){
+        errorMsg += "Return window has to be numeric<br/>"
+        errorFound = true;
+    }
+
     if (txtGST.value == "") {
         errorMsg += "Please Enter GST rate.<br/>"
+        errorFound = true;
+    }
+
+    if(!isNumber(txtGST.value)){
+        errorMsg += "GST has to be a number only.<br/>"
         errorFound = true;
     }
 
@@ -649,6 +669,13 @@ function validateFormDetails() {
         errorMsg += "Please Enter Stock Quantity.<br/>"
         errorFound = true;
     }
+
+    if(!isNumber(txtStockQty.value)){
+        errorMsg += "GST has to be a number only.<br/>"
+        errorFound = true;
+    }
+
+    
 
     if (txtProductDescription.value == "") {
         errorMsg += "Please Enter Product Description.<br/>"
@@ -1165,7 +1192,13 @@ function saveProductDetails() {
 
     }
 
-    tags = txtTags.value.split(',');
+    var tmpTags = [];
+    tags = [];
+    tmpTags = txtTags.value.split(',');
+    for(var i = 0; i < tmpTags.length; i++){
+        var tag = tmpTags[i].trim();
+        tags.push(tag);
+    }
     expiryDate = null;
     if (txtExpiryDate.value != "") {
         expiryDate = formatDate();
@@ -1180,12 +1213,12 @@ function saveProductDetails() {
 
     firebase.firestore().collection('products').doc(productId).set({
         Avg_Rating: 0,
-        Active: true,
+        Active: false,
         Brand: txtBrand.value,
         COD: rbYes.checked,
         Description: txtProductDescription.value,
         Features: productFeatures,
-        GST: parseInt(txtGST.value),
+        GST: parseFloat(txtGST.value),
         MRP: parseFloat(txtMRP.value),
         Offer_Price: parseFloat(txtOfferPrice.value),
         qty_discounts: qtyDiscounts,
@@ -1213,9 +1246,11 @@ function saveProductDetails() {
         seller_area_pin: mSeller.seller_area_pin,
         selling_offline: false,
         shop_price: 0,
+        status:"pending",
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
 
     }).then(function () {
+       
         divProgress.style.display = "none";
         divContent.style.display = "block";
         window.location.href = "showListing.html";
@@ -1270,16 +1305,13 @@ function updateProductDetails() {
         }
     }
 
-
-
-
     // Set the "capital" field of the city 'DC'
     return washingtonRef.update({
         Brand: txtBrand.value,
         COD: rbYes.checked,
         Description: txtProductDescription.value,
         Features: productFeatures,
-        GST: parseInt(txtGST.value),
+        GST: parseFloat(txtGST.value),
         MRP: parseFloat(txtMRP.value),
         Offer_Price: parseFloat(txtOfferPrice.value),
         qty_discounts: qtyDiscounts,
@@ -1306,12 +1338,21 @@ function updateProductDetails() {
     .then(function() {
         divProgress.style.display = "none";
         divContent.style.display = "block";
-        if(admin){
-            window.location.href = "admin_show_listing.html";
-        }
-        else{
-        window.location.href = "showListing.html";
-        }
+        alert("Listing updated successfully");
+        window.close();
+
+        // if(bUpdate){
+           
+        //     window.close();
+        //     return;
+        // }
+
+        // if(admin){
+        //     window.location.href = "admin_show_listing.html";
+        // }
+        // else{
+        // window.location.href = "showListing.html";
+        // }
     })
     .catch(function(error) {
         divProgress.style.display = "none";
@@ -1344,6 +1385,18 @@ function getQueryVariable(variable) {
         }
     }
     return null;
+}
+
+function isNumber(searchValue) {
+    var found = searchValue.search(/^(\d*\.?\d*)$/);
+    //Change to ^(\d*\.?\d+)$ if you don't want the number to end with a . such as 2.
+    //Currently validates .2, 0.2, 2.0 and 2.
+    if(found > -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 function getSellerDetails() {

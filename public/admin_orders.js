@@ -1,7 +1,7 @@
 
 
 var promiseList = [];
-var docLimit = 10;
+var docLimit = 25;
 var rupeeSymbol = "₹ ";
 var pendingOrders = [];
 //var users = [];
@@ -324,7 +324,7 @@ btnPrevious.addEventListener("click", function () {
     ordersUsersMap.clear();
     ordersAddressMap.clear();
     //users = [];
-   // addresses = [];
+    // addresses = [];
     deleteTableRows();
     // table = document.getElementById("tblPendingOrders");
 
@@ -719,20 +719,20 @@ function fetchOrders(query) {
 
 function fetchUserAgainstOrder(order) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
         var query = firebase.firestore()
-                .collection('users').doc(order.customer_id);
-    
+            .collection('users').doc(order.customer_id);
+
         query.get()
             .then(function (doc) {
-    
-                if(doc.exists){
-    
+
+                if (doc.exists) {
+
                     var user = doc.data();
                     ordersUsersMap.set(order.order_id, user);
                     resolve();
                 }
-                else{
+                else {
                     alert("Deleted user found against order id - " + order.order_id);
                     resolve();
                 }
@@ -756,7 +756,7 @@ function fetchUsers() {
             // query.get()
             //     .then(function (doc) {
             //         var user = doc.data();
-                    
+
             //         console.log(user.Name);
             //         users.push(user);
             //         if (users.length == pendingOrders.length) {
@@ -766,7 +766,7 @@ function fetchUsers() {
             //     })
 
         }
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
             resolve();
         })
 
@@ -778,28 +778,28 @@ function fetchUsers() {
 
 function fetchAddressAgainstOrder(order) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
 
         var user = ordersUsersMap.get(order.order_id);
-        if(user == null || user == undefined){
+        if (user == null || user == undefined) {
             alert("Order found against a deleted user - " + order.customer_id);
             resolve();
             return;
         }
-    
+
         var query = firebase.firestore()
             .collection('users').doc(order.customer_id).collection("Addresses").doc(user.AddressId);
-    
+
         query.get()
             .then(function (doc) {
-    
-                if(doc.exists){
-    
+
+                if (doc.exists) {
+
                     var address = doc.data();
                     ordersAddressMap.set(order.order_id, address);
                     resolve();
                 }
-                else{
+                else {
                     resolve();
                 }
             });
@@ -818,7 +818,7 @@ function fetchAddresses() {
         for (var i = 0; i < pendingOrders.length; i++) {
             var order = pendingOrders[i];
             promiseList.push(fetchAddressAgainstOrder(order));
-          
+
 
             // var query = firebase.firestore()
             //     .collection('users').doc(order.customer_id).collection("Addresses").doc(user.AddressId);
@@ -836,10 +836,10 @@ function fetchAddresses() {
 
             //     });
         }
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
             resolve();
         })
-        
+
     });
 }
 
@@ -946,7 +946,7 @@ function addPendingOrdersToTable() {
                 var index = i.toString();
 
                 var order = pendingOrders[i];
-                var user =  ordersUsersMap.get(order.order_id); // users[i];
+                var user = ordersUsersMap.get(order.order_id); // users[i];
                 var address = ordersAddressMap.get(order.order_id); // addresses[i];
                 var seller = orderSellerMap.get(order.order_id);
 
@@ -1248,19 +1248,37 @@ function addPendingOrdersToTable() {
                         if (product.return_processed == false) {
                             returnRequestedAndNotProcessed = true;
 
-                            spanReturn.innerHTML = "<br/><b>Return Requested</b>"
+                            spanReturn.innerHTML = "<br/><b>Return Requested (Qty : " + product.return_qty + ")</b>"
                         }
                         else {
-                            spanReturn.innerHTML = "<br/><b>Return Requested And Processed.</b>"
+                            spanReturn.innerHTML = "<br/><b>Return Requested  (Qty : " + product.return_qty + ") And Processed.</b>"
                         }
                         spanReturn.style.color = "#ff0000";
                     }
 
+                    var spanReplacement = document.createElement("span");
+                    if (product.replacement_requested != null) {
+                        if (product.replacement_requested) {
+                            spanReplacement.style.color = "#ff0000";
+                            spanReplacement.innerHTML = "<br/><b>Replacement Requested (Qty : " + product.replacement_qty + ")</b>"
+                        }
+                    }
+
+                    var spanIsReplaceOrder = document.createElement("span");
+                    if(order.replacement_order != null){
+                        if(order.replacement_order){
+                            spanIsReplaceOrder.style.color = "#ff0000";
+                            spanIsReplaceOrder.innerHTML = "<br/><b>Replacement Order (Original Order Id : " + order.original_order_id + ")</b>"
+                        }
+        
+                    }
 
 
                     productTitle.innerHTML = title;
                     divProductTitleLocal.appendChild(productTitle);
                     divProductTitleLocal.appendChild(spanReturn);
+                    divProductTitleLocal.appendChild(spanReplacement);
+                    divProductTitleLocal.appendChild(spanIsReplaceOrder);
                     divProductName.appendChild(divProductTitleLocal);
 
                     var divQtyLocal = document.createElement("div");

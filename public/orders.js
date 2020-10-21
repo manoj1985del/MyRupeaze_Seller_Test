@@ -2,7 +2,7 @@
 
 //const { DocumentReference } = require("@google-cloud/firestore");
 
-var docLimit = 10;
+var docLimit = 25;
 var rupeeSymbol = "₹ ";
 var pendingOrders = [];
 // var users = [];
@@ -1131,18 +1131,37 @@ function addPendingOrdersToTable() {
                 if (product.return_processed == false) {
                     returnRequestedAndNotProcessed = true;
 
-                    spanReturn.innerHTML = "<br/><b>Return Requested</b>"
+                    spanReturn.innerHTML = "<br/><b>Return Requested (Qty : " + product.return_qty + ")</b>"
                 }
                 else {
-                    spanReturn.innerHTML = "<br/><b>Return Requested And Processed.</b>"
+                    spanReturn.innerHTML = "<br/><b>Return Requested  (Qty : " + product.return_qty + ") And Processed.</b>"
                 }
                 spanReturn.style.color = "#ff0000";
+            }
+
+            var spanReplacement = document.createElement("span");
+            if(product.replacement_requested != null){
+                if(product.replacement_requested){
+                    spanReplacement.style.color = "#ff0000";
+                    spanReplacement.innerHTML = "<br/><b>Replacement Requested (Qty : " + product.replacement_qty + ")</b>"
+                }
+            }
+
+            var spanIsReplaceOrder = document.createElement("span");
+            if(order.replacement_order != null){
+                if(order.replacement_order){
+                    spanIsReplaceOrder.style.color = "#ff0000";
+                    spanIsReplaceOrder.innerHTML = "<br/><b>Replacement Order (Original Order Id : " + order.original_order_id + ")</b>"
+                }
+
             }
 
             productTitle.innerHTML = title;
             divProductTitleLocal.appendChild(productTitle);
             divProductName.appendChild(divProductTitleLocal);
             divProductName.appendChild(spanReturn);
+            divProductName.appendChild(spanReplacement);
+            divProductName.appendChild(spanIsReplaceOrder);
 
             var divQtyLocal = document.createElement("div");
             divQtyLocal.style.marginBottom = "10px";

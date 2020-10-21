@@ -189,7 +189,7 @@ exports.createOrder = functions.firestore
                 const mailOptions = {
                     from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
                     to: seller.email, //Getting recipient's email by query string
-                    subject: "My Rupeaze: New Order Received",
+                    subject: "My Rupeaze: New Order Received (Order Id: " + order.order_id + ")",
                     html: msg
 
                 };
@@ -328,7 +328,7 @@ exports.orderCancelled = functions.firestore
                     const mailOptions = {
                         from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
                         to: seller.email, //Getting recipient's email by query string
-                        subject: "My Rupeaze: Order Cancelled",
+                        subject: "My Rupeaze: Order Cancelled (Order Id: " + order.order_id + ")",
                         html: msg
                     };
 
@@ -404,7 +404,7 @@ exports.orderReturned = functions.firestore
                 const mailOptions = {
                     from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
                     to: seller.email, //Getting recipient's email by query string
-                    subject: "My Rupeaze: Order Return Request Raised",
+                    subject: "My Rupeaze: Order Return Request Raised (Order Id: " + orderid + ")",
                     html: msg
                 };
 

@@ -1,4 +1,4 @@
-var docLimit = 10;
+var docLimit = 25;
 var productList = [];
 var alreadySellingProductIds = [];
 var alreadySellingProducts = [];
@@ -16,6 +16,7 @@ var btnPrevious = document.getElementById("previous");
 var errMsg = document.getElementById("errorMsg");
 var queryList = [];
 var pageIndex = 0;
+
 
 btnNext.addEventListener("click", function () {
     divLoadingGif.style.display = "block";

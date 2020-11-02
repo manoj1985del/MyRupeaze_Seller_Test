@@ -279,7 +279,7 @@ function returnItem(status_list, points) {
     debitPoints(points).then(()=>{
 
 
-        var invoiceRef = firebase.firestore().collection("seller").doc(sellerId).collection("invoices").doc(txtInvoice.value);
+        var invoiceRef = firebase.firestore().collection("offline_invoices").doc(txtInvoice.value);
 
         // Set the "capital" field of the city 'DC'
         return invoiceRef.update({
@@ -300,13 +300,7 @@ function returnItem(status_list, points) {
 
 
 
-function addProductsToDb() {
-    getInvoiceId().then(() => {
-        createInvoice(newInvoiceId).then(() => {
-            window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
-        })
-    })
-}
+
 
 function createInvoice(invoiceId) {
 
@@ -321,7 +315,7 @@ function createInvoice(invoiceId) {
             statusList.push("success");
         }
 
-        firebase.firestore().collection('seller').doc(sellerId).collection("invoices").doc(invoiceId).set({
+        firebase.firestore().collection('offline_invoices').doc(invoiceId).set({
             invoice_id: newInvoiceId,
             seller_id: sellerId,
             seller_name: sellerName,
@@ -357,43 +351,7 @@ function createInvoice(invoiceId) {
 }
 
 
-function getInvoiceId() {
 
-    return new Promise((resolve, reject) => {
-
-        firebase.firestore().collection('seller').doc(sellerId).collection("invoices").orderBy("timestamp", "desc").limit(1)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    var invoice = doc.data();
-                    var invoiceId = invoice.invoice_id;
-                    var invoiceNum = parseInt(invoiceId.substring(3, invoiceId.length));
-                    invoiceNum = invoiceNum + 1;
-                    var newInvoiceNum = appendNumber(invoiceNum, 3);
-                    newInvoiceId = "INS" + newInvoiceNum;
-                    resolve();
-
-
-                });
-            })
-            .then(function () {
-                if (newInvoiceId == null) {
-                    newInvoiceId = "INS001";
-                    resolve();
-                }
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-                reject();
-            });
-
-
-    })
-
-
-
-}
 
 function appendNumber(number, digits) {
     return String(number).padStart(digits, '0');
@@ -405,7 +363,7 @@ function getInvoice(invoiceId) {
 
     return new Promise((resolve, reject) => {
         var query = firebase.firestore()
-            .collection('seller').doc(sellerId).collection("invoices").doc(invoiceId);
+            .collection('offline_invoices').doc(invoiceId);
 
         query.get()
             .then(function (doc) {

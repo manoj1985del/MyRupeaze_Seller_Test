@@ -1,4 +1,5 @@
 
+
 var divContent = document.getElementById("divContent");
 var divProgress = document.getElementById("divProgress");
 
@@ -25,6 +26,7 @@ var points = 0;
 var earnedPoints = 0;
 console.log("sellerid -" + sellerId);
 var customerId;
+var mSeller;
 
 
 
@@ -36,16 +38,18 @@ var qtyList = [];
 var statusList = [];
 
 //get seller details
-var sellerName = localStorage.getItem("sellerName");
-var sellerAddressLine1 = localStorage.getItem("sellerAddressLine1");
-var sellerAddressLine2 = localStorage.getItem("sellerAddressLine2");
-var sellerAddressLine3 = localStorage.getItem("sellerAddressLine3");
-var sellerCity = localStorage.getItem("sellerCity");
-var sellerState = localStorage.getItem("sellerState");
-var sellerCountry = "INDIA";
-var sellerPin = localStorage.getItem("sellerpin");
-var sellerPAN = localStorage.getItem("sellerPAN");
-var sellerGST = localStorage.getItem("sellerGST");
+var sellerName; // = localStorage.getItem("sellerName");
+var sellerAddressLine1; // = localStorage.getItem("sellerAddressLine1");
+var sellerAddressLine2; // = localStorage.getItem("sellerAddressLine2");
+var sellerAddressLine3; // = localStorage.getItem("sellerAddressLine3");
+var sellerCity; // = localStorage.getItem("sellerCity");
+var sellerState; // = localStorage.getItem("sellerState");
+var sellerCountry; // = "INDIA";
+var sellerPin; // = localStorage.getItem("sellerpin");
+var sellerPAN; // = localStorage.getItem("sellerPAN");
+var sellerGST; // = localStorage.getItem("sellerGST");
+var sellerMerchantId; ;
+
 
 
 table.style.display = "none";
@@ -63,6 +67,24 @@ class Products {
         this.points = points;
     }
 }
+
+getSellerDetails().then(()=>{
+    sellerName = mSeller.seller_name;
+    sellerAddressLine1 = mSeller.address_line1;
+    sellerAddressLine2 = mSeller.address_line2;
+    sellerAddressLine3 = mSeller.address_line3;
+    sellerCity = mSeller.city;
+    sellerState = mSeller.state;
+    sellerCountry = "INDIA";
+    sellerPin = mSeller.pincode;
+    sellerPAN = mSeller.pan_no;
+    sellerGST = mSeller.gstin;
+    sellerMerchantId = mSeller.merchant_id;
+
+
+
+});
+
 
 btnMobile.addEventListener("click", function () {
     console.log("goint to set display as block");
@@ -237,7 +259,7 @@ btnSubmit.addEventListener("click", function () {
 })
 
 function addProductsToDb() {
-    getInvoiceId().then(() => {
+    getNewInvoiceId().then(() => {
         createInvoice(newInvoiceId).then(() => {
             window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
         })
@@ -257,7 +279,7 @@ function createInvoice(invoiceId) {
             statusList.push("success");
         }
 
-        firebase.firestore().collection('seller').doc(sellerId).collection("invoices").doc(invoiceId).set({
+        firebase.firestore().collection('offline_invoices').doc(newInvoiceId).set({
             invoice_id: newInvoiceId,
             customer_id:customerId,
             seller_id: sellerId,
@@ -337,6 +359,49 @@ function getInvoiceId() {
 
 }
 
+function getNewInvoiceId() {
+
+    return new Promise((resolve, reject) => {
+
+        firebase.firestore().collection('offline_invoices')
+        .where("seller_id", '==', mSeller.seller_id)
+        .orderBy("timestamp", "desc").limit(1)
+        .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log("invoice found");
+                    var invoice = doc.data();
+                    var invoiceId = invoice.invoice_id;
+                    var tmpInvoice = invoiceId.split('_');
+                    var tmpInvoiceId = tmpInvoice[1];
+                    var invoiceNum = parseInt(tmpInvoiceId.substring(3, tmpInvoiceId.length));
+                    invoiceNum = invoiceNum + 1;
+                    var newInvoiceNum = appendNumber(invoiceNum, 3);
+                    newInvoiceId = mSeller.merchant_id +  "_INS" + newInvoiceNum;
+                    resolve();
+
+
+                });
+            })
+            .then(function () {
+                console.log("no invoice found");
+                if (newInvoiceId == null) {
+                    newInvoiceId = mSeller.merchant_id +  "_INS001";
+                    resolve();
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                newInvoiceId = mSeller.merchant_id +  "_INS001";
+                resolve();
+            });
+
+
+    })
+
+}
+
 function updatePoints() {
 
     return new Promise((resolve, reject)=>{
@@ -391,4 +456,36 @@ function getCustomerDetails(mobile) {
             })
 
     })
+}
+
+function getSellerDetails() {
+
+
+    return new Promise((resolve, reject)=>{
+
+        var docRef = firebase.firestore().collection("seller").doc(sellerId);
+
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mSeller = doc.data();
+                resolve();
+            } else {
+                mSeller = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                resolve();
+    
+            }
+        }).catch(function (error) {
+            mSeller = null;
+            console.log("Error getting document:", error);
+            reject();
+        });
+    
+
+    })
+
+
+
+
 }

@@ -48,11 +48,21 @@ btnNext.addEventListener("click", function () {
     fetchInvoices(query).then(() => {
 
         showInvoices();
-        nextQuery = firebase.firestore()
-            .collection('seller').doc(sellerid).collection("invoices")
+        if(sellerid == null){
+            nextQuery = firebase.firestore()
+            .collection('offline_invoices')
             .orderBy("timestamp", "desc")
             .limit(docLimit)
             .startAfter(lastVisibleDoc);
+        }else{
+            nextQuery = firebase.firestore()
+            .collection('offline_invoices')
+            .where("seller_id", "==", sellerid)
+            .orderBy("timestamp", "desc")
+            .limit(docLimit)
+            .startAfter(lastVisibleDoc);
+        }
+       
         pageIndex++;
         queryList.push(nextQuery);
         if (paginationFinished) {
@@ -100,20 +110,42 @@ btnPrevious.addEventListener("click", function () {
 function loadInvoices() {
 
     pageHeader.textContent = "Offline Invoices";
-    var query = firebase.firestore()
-        .collection('seller').doc(sellerid).collection("invoices")
+    var query;
+    if(sellerid == null){
+        query = firebase.firestore()
+        .collection('offline_invoices')
         .orderBy("timestamp", "desc")
         .limit(docLimit);
+    }
+    else{
+        query = firebase.firestore()
+        .collection('offline_invoices')
+        .where("seller_id", '==', sellerid)
+        .orderBy("timestamp", "desc")
+        .limit(docLimit);
+    }
+
 
     queryList.push(query);
 
     fetchInvoices(query).then(() => {
 
-        nextQuery = firebase.firestore()
-            .collection('seller').doc(sellerid).collection("invoices")
+        if(sellerid == null){
+            nextQuery = firebase.firestore()
+            .collection('offline_invoices')
             .orderBy("timestamp", "desc")
             .startAfter(lastVisibleDoc)
             .limit(docLimit);
+        }
+        else{
+            nextQuery = firebase.firestore()
+            .collection('offline_invoices')
+            .where("seller_id", "==", sellerid)
+            .orderBy("timestamp", "desc")
+            .startAfter(lastVisibleDoc)
+            .limit(docLimit);
+        }
+      
 
 
         queryList.push(nextQuery);

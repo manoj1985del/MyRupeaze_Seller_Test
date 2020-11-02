@@ -615,7 +615,7 @@ function drawTable() {
         btnOfflineInvoices.addEventListener("click", function(){
             var index = parseInt(this.id);
             var seller = sellerList[index];
-            var href = "admin_offline_invoice.html?sellerid=" + seller.seller_id;
+            var href = "admin_view_offline_invoice.html?sellerid=" + seller.seller_id;
             window.location.href = href;
         })
 

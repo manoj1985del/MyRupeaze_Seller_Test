@@ -32,6 +32,7 @@ if (type == null || type == undefined) {
 btnNext.addEventListener("click", function () {
 
     productList = [];
+    productAndSellerMap = new Map();
     deleteTableRows();
     btnPrevious.style.display = "block";
     imgLoading.style.display = "block";
@@ -50,7 +51,9 @@ btnNext.addEventListener("click", function () {
         }
         Promise.all(promiseList).then(() => {
 
+            console.log(type);
             if (type == "pending") {
+                console.log("in pending");
                 nextQuery = firebase.firestore()
                     .collection('products')
                     .where("status", "==", "pending")
@@ -58,6 +61,7 @@ btnNext.addEventListener("click", function () {
                     .startAfter(lastVisibleDoc)
                     .limit(docLimit);
             } else {
+                console.log("in all");
                 nextQuery = firebase.firestore()
                     .collection('products')
                     .orderBy('timestamp', 'desc')
@@ -177,15 +181,23 @@ function showData() {
 
         Promise.all(promiseList).then(() => {
 
+            if(type == "pending"){
+                nextQuery = firebase.firestore()
+                .collection('products')
+                .where("status", "==", "pending")
+                .orderBy('timestamp', 'desc')
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);
+            }
+            else{
 
-            nextQuery = firebase.firestore()
+                nextQuery = firebase.firestore()
                 .collection('products')
                 .orderBy('timestamp', 'desc')
                 .startAfter(lastVisibleDoc)
                 .limit(docLimit);
-
+            }
             queryList.push(nextQuery);
-
             addRecordToTable();
 
         })

@@ -475,36 +475,37 @@ function fetchInvoice(invoiceId) {
 
   return new Promise((resolve, reject) => {
     var query = firebase.firestore()
-      .collection('seller').doc(sellerId).collection("invoices").doc(invoiceId);
+      .collection('offline_invoices').doc(invoiceId);
 
     query.get()
       .then(function (doc) {
         if (doc.exists) {
           invoice = doc.data();
-          // resolve();
+           resolve();
         }
         else {
           invoice = null;
           reject();
         }
-      }).then(function () {
-
-        var query = firebase.firestore()
-          .collection('invoices').doc(invoiceId).collection("products");
-
-        query.get()
-          .then(function (snapshot) {
-            snapshot.forEach(function (doc) {
-              var product = doc.data();
-              console.log("got product - " + product.Title);
-              productList.push(product);
-            })
-
-            console.log("products retreived. Finally resolving");
-            resolve();
-          })
-
       })
+      // .then(function () {
+
+      //   var query = firebase.firestore()
+      //     .collection('invoices').doc(invoiceId).collection("products");
+
+      //   query.get()
+      //     .then(function (snapshot) {
+      //       snapshot.forEach(function (doc) {
+      //         var product = doc.data();
+      //         console.log("got product - " + product.Title);
+      //         productList.push(product);
+      //       })
+
+      //       console.log("products retreived. Finally resolving");
+      //       resolve();
+      //     })
+
+      // })
   })
 }
 

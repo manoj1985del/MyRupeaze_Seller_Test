@@ -57,6 +57,7 @@ var hDisbursable = document.getElementById("hDisbursable");
 var hFreezed = document.getElementById("hFreezed");
 
 var linkSubscription = document.getElementById("linkSubscription");
+var linkOfflineInvoices = document.getElementById("linkOfflineInvoices");
 
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
@@ -232,6 +233,10 @@ linkSubscription.addEventListener("click", function(){
     }
 
     window.location.href = "subscription.html";
+})
+
+linkOfflineInvoices.addEventListener("click", function(){
+    window.location.href = "admin_view_offline_invoice.html?sellerid=" + sellerId;
 })
 
 function loadChart() {

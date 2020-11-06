@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="pdf.css" />
     <script src="common.js"></script>
+    <script src="JsBarcode.all.min.js"></script>
     <script src="shipping_label.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 
@@ -69,6 +70,7 @@
                                         <ul class="list list-unstyled mb-0">
                                             <li>Date: <span class="font-weight-semibold">March 15, 2020</span></li>
                                             <li><b>Order Id: </b><span class="font-weight-semibold" id="txtOrderId"></span></li>
+                                            
                                         </ul>
                                     </div>
                                 </div>
@@ -142,10 +144,15 @@
                         
                         <h6 class="ml-2"><span id="txtAmountInWords"></span> </h6>
                     </div>
+                    <div class="mt-2 d-flex justify-content-center">
+                        <svg id="barcode"></svg>
+                    </div>
                     <div class="card-footer"> <span class="text-muted" >For any queries please email to support@myrupeaze.com</span> </div>
                 </div>
             </div>
         </div>
+
+        
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -173,6 +180,7 @@
 
 <!-- Initialize Firebase -->
 <script src="/__/firebase/init.js"></script>
+
 </body>
 
 </html>

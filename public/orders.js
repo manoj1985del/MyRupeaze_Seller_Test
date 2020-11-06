@@ -957,6 +957,15 @@ function addPendingOrdersToTable() {
         divPrintShipLabel.appendChild(btnPrintShipLabel);
         divAfterConfirm.appendChild(divPrintShipLabel);
 
+        var divLocalDelivery = document.createElement("div");
+        divLocalDelivery.style.marginBottom = "10px";
+        var btnLocalDelivery = document.createElement("button");
+        btnLocalDelivery.textContent = "Local Delivery";
+        btnLocalDelivery.setAttribute("id", index);
+        btnLocalDelivery.style.width = "150px";
+        divLocalDelivery.appendChild(btnLocalDelivery);
+        divAfterConfirm.appendChild(divLocalDelivery);
+
         if (order.cancelled) {
             divConfirm.style.display = "none";
             divAfterConfirm.style.display = "none";
@@ -1298,6 +1307,12 @@ function addPendingOrdersToTable() {
             var index = parseInt(this.id);
             var order = pendingOrders[index];
             window.location.href = "pdf.html?invoiceid=" + order.invoice_id;
+        })
+
+        btnLocalDelivery.addEventListener("click", function(){
+            var index = parseInt(this.id);
+            var order = pendingOrders[index];
+            window.location.href = "local_delivery.html?orderid=" + order.order_id;
         })
 
         btnPrintShipLabel.addEventListener("click", function () {

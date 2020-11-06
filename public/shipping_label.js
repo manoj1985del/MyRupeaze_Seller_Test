@@ -2,7 +2,9 @@
 var invoice;
 var productList = [];
 
+
 window.onload = function () {
+
 
   var invId = getQueryVariable("invoiceid");
   console.log("invoice id = " + invId);
@@ -63,6 +65,15 @@ function loadInvoice() {
 
 
   txtOrderId.textContent = invoice.order_id;
+
+  JsBarcode("#barcode", invoice.order_id, {
+    format: "code128",
+    width: 1,
+    height: 60,
+    displayValue: true
+  });
+
+
 
   txtSellerName.textContent = invoice.seller_name;
   txtSelleraddressLine1.textContent = invoice.txtSelleraddressLine1;

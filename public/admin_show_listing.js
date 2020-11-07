@@ -14,10 +14,10 @@ var btnPrevious = document.getElementById("previous");
 var errorMsg = document.getElementById("errMsg");
 var table = document.getElementById("tblshowlisting");
 var imgLoading = document.getElementById("imgLoading");
-var divContent = document.getElementById("")
 var pageIndex = 0;
 var lastVisibleDoc;
 var productAndSellerMap = new Map();
+var btnSearchProduct = document.getElementById("btnSearchProduct");
 
 var queryList = [];
 var productList = [];
@@ -29,6 +29,18 @@ if (type == null || type == undefined) {
     type = "all";
 }
 
+btnSearchProduct.addEventListener("click", function(){
+    productList = [];
+    deleteTableRows();
+    var query = firebase.firestore()
+      .collection('products')
+      .where("Product_Id", '==', txtProductId.value);
+      showListing(query).then(function(){
+        addRecordToTable();
+      })
+  
+  })
+
 btnNext.addEventListener("click", function () {
 
     productList = [];
@@ -36,6 +48,7 @@ btnNext.addEventListener("click", function () {
     deleteTableRows();
     btnPrevious.style.display = "block";
     imgLoading.style.display = "block";
+    divContent.style.display = "none";
     divLoadingGif.style.display = "block";
     divLoadingGif.style.width = "500px";
     divLoadingGif.style.height = "500px";
@@ -97,6 +110,7 @@ btnPrevious.addEventListener("click", function () {
     divLoadingGif.style.width = "500px";
     divLoadingGif.style.height = "500px";
     imgLoading.style.display = "block";
+    divContent.style.display = "none";
 
     console.log("pageindex :" + pageIndex);
     var query = queryList[pageIndex - 1];
@@ -211,6 +225,7 @@ function showListing(query) {
         query.get()
             .then(function (snapshot) {
                 imgLoading.style.display = "none";
+                divContent.style.display = "block";
 
 
                 if (snapshot.docs.length < docLimit) {
@@ -243,6 +258,7 @@ function showListing(query) {
                 divLoadingGif.style.width = "0px";
                 divLoadingGif.style.height = "0px";
                 imgLoading.style.display = "none";
+                divContent.style.display = "block";
 
                 //  createTableHeaders();
                 snapshot.forEach(function (doc) {

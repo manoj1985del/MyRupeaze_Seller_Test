@@ -136,6 +136,13 @@ var txtQtyDiscountPrice = document.getElementById("txtQtyDiscountPrice");
 var btnAddQtyDiscount = document.getElementById("btnAddQtyDiscount");
 var ulQtyDiscount = document.getElementById("ulQtyDiscount");
 
+var txtProductId = document.getElementById("txtProductId");
+var btnSearchProduct = document.getElementById("btnSearchProduct");
+var divAddFromProduct = document.getElementById("divAddFromProduct");
+var chkAddExisting = document.getElementById("chkAddExisting");
+var divAddExisting = document.getElementById("divAddExisting");
+
+
 var fileCover;
 var fileImg1;
 var fileImg2;
@@ -166,6 +173,13 @@ getSellerDetails();
 var bUpdate = false;
 
 
+chkAddExisting.addEventListener("change", function(){
+   if(this.checked){
+       divAddExisting.style.display = "block";
+   }else{
+       divAddExisting.style.display = "none";
+   }
+})
 
 btnUploadCover.addEventListener("click", function () {
     if (fileCover == null) {
@@ -388,23 +402,23 @@ btnAddVariant.addEventListener("click", function () {
     // variantMap.set(txtVariantName.value, variantList);
 })
 
+btnSearchProduct.addEventListener("click", function(){
+    if(txtProductId.value == null){
+        alert("Please enter a product Id");
+        return;
+    }
 
+    bUpdate = false;
+    loadUI(true, txtProductId.value);
 
-
-// class Variants {
-//     constructor(variantName, nameList, stockList) {
-//         this.variantName = variantName;
-//         this.nameList = nameList;
-//         this.stockList = stockList;
-//     }
-// }
-
+})
 var productId = getQueryVariable("productid");
 var admin = getQueryVariable("admin");
 
 if (productId != null) {
     bUpdate = true;
-    loadUI();
+    divAddFromProduct.style.display = "none";
+    loadUI(false, productId);
    
 }
 else{
@@ -412,7 +426,7 @@ else{
     productId = generateUUID();
 }
 
-function loadUI(){
+function loadUI(bProductIdEntered, p_ProductId){
 
     btnSubmit.style.display = "none";
     btnUpdate.style.display = "block";
@@ -420,7 +434,7 @@ function loadUI(){
 
     var query = firebase.firestore()
         .collection('products')
-        .where("Product_Id", "==", productId);
+        .where("Product_Id", "==", p_ProductId);
 
     query.get()
         .then(function (snapshot) {
@@ -428,8 +442,21 @@ function loadUI(){
                 var product = doc.data();
                 mProduct = product;
                 txtProductTitle.value = product.Title;
-                txtOfferPrice.value = product.Offer_Price;
-                txtMRP.value = product.MRP;
+                
+                if(bUpdate)
+                {
+                    txtOfferPrice.value = product.Offer_Price;
+                    txtMRP.value = product.MRP;
+
+                    var qd = product.qty_discounts;
+                for (const property in qd) {
+                    var propertyName = `${property}`;
+                    var propertyValue = `${qd[property]}`;
+                    addQtyDiscount(propertyName, propertyValue);
+                }
+
+                }
+                
                 txtGST.value = product.GST;
                 txtBrand.value = product.Brand;
                 txtTags.value = product.Tags;
@@ -470,13 +497,7 @@ function loadUI(){
                 }
 
         
-                var qd = product.qty_discounts;
-                for (const property in qd) {
-                    var propertyName = `${property}`;
-                    var propertyValue = `${qd[property]}`;
-                    addQtyDiscount(propertyName, propertyValue);
-                }
-
+                
                 if (variantsAvailable) {
                     var vr = product.Variants;
                     for (const property in vr) {
@@ -1213,7 +1234,7 @@ function saveProductDetails() {
 
     firebase.firestore().collection('products').doc(productId).set({
         Avg_Rating: 0,
-        Active: false,
+        Active: true,
         Brand: txtBrand.value,
         COD: rbYes.checked,
         Description: txtProductDescription.value,

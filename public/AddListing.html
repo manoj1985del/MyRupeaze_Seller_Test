@@ -144,14 +144,18 @@
 
       <form>
 
-        
+
         <div class="form-group" id="divAddFromProduct">
-          <input type="checkbox" id="chkAddExisting" text="Add from an Existing Product" />
-          <div id = 'divAddExisting' style="display: none;">
-          <label for="txtProductId">Add from An Existing Product</label>
-          <input type="text" class="form-control" id="txtProductId" placeholder="Enter Product Id">
-          <button type="button" class="btn btn-primary mt-2" id="btnSearchProduct">Search Product</button>
+            <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="chkAddExisting">
+          <label class="form-check-label" for="chkAddExisting">Add from an Existing Product</label>
         </div>
+
+          <!-- <input type="checkbox" id="chkAddExisting" text="Add from an Existing Product" /> -->
+          <div id='divAddExisting' style="display: none;">
+            <input type="text" class="form-control" id="txtProductId" placeholder="Enter Product Id">
+            <button type="button" class="btn btn-primary mt-2" id="btnSearchProduct">Search Product</button>
+          </div>
         </div>
 
         <div class="form-group">

@@ -29,11 +29,20 @@ var nextQuery;
 btnSearchProduct.addEventListener("click", function(){
   productList = [];
   deleteTableRows();
+  productAndSellerMap = new Map();
   var query = firebase.firestore()
     .collection('products')
     .where("Product_Id", '==', txtProductId.value);
     showListing(query).then(function(){
-      addRecordToTable();
+      var promiseList = [];
+      for (var i = 0; i < productList.length; i++) {
+          var product = productList[i];
+          promiseList.push(mapProductWithSeller(product));
+      }
+
+      Promise.all(promiseList).then(() => {
+          addRecordToTable();
+      });
     })
 
 })

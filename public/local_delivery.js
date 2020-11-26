@@ -189,9 +189,13 @@ function createTable() {
             return docref.update({
 
                 delivery_agent_id: agent.customer_id,
-                Status: "Delivery Agent Assigned"
+                Status: "Delivery Agent Assigned",
+                pickup_rejection_reason: null
             })
                 .then(function () {
+                    var body = getMessageBody(agent, mOrder);
+                    var subject = "New Order Recieved for Shipment : Order id: " + mOrder.order_id;
+                    sendEmail(agent.Email, subject, body);
                     alert("Delivery Agent Assigned");
                 })
                 .catch(function (error) {
@@ -202,5 +206,30 @@ function createTable() {
 
     }
 }
+
+function getMessageBody(agent, order){
+
+    var customerDetail = "<p>Customer Name : " + mCustomer.Name + "<br/>"
+    + "Address : " + mCustomer.AddressLine1 + "<br />"
+    + mCustomer.AddressLine2 + "<br/>"
+    + mCustomer.AddressLine3 + "<br />"
+
+    + "Landmark: " + mCustomer.Landmark + "<br />"
+    + "Pincode: " + mCustomer.Pincode + "<br/>"
+    + "City: " + mCustomer.City + "<br />"
+    + "State: " + mCustomer.State + " (INDIA) <br/>"
+    + "Contact No. " + mCustomer.Phone + "</p>";
+
+    var sMsg = "<h3>Hello " + agent.Name + "</h3>"
+    + "<p>Greetings from My Rupeaze!!</p>"
+    + "<p> This is to inform you that we have received an order for shipment (order id: " + order.order_id + "</p>"
+    + customerDetail
+    + "<p>With Kind Regards,<br/>"
+    + "My Rupeaze Team </p>";
+
+    return sMsg;
+}
+
+
 
 

@@ -59,22 +59,22 @@ function loadInvoice() {
   var txtshiptoState = document.getElementById("shiptoState");
   var txtshiptoPincode = document.getElementById("shiptoPincode");
   var txtshiptoPhone = document.getElementById("shiptoPhone");
+  var qrcode = document.getElementById("qrcode");
+
+  var qrcode1 = new QRCode(qrcode, {
+    text: invoice.order_id,
+    width: 128,
+    height: 128,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+});
 
 
  //var txtAmountInWords = document.getElementById("txtAmountInWords");
 
 
   txtOrderId.textContent = invoice.order_id;
-
-  JsBarcode("#barcode", invoice.order_id, {
-    format: "code128",
-    width: 1,
-    height: 60,
-    displayValue: true
-  });
-
-
-
   txtSellerName.textContent = invoice.seller_name;
   txtSelleraddressLine1.textContent = invoice.txtSelleraddressLine1;
   txtSelleraddressLine2.textContent = invoice.sellerAddressLine2;

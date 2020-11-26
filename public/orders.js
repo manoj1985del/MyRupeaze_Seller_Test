@@ -982,6 +982,15 @@ function addPendingOrdersToTable() {
 
 
 
+        if(order.delivery_agent_id != null){
+            btnLocalDelivery.disabled = true;
+        }
+        else{
+            btnLocalDelivery.disabled = false;
+        }
+
+
+
         divAction.appendChild(divAfterConfirm);
 
         var divStatus = document.createElement("div");
@@ -1317,7 +1326,11 @@ function addPendingOrdersToTable() {
 
         btnPrintShipLabel.addEventListener("click", function () {
             var index = parseInt(this.id);
+            console.log(pendingOrders);
+           // alert(index);
+           
             var invoiceId = pendingOrders[index].invoice_id;
+           // alert(invoiceId);
             window.location.href = "shipping_label.html?invoiceid=" + invoiceId;
         })
 

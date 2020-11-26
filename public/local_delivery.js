@@ -190,7 +190,8 @@ function createTable() {
 
                 delivery_agent_id: agent.customer_id,
                 Status: "Delivery Agent Assigned",
-                pickup_rejection_reason: null
+                pickup_rejection_reason: null,
+                pickup_status: null
             })
                 .then(function () {
                     var body = getMessageBody(agent, mOrder);

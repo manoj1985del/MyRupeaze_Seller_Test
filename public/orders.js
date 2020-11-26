@@ -957,6 +957,15 @@ function addPendingOrdersToTable() {
         divPrintShipLabel.appendChild(btnPrintShipLabel);
         divAfterConfirm.appendChild(divPrintShipLabel);
 
+        var divLocalDelivery = document.createElement("div");
+        divLocalDelivery.style.marginBottom = "10px";
+        var btnLocalDelivery = document.createElement("button");
+        btnLocalDelivery.textContent = "Local Delivery";
+        btnLocalDelivery.setAttribute("id", index);
+        btnLocalDelivery.style.width = "150px";
+        divLocalDelivery.appendChild(btnLocalDelivery);
+        divAfterConfirm.appendChild(divLocalDelivery);
+
         if (order.cancelled) {
             divConfirm.style.display = "none";
             divAfterConfirm.style.display = "none";
@@ -969,6 +978,15 @@ function addPendingOrdersToTable() {
             else {
                 divConfirmOder.style.display = "none";
             }
+        }
+
+
+
+        if(order.delivery_agent_id != null){
+            btnLocalDelivery.disabled = true;
+        }
+        else{
+            btnLocalDelivery.disabled = false;
         }
 
 
@@ -1300,9 +1318,19 @@ function addPendingOrdersToTable() {
             window.location.href = "pdf.html?invoiceid=" + order.invoice_id;
         })
 
+        btnLocalDelivery.addEventListener("click", function(){
+            var index = parseInt(this.id);
+            var order = pendingOrders[index];
+            window.location.href = "local_delivery.html?orderid=" + order.order_id;
+        })
+
         btnPrintShipLabel.addEventListener("click", function () {
             var index = parseInt(this.id);
+            console.log(pendingOrders);
+           // alert(index);
+           
             var invoiceId = pendingOrders[index].invoice_id;
+           // alert(invoiceId);
             window.location.href = "shipping_label.html?invoiceid=" + invoiceId;
         })
 

@@ -303,6 +303,7 @@ exports.orderCancelled = functions.firestore
         const order = change.after.data();
         let orderid = order.order_id;
         let status = order.Status;
+        let pickup_status = order.pickup_status;
         var sellerid = order.seller_id;
 
 
@@ -353,6 +354,161 @@ exports.orderCancelled = functions.firestore
 
 
         }
+
+        if(pickup_status === "rejected"){
+
+            let reason = order.pickup_rejection_reason;
+
+            const db = admin.firestore();
+            let documentRef = db.doc('seller/' + sellerid);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var seller = documentSnapshot.data();
+                    console.log(seller.email);
+
+                    var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                        + "<p>Greetings from My Rupeaze!!</p>"
+                        + "<p> This is to inform you that local delivery agent  has declined to pickup the order with order id: " + order.order_id + ". Please don't dispatch this item.</p>"
+                        + "<p> Reason of decline: " + reason
+                        + "<p>Please reschedule it with some other delivery agent id.</p>"
+                        + "<p>Keep Selling with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: seller.email, //Getting recipient's email by query string
+                        subject: "My Rupeaze: Order declined for picke by delivery agent (Order Id: " + order.order_id + ")",
+                        html: msg
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        console.log("EMail sent");
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((error) => {
+                console.error('Error writing new message to database', error);
+                return null;
+            });
+
+
+
+
+        }
+
+        if(pickup_status === "attempted delivery failed"){
+
+            let reason = order.cancellation_reason;
+
+            const db = admin.firestore();
+            let documentRef = db.doc('seller/' + sellerid);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var seller = documentSnapshot.data();
+                    console.log(seller.email);
+
+                    var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                        + "<p>Greetings from My Rupeaze!!</p>"
+                        + "<p> This is to inform you that local delivery agent attempted delivery for order with order id: " + order.order_id + ". However order could not be delivered.</p>"
+                        + "<p> Hence, the order has been cancelled."
+                        + "<p> Reason of order cancellation: " + reason
+                        + "<p>Please reschedule it with some other delivery agent id.</p>"
+                        + "<p>Keep Selling with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: seller.email, //Getting recipient's email by query string
+                        subject: "My Rupeaze: Order declined for picke by delivery agent (Order Id: " + order.order_id + ")",
+                        html: msg
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        console.log("EMail sent");
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((error) => {
+                console.error('Error writing new message to database', error);
+                return null;
+            });
+
+
+
+
+        }
+        
+
+
+
+
+        // if (status.includes("Order Rejected by Local Delivery Agent")) {
+        //     let reason = order.pickup_rejection_reason;
+
+        //     const db = admin.firestore();
+        //     let documentRef = db.doc('seller/' + sellerid);
+
+        //     documentRef.get().then((documentSnapshot) => {
+        //         if (documentSnapshot.exists) {
+        //             var seller = documentSnapshot.data();
+        //             console.log(seller.email);
+
+        //             var msg = "<h3>Hello " + seller.company_name + "</h3>"
+        //                 + "<p>Greetings from My Rupeaze!!</p>"
+        //                 + "<p> This is to inform you that local delivery agent (id : " + order.delivery_agent_id + ")  has declined to pickup the order with order id: " + order.order_id + ". Please don't dispatch this item.</p>"
+        //                 + "<p> Reason of decline: " + reason
+        //                 + "<p>Please reschedule it with some other delivery agent id.</p>"
+        //                 + "<p>Keep Selling with us!!</p>"
+        //                 + "<p>With Kind Regards,<br/>"
+        //                 + "My Rupeaze Team </p>";
+
+        //             const mailOptions = {
+        //                 from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+        //                 to: seller.email, //Getting recipient's email by query string
+        //                 subject: "My Rupeaze: Order Cancelled (Order Id: " + order.order_id + ")",
+        //                 html: msg
+        //             };
+
+        //             //Returning result
+        //             return transporter.sendMail(mailOptions, (err, info) => {
+        //                 if (err) {
+        //                     return res.send(err.toString());
+        //                 }
+        //                 console.log("EMail sent");
+        //                 return res.send('Email sent succesfully');
+        //             });
+
+
+        //         }
+        //         return null;
+        //     }).catch((error) => {
+        //         console.error('Error writing new message to database', error);
+        //         return null;
+        //     });
+
+
+
+
+        // }
+
 
         return null;
     });

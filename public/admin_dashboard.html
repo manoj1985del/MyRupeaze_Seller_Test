@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Listing</title>
+    <title>Dashboard Page</title>
 
     <link rel="icon" href="img_logo.png">
 
@@ -139,31 +139,137 @@
             </div>
 
             <form>
+
+                <div id="divCarousel"> 
+                    <h3>Carousel Images</h3>
+
+                    <div class="form-group">
+                        <label for="txtImag1Tag_carousel">Image1 Tag</label>
+                        <input type="text" class="form-control" id="txtImag1Tag_carousel">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag2Tag_carousel">Image2 Tag</label>
+                        <input type="text" class="form-control" id="txtImag2Tag_carousel">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag3Tag_carousel">Image3 Tag</label>
+                        <input type="text" class="form-control" id="txtImag3Tag_carousel">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag4Tag_carousel">Image4 Tag</label>
+                        <input type="text" class="form-control" id="txtImag4Tag_carousel">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtImag5Tag_carousel">Image5 Tag</label>
+                        <input type="text" class="form-control" id="txtImag5Tag_carousel">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_CarouselImage1">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_CarouselImage1">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Carousel Image 1</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadCarouselImage1">Upload</button>
+                            <img id="imgProgressCarouselImage1" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgCarouselImage1" style="display: none;">Upload Successful</span>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_CarouselImage2">
+                            <br />
+                            <div class="image-preview" id="imagePreview_CarouselImage2">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Carousel Image 2</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadCarouselImage2">Upload</button>
+                            <img id="imgProgressCarouselImage2" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgCarouselImage2" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_CarouselImage3">
+                            <br />
+                            <div class="image-preview" id="imagePreview_CarouselImage3">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Carousel Image 3</span>
+                            </div>
+                            <button class="mt-2" type="button" id="btnUploadCarouselImage3">Upload</button>
+                            <img id="imgProgressCarouselImage3" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgCarouselImage3" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_CarouselImage4">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_CarouselImage4">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Carousel Image 4</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadCarouselImage4">Upload</button>
+                            <img id="imgProgressCarouselImage4" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgCarouselImage4" style="display: none;">Upload Successful</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="file" name="inpFile" id="inpFile_CarouselImage5">
+                            <br />
+
+                            <div class="image-preview" id="imagePreview_CarouselImage5">
+                                <img src="" alt="Image Preview" class="image-preview_image" />
+                                <span class="image-preview_default-text">Carousel Image 5</span>
+                            </div>
+                            <button type="button" class="mt-2" id="btnUploadCarouselImage5">Upload</button>
+                            <img id="imgProgressCarouselImage5" style="width: 75px; height: auto; display: none"
+                                src="img_progress.gif" />
+                            <span id="uploadMsgCarouselImage5" style="display: none;">Upload Successful</span>
+                        </div>
+
+                    </div>
+
+                </div>
+                
                 <div id="divFeatured"> 
                     <h3>Featured</h3>
 
                     <div class="form-group">
-                        <label for="txtImag1Tag_grp1">Image1 Tag</label>
+                        <label for="txtImag1Tag_featured">Image1 Tag</label>
                         <input type="text" class="form-control" id="txtImag1Tag_featured">
                     </div>
 
                     <div class="form-group">
-                        <label for="txtImag2Tag_grp1">Image2 Tag</label>
+                        <label for="txtImag2Tag_featured">Image2 Tag</label>
                         <input type="text" class="form-control" id="txtImag2Tag_featured">
                     </div>
 
                     <div class="form-group">
-                        <label for="txtImag3Tag_grp1">Image3 Tag</label>
+                        <label for="txtImag3Tag_featured">Image3 Tag</label>
                         <input type="text" class="form-control" id="txtImag3Tag_featured">
                     </div>
 
                     <div class="form-group">
-                        <label for="txtImag4Tag_grp1">Image4 Tag</label>
+                        <label for="txtImag4Tag_featured">Image4 Tag</label>
                         <input type="text" class="form-control" id="txtImag4Tag_featured">
                     </div>
 
                     <div class="form-group">
-                        <label for="txtImag4Tag_grp1">Image5 Tag</label>
+                        <label for="txtImag5Tag_featured">Image5 Tag</label>
                         <input type="text" class="form-control" id="txtImag5Tag_featured">
                     </div>
 

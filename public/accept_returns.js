@@ -150,10 +150,13 @@ function createTable() {
         var status = status_list[i];
 
         var price = qty * price;
-        var factor = price / 100;
-        //for every 100 rs spent 20 points will be earned
-        var points = factor * 20;
-        points = Math.floor(points);
+
+        //amout credited would have been 2.5 percent of price..
+        var priceTwoAndHalfPercent = (price * 2.5) / 100;
+        var points = Math.floor(priceTwoAndHalfPercent * 8);
+        // //for every 100 rs spent 20 points will be earned
+        // var points = factor * 20;
+        // points = Math.floor(points);
 
         pointList.push(points);
 

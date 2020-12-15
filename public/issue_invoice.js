@@ -129,10 +129,13 @@ btnAddProduct.addEventListener("click", function () {
 
     table.style.display = "block";
     var price = parseInt(txtPrice.value) * parseInt(txtQty.value);
-    var factor = price / 100;
-    //for every 100 rs spent 20 points will be earned
-    var points = factor * 20;
-    points = Math.floor( points );
+    var priceTwoAndHalfPercent = (price * 2.5) / 100;
+    //8 points make one rupee
+    var points = Math.floor(priceTwoAndHalfPercent * 8);
+    // var factor = price / 100;
+    // //for every 100 rs spent 20 points will be earned
+    // var points = factor * 20;
+    // points = Math.floor( points );
 
     var product = new Products(txtProductName.value, txtGST.value, txtPrice.value, txtQty.value, points);
     productList.push(product);

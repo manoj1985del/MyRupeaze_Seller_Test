@@ -6,6 +6,10 @@ var nav = document.getElementById("nav");
 
 
 var update = false;
+var newTagsAdded = false;
+var localTagList = [];
+var globalTagList = [];
+var activeTagDocId = null;
 
 var imgUrl = null;
 var coverImageUrl = null;
@@ -142,6 +146,13 @@ var divAddFromProduct = document.getElementById("divAddFromProduct");
 var chkAddExisting = document.getElementById("chkAddExisting");
 var divAddExisting = document.getElementById("divAddExisting");
 
+var divVariantPricing = document.getElementById("divVariantPricing");
+var rbYesVariantPricing = document.getElementById("rbYesVariantPricing");
+var rbNoVariantPricing = document.getElementById("rbNoVariantPricing");
+
+var divVariantSelection = document.getElementById("divVariantSelection");
+var selectVariant = document.getElementById("selectVariant");
+var table = document.getElementById("tblVariantPrice");
 
 var fileCover;
 var fileImg1;
@@ -165,20 +176,66 @@ let bulletMap = new Map();
 let featureMap = new Map();
 let variantMap = new Map();
 let qtyDiscountMap = new Map();
+
+let variantPriceMap = new Map();
 var variantList = [];
 var mProduct;
 
+loadTags();
 getSellerDetails();
 
 var bUpdate = false;
 
+rbYesVariantPricing.addEventListener("change", function () {
+    if (this.checked) {
+        divVariantSelection.style.display = "block";
+        addVariantsInDropDown();
+    }
+    else {
+        divVariantSelection.style.display = "none";
+        deleteTableRows();
+    }
+})
 
-chkAddExisting.addEventListener("change", function(){
-   if(this.checked){
-       divAddExisting.style.display = "block";
-   }else{
-       divAddExisting.style.display = "none";
-   }
+rbNoVariantPricing.addEventListener("change", function () {
+    if (this.checked) {
+        divVariantSelection.style.display = "none";
+        deleteTableRows();
+
+    }
+    else {
+        divVariantSelection.style.display = "block";
+        addVariantsInDropDown();
+    }
+})
+
+selectVariant.addEventListener("change", function () {
+    // alert(this.value);
+    setVariantPricing(this.value);
+
+
+})
+
+function setVariantPricing(variantName) {
+    variantPriceMap = new Map();
+    var tmpVariantName = [];
+    variants = [];
+    tmpVariantName = variantMap.get(variantName).split(',');
+    // console.log(tmpVariantName);
+    for (var i = 0; i < tmpVariantName.length; i++) {
+        var variant = tmpVariantName[i].trim();
+        variantPriceMap.set(variant, 0);
+    }
+
+    createTable();
+}
+
+chkAddExisting.addEventListener("change", function () {
+    if (this.checked) {
+        divAddExisting.style.display = "block";
+    } else {
+        divAddExisting.style.display = "none";
+    }
 })
 
 btnUploadCover.addEventListener("click", function () {
@@ -197,19 +254,19 @@ btnUploadCover.addEventListener("click", function () {
         return;
     }
 
-    console.log(fileCover);
+    // console.log(fileCover);
 
-    console.log("going to show progress bar");
+    // console.log("going to show progress bar");
     imgProgressCover.style.display = "block";
 
-    saveImageAtFirebase(fileCover, productId).then(()=>{
+    saveImageAtFirebase(fileCover, productId).then(() => {
         imgProgressCover.style.display = "none";
         uploadMsgCover.style.display = "block";
 
         coverImageUrl = imgUrl;
-        console.log("cover image url - " + coverImageUrl);
+        // console.log("cover image url - " + coverImageUrl);
     })
-   
+
 })
 
 btnUploadImg1.addEventListener("click", function () {
@@ -235,12 +292,12 @@ btnUploadImg1.addEventListener("click", function () {
     console.log("going to show progress bar");
     imgProgressImg1.style.display = "block";
 
-    saveImageAtFirebase(file, productId).then(()=>{
+    saveImageAtFirebase(file, productId).then(() => {
         imgProgressImg1.style.display = "none";
         uploadMsgImg1.style.display = "block";
         Img1Url = imgUrl;
     })
-  
+
 })
 
 btnUploadImg2.addEventListener("click", function () {
@@ -264,12 +321,12 @@ btnUploadImg2.addEventListener("click", function () {
     console.log("going to show progress bar");
     imgProgressImg2.style.display = "block";
 
-    saveImageAtFirebase(file, productId).then(()=>{
+    saveImageAtFirebase(file, productId).then(() => {
         imgProgressImg2.style.display = "none";
         uploadMsgImg2.style.display = "block";
         Img2Url = imgUrl;
     })
-   
+
 })
 
 btnUploadImg3.addEventListener("click", function () {
@@ -293,12 +350,12 @@ btnUploadImg3.addEventListener("click", function () {
     console.log("going to show progress bar");
     imgProgressImg3.style.display = "block";
 
-    saveImageAtFirebase(file, productId).then(()=>{
+    saveImageAtFirebase(file, productId).then(() => {
         imgProgressImg3.style.display = "none";
         uploadMsgImg3.style.display = "block";
         Img3Url = imgUrl;
     })
-   
+
 })
 
 btnUploadImg4.addEventListener("click", function () {
@@ -322,12 +379,12 @@ btnUploadImg4.addEventListener("click", function () {
     console.log("going to show progress bar");
     imgProgressImg4.style.display = "block";
 
-    saveImageAtFirebase(file, productId).then(()=>{
+    saveImageAtFirebase(file, productId).then(() => {
         imgProgressImg4.style.display = "none";
         uploadMsgImg4.style.display = "block";
         Img4Url = imgUrl;
     })
-   
+
 })
 
 btnUploadImg5.addEventListener("click", function () {
@@ -351,12 +408,12 @@ btnUploadImg5.addEventListener("click", function () {
     console.log("going to show progress bar");
     imgProgressImg5.style.display = "block";
 
-    saveImageAtFirebase(file, productId).then(()=>{
+    saveImageAtFirebase(file, productId).then(() => {
         imgProgressImg5.style.display = "none";
         uploadMsgImg5.style.display = "block";
         Img5Url = imgUrl;
     })
-  
+
 })
 
 
@@ -394,6 +451,7 @@ btnMapVariant.addEventListener("click", function () {
 
 btnAddVariant.addEventListener("click", function () {
     addVariant(txtVariantName.value, spanMapVariant.textContent);
+    divVariantPricing.style.display = "block";
     spanMapVariant.textContent = "";
     txtVariantName.value = "";
     txtVariantValue.value = "";
@@ -402,8 +460,8 @@ btnAddVariant.addEventListener("click", function () {
     // variantMap.set(txtVariantName.value, variantList);
 })
 
-btnSearchProduct.addEventListener("click", function(){
-    if(txtProductId.value == null){
+btnSearchProduct.addEventListener("click", function () {
+    if (txtProductId.value == null) {
         alert("Please enter a product Id");
         return;
     }
@@ -419,14 +477,14 @@ if (productId != null) {
     bUpdate = true;
     divAddFromProduct.style.display = "none";
     loadUI(false, productId);
-   
+
 }
-else{
+else {
     bUpdate = false;
     productId = generateUUID();
 }
 
-function loadUI(bProductIdEntered, p_ProductId){
+function loadUI(bProductIdEntered, p_ProductId) {
 
     btnSubmit.style.display = "none";
     btnUpdate.style.display = "block";
@@ -442,21 +500,20 @@ function loadUI(bProductIdEntered, p_ProductId){
                 var product = doc.data();
                 mProduct = product;
                 txtProductTitle.value = product.Title;
-                
-                if(bUpdate)
-                {
+
+                if (bUpdate) {
                     txtOfferPrice.value = product.Offer_Price;
                     txtMRP.value = product.MRP;
 
-                    var qd = product.qty_discounts;
-                for (const property in qd) {
-                    var propertyName = `${property}`;
-                    var propertyValue = `${qd[property]}`;
-                    addQtyDiscount(propertyName, propertyValue);
-                }
+                    var qd = product.qty_discount_in_percent;
+                    for (const property in qd) {
+                        var propertyName = `${property}`;
+                        var propertyValue = `${qd[property]}`;
+                        addQtyDiscount(propertyName, propertyValue);
+                    }
 
                 }
-                
+
                 txtGST.value = product.GST;
                 txtBrand.value = product.Brand;
                 txtTags.value = product.Tags;
@@ -481,10 +538,14 @@ function loadUI(bProductIdEntered, p_ProductId){
                 if (variantsAvailable) {
                     rbVariantYes.checked = true;
                     divVariant.style.display = "block";
+                    divVariantPricing.style.display = "block";
+                    divVariantSelection.style.display = "block";
                 }
                 else {
                     rbVariantNo.checked = true;
                     divVariant.style.display = "none";
+                    divVariantPricing.style.display = "none";
+                    divVariantSelection.style.display = "none";
                 }
 
 
@@ -496,8 +557,8 @@ function loadUI(bProductIdEntered, p_ProductId){
                     addfeatures(propertyName, propertyValue);
                 }
 
-        
-                
+
+
                 if (variantsAvailable) {
                     var vr = product.Variants;
                     for (const property in vr) {
@@ -507,45 +568,67 @@ function loadUI(bProductIdEntered, p_ProductId){
 
                     }
                 }
+                else {
+                    divVariantPricing.style.display = "none";
+                    divVariantSelection.style.display = "none";
+                }
 
-                console.log(product);
+                if (product.variant_pricing) {
+                    rbYesVariantPricing.checked = true;
+                    addVariantsInDropDown();
+                    selectVariant.value = product.variant_pricing_attribute;
 
-                if(product.ImageUrlCover != null){
+                    var vr = product.variant_price_map;
+                    for (const property in vr) {
+                        var propertyName = `${property}`;
+                        var propertyValue = `${vr[property]}`;
+                        variantPriceMap.set(propertyName, propertyValue);
+                        //  addVariant(propertyName, propertyValue);
+
+                    }
+
+                    createTable();
+
+                    // setVariantPricing(product.variant_pricing_attribute);
+
+                }
+
+                if (product.ImageUrlCover != null) {
                     coverImageUrl = product.ImageUrlCover;
                     previewImageCover.src = product.ImageUrlCover;
                     previewImageCover.style.display = "block";
                     previewImageDefaultTextCover.style.display = "none";
                 }
 
-                if(product.ImageUrlImage1 != null){
+                if (product.ImageUrlImage1 != null) {
                     Img1Url = product.ImageUrlImage1;
                     previewImageImage1.src = product.ImageUrlImage1;
                     previewImageImage1.style.display = "block";
                     previewImageDefaultTextImage1.style.display = "none";
                 }
 
-                if(product.ImageUrlImage2 != null){
+                if (product.ImageUrlImage2 != null) {
                     Img2Url = product.ImageUrlImage2;
                     previewImageImage2.src = product.ImageUrlImage2;
                     previewImageImage2.style.display = "block";
                     previewImageDefaultTextImage2.style.display = "none";
                 }
 
-                if(product.ImageUrlImage3 != null){
+                if (product.ImageUrlImage3 != null) {
                     Img3Url = product.ImageUrlImage3;
                     previewImageImage3.src = product.ImageUrlImage3;
                     previewImageImage3.style.display = "block";
                     previewImageDefaultTextImage3.style.display = "none";
                 }
 
-                if(product.ImageUrlImage4 != null){
+                if (product.ImageUrlImage4 != null) {
                     Img4Url = product.ImageUrlImage4;
                     previewImageImage4.src = product.ImageUrlImage4;
                     previewImageImage4.style.display = "block";
                     previewImageDefaultTextImage4.style.display = "none";
                 }
 
-                if(product.ImageUrlImage5 != null){
+                if (product.ImageUrlImage5 != null) {
                     Img5Url = product.ImageUrlImage5;
                     previewImageImage5.src = product.ImageUrlImage5;
                     previewImageImage5.style.display = "block";
@@ -553,33 +636,33 @@ function loadUI(bProductIdEntered, p_ProductId){
                 }
 
                 console.log(admin);
-                if(admin == "true"){
+                if (admin == "true") {
                     console.log("here");
                     //nav.style.display = "none";
                     pageHeading.innerHTML = "<h1>View Product Details</h1>";
 
-                //     productCategory.disabled = true;
-                //     txtProductTitle.disabled = true;
-                //     txtOfferPrice.disabled = true;
-                //     txtMRP.disabled = true;
-                //     txtReturnWindow.disabled = true;
-                //     txtGST.disabled = true;
-                //     txtBrand.disabled = true;
-                //     txtCountryOfOrigin.disabled = true;
-                //     txtExpiryDate.disabled = true;
-                //     //txtTags.disabled = true;
-                //     txtBulletPoints.disabled = true;
-                //     txtStockQty.disabled = true;
-                //     txtProductDescription.disabled = true;
-                //   //  rbYes.disabled = true;
-                //     txtFeatureName.disabled = true;
-                //     txtFeatureValue.disabled = true;
-                //     btnUploadCover.style.display = "none";
-                //     btnUploadImg1.style.display = "none";
-                //     btnUploadImg2.style.display = "none";
-                //     btnUploadImg3.style.display = "none";
-                //     btnUploadImg4.style.display = "none";
-                //     btnUploadImg5.style.display = "none";
+                    //     productCategory.disabled = true;
+                    //     txtProductTitle.disabled = true;
+                    //     txtOfferPrice.disabled = true;
+                    //     txtMRP.disabled = true;
+                    //     txtReturnWindow.disabled = true;
+                    //     txtGST.disabled = true;
+                    //     txtBrand.disabled = true;
+                    //     txtCountryOfOrigin.disabled = true;
+                    //     txtExpiryDate.disabled = true;
+                    //     //txtTags.disabled = true;
+                    //     txtBulletPoints.disabled = true;
+                    //     txtStockQty.disabled = true;
+                    //     txtProductDescription.disabled = true;
+                    //   //  rbYes.disabled = true;
+                    //     txtFeatureName.disabled = true;
+                    //     txtFeatureValue.disabled = true;
+                    //     btnUploadCover.style.display = "none";
+                    //     btnUploadImg1.style.display = "none";
+                    //     btnUploadImg2.style.display = "none";
+                    //     btnUploadImg3.style.display = "none";
+                    //     btnUploadImg4.style.display = "none";
+                    //     btnUploadImg5.style.display = "none";
 
                     console.log(mSeller);
 
@@ -587,7 +670,7 @@ function loadUI(bProductIdEntered, p_ProductId){
                     btnSubmit.style.display = "none";
                 }
 
-               
+
             });
         })
         .catch(function (error) {
@@ -608,9 +691,15 @@ rbVariantYes.addEventListener("change", function () {
 rbVariantNo.addEventListener("change", function () {
     if (rbVariantNo.checked) {
         divVariant.style.display = "none";
+        deleteTableRows();
+        divVariantPricing.style.display = "none";
+        divVariantSelection.style.display = "none";
+        variantMap = new variantMap();
+
     }
     else {
         divVariant.style.display = "block";
+
     }
 })
 
@@ -636,7 +725,7 @@ function validateFormDetails() {
         errorFound = true;
     }
 
-    if(!isNumber(txtOfferPrice.value)){
+    if (!isNumber(txtOfferPrice.value)) {
         errorMsg += "Offer Price has to be numeric";
         errorFound = true;
     }
@@ -646,7 +735,7 @@ function validateFormDetails() {
         errorFound = true;
     }
 
-    if(!isNumber(txtMRP.value)){
+    if (!isNumber(txtMRP.value)) {
         errorMsg += "MRP has to be numeric<br/>"
         errorFound = true;
     }
@@ -656,7 +745,7 @@ function validateFormDetails() {
         errorFound = true;
     }
 
-    if(!isNumber(txtReturnWindow.value)){
+    if (!isNumber(txtReturnWindow.value)) {
         errorMsg += "Return window has to be numeric<br/>"
         errorFound = true;
     }
@@ -666,7 +755,7 @@ function validateFormDetails() {
         errorFound = true;
     }
 
-    if(!isNumber(txtGST.value)){
+    if (!isNumber(txtGST.value)) {
         errorMsg += "GST has to be a number only.<br/>"
         errorFound = true;
     }
@@ -691,12 +780,12 @@ function validateFormDetails() {
         errorFound = true;
     }
 
-    if(!isNumber(txtStockQty.value)){
+    if (!isNumber(txtStockQty.value)) {
         errorMsg += "GST has to be a number only.<br/>"
         errorFound = true;
     }
 
-    
+
 
     if (txtProductDescription.value == "") {
         errorMsg += "Please Enter Product Description.<br/>"
@@ -719,7 +808,7 @@ function validateFormDetails() {
         }
     }
 
-    if(coverImageUrl == null){
+    if (coverImageUrl == null) {
         errorMsg += "Please upload cover image";
         errorFound = true;
 
@@ -891,8 +980,27 @@ btnSubmit.addEventListener("click", function () {
     divProgress.style.display = "block";
     divContent.style.display = "none";
 
-    var code = saveProductDetails();
-    return code;
+    var tmpTags = [];
+    tags = [];
+
+    tmpTags = txtTags.value.split(',');
+    for (var i = 0; i < tmpTags.length; i++) {
+        var tag = tmpTags[i].trim();
+        tags.push(tag);
+        if (!globalTagList.includes(tag)) {
+            localTagList.push(tag);
+            newTagsAdded = true;
+        }
+
+    }
+
+    addTags().then(() => {
+        var code = saveProductDetails();
+        return code;
+    })
+
+
+
 });
 
 btnUpdate.addEventListener("click", function () {
@@ -905,15 +1013,26 @@ btnUpdate.addEventListener("click", function () {
     divProgress.style.display = "block";
     divContent.style.display = "none";
 
-    var code = saveProductDetails();
-    return code;
+    var tmpTags = [];
+    tags = [];
+
+    tmpTags = txtTags.value.split(',');
+    for (var i = 0; i < tmpTags.length; i++) {
+        var tag = tmpTags[i].trim();
+        tags.push(tag);
+        if (!globalTagList.includes(tag)) {
+            localTagList.push(tag);
+            newTagsAdded = true;
+        }
+
+    }
+
+    addTags().then(() => {
+        var code = saveProductDetails();
+        return code;
+    })
 
 });
-
-
-
-
-
 
 
 //image operations
@@ -1001,27 +1120,27 @@ function addBullets(data) {
     txtBulletPoints.value = "";
 }
 
-btnAddQtyDiscount.addEventListener("click", function(){
-    if(txtQtyDiscountQty.value == ""){
+btnAddQtyDiscount.addEventListener("click", function () {
+    if (txtQtyDiscountQty.value == "") {
         alert("Please specify Quantity");
         txtQtyDiscountQty.focus();
         return;
     }
 
-    if(txtQtyDiscountPrice.value == ""){
+    if (txtQtyDiscountPrice.value == "") {
         alert("Please specify discount price");
         txtQtyDiscountPrice.focus();
         return;
     }
 
-    if(txtQtyDiscountQty.value == "1"){
+    if (txtQtyDiscountQty.value == "1") {
         alert("Value of discount quantity should be greater than 1");
         txtQtyDiscountQty.focus();
         return;
     }
 
     var value = qtyDiscountMap.get(txtQtyDiscountQty.value);
-    if(value != null){
+    if (value != null) {
         alert("Discount has already been defined on this quantity");
         return;
     }
@@ -1125,6 +1244,12 @@ function addElement(parentId, elementTag, mapKey, mapVal, map, isFeature) {
         removeElement(eid);
         map.delete(eid);
 
+        if (variantMap.size == 0) {
+            divVariantPricing.style.display = "none";
+            divVariantSelection.style.display = "none";
+
+        }
+
     });
 
     newElement.addEventListener("mouseover", function () {
@@ -1165,7 +1290,7 @@ function saveProductDetails() {
         return false;
     }
 
-    if(coverImageUrl == null){
+    if (coverImageUrl == null) {
         alert("Cover image needs to be selected.");
         divContent.style.display = "block";
         divProgress.style.display = "none";
@@ -1194,7 +1319,7 @@ function saveProductDetails() {
     }
 
     qtyDiscounts = null;
-    if(qtyDiscountMap.size > 0){
+    if (qtyDiscountMap.size > 0) {
         qtyDiscounts = new Object();
         for (let [key, value] of qtyDiscountMap) {
             qtyDiscounts[key] = parseInt(value);
@@ -1208,29 +1333,40 @@ function saveProductDetails() {
     }
 
 
-    if(bUpdate == false){
+    if (bUpdate == false) {
         txtTags.value += "," + productCategory.value + "," + txtBrand.value;
 
     }
 
-    var tmpTags = [];
-    tags = [];
-    tmpTags = txtTags.value.split(',');
-    for(var i = 0; i < tmpTags.length; i++){
-        var tag = tmpTags[i].trim();
-        tags.push(tag);
-    }
+
     expiryDate = null;
     if (txtExpiryDate.value != "") {
         expiryDate = formatDate();
     }
 
-    if(bUpdate){
+    if (bUpdate) {
         updateProductDetails();
         return;
     }
 
-   
+
+    var variant_pricing = false;
+    if (rbYesVariantPricing.checked) {
+        variant_pricing = true;
+    }
+
+    var variant_pricing_attribute = null;
+    if (variant_pricing) {
+        variant_pricing_attribute = selectVariant.value;
+    }
+
+    var vp = null;
+    if (variant_pricing && variantPriceMap.size > 0) {
+        vp = new Object();
+        for (let [key, value] of variantPriceMap) {
+            vp[key] = parseFloat(value);
+        }
+    }
 
     firebase.firestore().collection('products').doc(productId).set({
         Avg_Rating: 0,
@@ -1242,7 +1378,7 @@ function saveProductDetails() {
         GST: parseFloat(txtGST.value),
         MRP: parseFloat(txtMRP.value),
         Offer_Price: parseFloat(txtOfferPrice.value),
-        qty_discounts: qtyDiscounts,
+        qty_discount_in_percent: qtyDiscounts,
         Product_Id: productId,
         Tags: tags,
         Title: txtProductTitle.value,
@@ -1267,11 +1403,14 @@ function saveProductDetails() {
         seller_area_pin: mSeller.seller_area_pin,
         selling_offline: false,
         shop_price: 0,
-        status:"pending",
+        status: "pending",
+        variant_pricing: variant_pricing,
+        variant_pricing_attribute: variant_pricing_attribute,
+        variant_price_map: vp,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
 
     }).then(function () {
-       
+
         divProgress.style.display = "none";
         divContent.style.display = "block";
         window.location.href = "showListing.html";
@@ -1319,12 +1458,35 @@ function updateProductDetails() {
     }
 
     qtyDiscounts = null;
-    if(qtyDiscountMap.size > 0){
+    if (qtyDiscountMap.size > 0) {
         qtyDiscounts = new Object();
         for (let [key, value] of qtyDiscountMap) {
-            qtyDiscounts[key] =  parseInt(value);
+            qtyDiscounts[key] = parseInt(value);
         }
     }
+
+    console.log(qtyDiscountMap);
+
+    var variant_pricing = false;
+    if (rbYesVariantPricing.checked) {
+        variant_pricing = true;
+    }
+
+    var variant_pricing_attribute = null;
+    if (variant_pricing) {
+        variant_pricing_attribute = selectVariant.value;
+    }
+
+    var vp = null;
+    if (variant_pricing && variantPriceMap.size > 0) {
+        vp = new Object();
+        for (let [key, value] of variantPriceMap) {
+            vp[key] = parseFloat(value);
+        }
+    }
+
+
+
 
     // Set the "capital" field of the city 'DC'
     return washingtonRef.update({
@@ -1335,7 +1497,7 @@ function updateProductDetails() {
         GST: parseFloat(txtGST.value),
         MRP: parseFloat(txtMRP.value),
         Offer_Price: parseFloat(txtOfferPrice.value),
-        qty_discounts: qtyDiscounts,
+        qty_discount_in_percent: qtyDiscounts,
         Product_Id: productId,
         Tags: tags,
         Title: txtProductTitle.value,
@@ -1354,34 +1516,37 @@ function updateProductDetails() {
         ImageUrlImage4: Img4Url,
         ImageUrlImage5: Img5Url,
         returning_window: parseInt(txtReturnWindow.value),
+        variant_pricing: variant_pricing,
+        variant_pricing_attribute: variant_pricing_attribute,
+        variant_price_map: vp,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
-    .then(function() {
-        divProgress.style.display = "none";
-        divContent.style.display = "block";
-        alert("Listing updated successfully");
-        window.close();
+        .then(function () {
+            divProgress.style.display = "none";
+            divContent.style.display = "block";
+            alert("Listing updated successfully");
+            window.close();
 
-        // if(bUpdate){
-           
-        //     window.close();
-        //     return;
-        // }
+            // if(bUpdate){
 
-        // if(admin){
-        //     window.location.href = "admin_show_listing.html";
-        // }
-        // else{
-        // window.location.href = "showListing.html";
-        // }
-    })
-    .catch(function(error) {
-        divProgress.style.display = "none";
-        divContent.style.display = "block   ";
-        console.error('Error writing new message to database', error);
-        return false;
-       
-    });
+            //     window.close();
+            //     return;
+            // }
+
+            // if(admin){
+            //     window.location.href = "admin_show_listing.html";
+            // }
+            // else{
+            // window.location.href = "showListing.html";
+            // }
+        })
+        .catch(function (error) {
+            divProgress.style.display = "none";
+            divContent.style.display = "block   ";
+            console.error('Error writing new message to database', error);
+            return false;
+
+        });
 
 }
 
@@ -1412,7 +1577,7 @@ function isNumber(searchValue) {
     var found = searchValue.search(/^(\d*\.?\d*)$/);
     //Change to ^(\d*\.?\d+)$ if you don't want the number to end with a . such as 2.
     //Currently validates .2, 0.2, 2.0 and 2.
-    if(found > -1) {
+    if (found > -1) {
         return true;
     }
     else {
@@ -1424,22 +1589,217 @@ function getSellerDetails() {
 
 
 
-        var docRef = firebase.firestore().collection("seller").doc(sellerId);
+    var docRef = firebase.firestore().collection("seller").doc(sellerId);
 
-        docRef.get().then(function (doc) {
-            if (doc.exists) {
-                mSeller = doc.data();
-            } else {
-                seller = null;
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-
-            }
-        }).catch(function (error) {
+    docRef.get().then(function (doc) {
+        if (doc.exists) {
+            mSeller = doc.data();
+        } else {
             seller = null;
-            console.log("Error getting document:", error);
-        });
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
 
+        }
+    }).catch(function (error) {
+        seller = null;
+        console.log("Error getting document:", error);
+    });
+
+
+
+}
+
+function deleteAllElementsFromVariantDropDown() {
+    //e.firstElementChild can be used. 
+    var child = selectVariant.lastElementChild;
+    while (child) {
+        selectVariant.removeChild(child);
+        child = selectVariant.lastElementChild;
+    }
+}
+
+function addVariantsInDropDown() {
+
+    deleteAllElementsFromVariantDropDown();
+    variantPriceMap = new Map();
+    var option = document.createElement("option");
+    option.selected = true;
+    option.disabled = true;
+    option.hidden = true;
+    option.value = null;
+    option.textContent = "Select Variant";
+    selectVariant.appendChild(option);
+
+    for (let [key, value] of variantMap) {
+        // console.log(key + " = " + value);
+        var option = document.createElement("option");
+        option.value = key;
+        option.textContent = key;
+        selectVariant.appendChild(option);
+    }
+
+    //  var tdProductName = document.createElement("td");
+
+
+}
+
+
+function deleteTableRows() {
+    //e.firstElementChild can be used. 
+    var child = table.lastElementChild;
+    while (child) {
+        table.removeChild(child);
+        child = table.lastElementChild;
+    }
+}
+
+function createTableHeaders() {
+
+
+    var tHead = document.createElement("thead");
+    var tr = document.createElement("tr");
+    var thType = document.createElement("th");
+    thType.textContent = "Type";
+    var thPrice = document.createElement("th");
+    thPrice.textContent = "Price";
+    var thAction = document.createElement("th");
+    thAction.textContent = "Action";
+
+    tr.appendChild(thType);
+    tr.appendChild(thPrice);
+    tr.appendChild(thAction);
+
+    tHead.appendChild(tr);
+    table.appendChild(tHead);
+
+}
+
+function createTable() {
+    deleteTableRows();
+    createTableHeaders();
+
+    // console.log(variantPriceMap);
+
+    for (let [key, value] of variantPriceMap) {
+
+
+        var tr = document.createElement("tr");
+        var tdVariant = document.createElement("td");
+        var tdPrice = document.createElement('td');
+        var tdAction = document.createElement('td');
+
+        var divVariant = document.createElement('div');
+        var spanVariant = document.createElement('span');
+        spanVariant.textContent = key;
+        divVariant.appendChild(spanVariant);
+
+        var divPrice = document.createElement('div');
+        var spanPrice = document.createElement('span');
+        spanPrice.textContent = value;
+        divPrice.appendChild(spanPrice);
+
+        var divAction = document.createElement('div');
+        var btnChangePrice = document.createElement('button');
+        btnChangePrice.textContent = "Change Price";
+        btnChangePrice.setAttribute("type", "button");
+        btnChangePrice.setAttribute("id", key);
+        divAction.appendChild(btnChangePrice);
+
+        tdVariant.appendChild(divVariant);
+        tdPrice.appendChild(divPrice);
+        tdAction.appendChild(divAction);
+
+        tr.appendChild(tdVariant);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdAction);
+
+        table.appendChild(tr);
+
+        btnChangePrice.addEventListener("click", function () {
+            alert(this.id);
+
+            var price = prompt("Please enter price for the variant: " + this.id, "");
+            if (price == null || price == "") {
+                return;
+            }
+
+            variantPriceMap.set(this.id, price);
+            createTable();
+        })
+    }
+
+
+}
+
+function saveTags() {
+
+}
+
+function loadTags() {
+    return new Promise((resolve, reject) => {
+        firebase.firestore().collection("product_tags")
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    var product_tags = doc.data();
+                    if (product_tags.active == true) {
+                        activeTagDocId = product_tags.tag_id;
+                    }
+
+                    var tags = product_tags.tags;
+                    for (var i = 0; i < tags.length; i++) {
+                        var tag = tags[i];
+                        if (product_tags.active == true) {
+                            localTagList.push(tag);
+                        }
+                        globalTagList.push(tag);
+
+                    }
+                });
+            })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+
+    })
+}
+
+function addTags() {
+
+    return new Promise((resolve, reject) => {
+
+        var tagId = null;
+        if (activeTagDocId == null) {
+            tagId = generateUUID();
+        }
+        else {
+            tagId = activeTagDocId;
+        }
+        var active = true;
+        if (localTagList.length >= 2000) {
+            active = false;
+        }
+
+        // Add a new document in collection "cities"
+        firebase.firestore().collection("product_tags").doc(tagId).set({
+            tag_id: tagId,
+            active: active,
+            tags: localTagList
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                reject();
+            });
+
+    })
 
 
 }

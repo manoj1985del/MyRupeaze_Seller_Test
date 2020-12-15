@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link rel="stylesheet" href="myStyle.css">
+  <link rel="stylesheet" href="table.css">
 
 </head>
 
@@ -146,10 +147,10 @@
 
 
         <div class="form-group" id="divAddFromProduct">
-            <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" id="chkAddExisting">
-          <label class="form-check-label" for="chkAddExisting">Add from an Existing Product</label>
-        </div>
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="chkAddExisting">
+            <label class="form-check-label" for="chkAddExisting">Add from an Existing Product</label>
+          </div>
 
           <!-- <input type="checkbox" id="chkAddExisting" text="Add from an Existing Product" /> -->
           <div id='divAddExisting' style="display: none;">
@@ -195,11 +196,11 @@
 
 
         <div class="form-group" id="divQtyDiscounts">
-          <h3>Quantity Discounts</h3>
+          <h3>Quantity Discounts (In Percent)</h3>
           <label for="txtQtyDiscountQty">Quantity</label>
           <input type="number" class="form-control" id="txtQtyDiscountQty">
 
-          <label for="txtQtyDiscountPrice">Price</label>
+          <label for="txtQtyDiscountPrice">Percentage Off per Item (% off)</label>
           <input type="number" class="form-control" id="txtQtyDiscountPrice">
           <button type="button" class="btn btn-primary mt-2" id="btnAddQtyDiscount">Add</button>
           <ul class="mt-3" id="ulQtyDiscount"></ul>
@@ -337,6 +338,45 @@
 
               <ul class="mt-3" id="ulVariants"></ul>
             </div>
+
+            <div class="form-group" id="divVariantPricing">
+              <h3>Variant Pricing</h3>
+              <hr />
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="variantPricingRadios" id="rbYesVariantPricing" value="Yes">
+                <label class="form-check-label" for="rbYesVariantPricing">
+                  Yes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="variantPricingRadios" id="rbNoVariantPricing" value="No" checked>
+                <label class="form-check-label" for="rbNoVariantPricing">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" id="divVariantSelection" style="display: none;">
+              <label for="selectVariant">Select Variant</label>
+              <!-- <input type="text" class="form-control" id="txtState"> -->
+              <select name="selectVariant" id="selectVariant" class="form-control">
+                <option selected disabled hidden value=null>Select Variant</option>
+                <option value="Electronics and Appliances">Electronics and Appliances</option>
+                <option value="Fashion and apparels">Fashion and apparels</option>
+                <option value="Books, Toys, Games, Baby products">Books, Toys, Games, Baby products</option>
+                <option value="Footwears">Footwears</option>
+                <option value="Pandemic Needs">Pandemic Needs</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Home, Kitchen, pets, Furniture">Home, Kitchen, pets, Furniture</option>
+                <option value="Mobiles, Computers">Mobiles, Computers</option>
+                <option value="Sports, Fitness, Bags & Luggage">Sports, Fitness, Bags & Luggage</option>
+                <option value="Cakes, Sweets and Confectionaries">Cakes, Sweets and Confectionaries</option>
+              </select>
+
+              <table id = "tblVariantPrice"></table>
+            </div>
+
+            
 
             <!-- Images to be uploaded -->
             <h3>Upload Images</h3>

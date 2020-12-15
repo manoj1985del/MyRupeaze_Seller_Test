@@ -1,4 +1,57 @@
 
+
+//carousel
+var txtImag1Tag_carousel = document.getElementById("txtImag1Tag_carousel");
+var txtImag2Tag_carousel = document.getElementById("txtImag2Tag_carousel");
+var txtImag3Tag_carousel = document.getElementById("txtImag3Tag_carousel");
+var txtImag4Tag_carousel = document.getElementById("txtImag4Tag_carousel");
+var txtImag5Tag_carousel = document.getElementById("txtImag5Tag_carousel");
+
+var inpFile_CarouselImage1 = document.getElementById("inpFile_CarouselImage1");
+var inpFile_CarouselImage2 = document.getElementById("inpFile_CarouselImage2");
+var inpFile_CarouselImage3 = document.getElementById("inpFile_CarouselImage3");
+var inpFile_CarouselImage4 = document.getElementById("inpFile_CarouselImage4");
+var inpFile_CarouselImage5 = document.getElementById("inpFile_CarouselImage5");
+
+
+var imagePreview_CarouselImage1Container = document.getElementById("imagePreview_CarouselImage1");
+var previewImage_CarouselImage1 = imagePreview_CarouselImage1Container.querySelector(".image-preview_image");
+var previewText_CarouselImage1 = imagePreview_CarouselImage1Container.querySelector(".image-preview_default-text");
+
+var imagePreview_CarouselImage2Container = document.getElementById("imagePreview_CarouselImage2");
+var previewImage_CarouselImage2 = imagePreview_CarouselImage2Container.querySelector(".image-preview_image");
+var previewText_CarouselImage2 = imagePreview_CarouselImage2Container.querySelector(".image-preview_default-text");
+
+var imagePreview_CarouselImage3Container = document.getElementById("imagePreview_CarouselImage3");
+var previewImage_CarouselImage3 = imagePreview_CarouselImage3Container.querySelector(".image-preview_image");
+var previewText_CarouselImage3 = imagePreview_CarouselImage3Container.querySelector(".image-preview_default-text");
+
+var imagePreview_CarouselImage4Container = document.getElementById("imagePreview_CarouselImage4");
+var previewImage_CarouselImage4 = imagePreview_CarouselImage4Container.querySelector(".image-preview_image");
+var previewText_CarouselImage4 = imagePreview_CarouselImage4Container.querySelector(".image-preview_default-text");
+
+var imagePreview_CarouselImage5Container = document.getElementById("imagePreview_CarouselImage5");
+var previewImage_CarouselImage5 = imagePreview_CarouselImage5Container.querySelector(".image-preview_image");
+var previewText_CarouselImage5 = imagePreview_CarouselImage5Container.querySelector(".image-preview_default-text");
+
+var btnUploadCarouselImage1 = document.getElementById("btnUploadCarouselImage1");
+var btnUploadCarouselImage2 = document.getElementById("btnUploadCarouselImage2");
+var btnUploadCarouselImage3 = document.getElementById("btnUploadCarouselImage3");
+var btnUploadCarouselImage4 = document.getElementById("btnUploadCarouselImage4");
+var btnUploadCarouselImage5 = document.getElementById("btnUploadCarouselImage5");
+
+var imgProgressCarouselImage1 = document.getElementById("imgProgressCarouselImage1");
+var imgProgressCarouselImage2 = document.getElementById("imgProgressCarouselImage2");
+var imgProgressCarouselImage3 = document.getElementById("imgProgressCarouselImage3");
+var imgProgressCarouselImage4 = document.getElementById("imgProgressCarouselImage4");
+var imgProgressCarouselImage5 = document.getElementById("imgProgressCarouselImage5");
+
+var uploadMsgCarouselImage1 = document.getElementById("uploadMsgCarouselImage1");
+var uploadMsgCarouselImage2 = document.getElementById("uploadMsgCarouselImage2");
+var uploadMsgCarouselImage3 = document.getElementById("uploadMsgCarouselImage3");
+var uploadMsgCarouselImage4 = document.getElementById("uploadMsgCarouselImage4");
+var uploadMsgCarouselImage5 = document.getElementById("uploadMsgCarouselImage5");
+
 //featured
 var txtImag1Tag_featured = document.getElementById("txtImag1Tag_featured");
 var txtImag2Tag_featured = document.getElementById("txtImag2Tag_featured");
@@ -209,6 +262,12 @@ var divProgress = document.getElementById("divProgress");
 var divContent = document.getElementById("divContent");
 var btnSubmit = document.getElementById("btnSubmit");
 
+
+var fileCarousel_Img1;
+var fileCarousel_Img2;
+var fileCarousel_Img3;
+var fileCarousel_Img4;
+var fileCarousel_Img5;
 var fileFeatured_Img1;
 var fileFeatured_Img2;
 var fileFeatured_Img3;
@@ -230,6 +289,12 @@ var fileGroup4_Img1;
 var fileGroup4_Img2;
 var fileGroup4_Img3;
 var fileGroup4_Img4;
+
+var url_Carousel_Img1;
+var url_Carousel_Img2;
+var url_Carousel_Img3;
+var url_Carousel_Img4;
+var url_Carousel_Img5;
 
 var url_Featured_Img1;
 var url_Featured_Img2;
@@ -270,6 +335,12 @@ getDashboardDetails().then(()=>{
 
 
 //1.Add listners on inpfiles clicks
+setImage(inpFile_CarouselImage1, previewImage_CarouselImage1, previewText_CarouselImage1, "fileCarousel_Img1");
+setImage(inpFile_CarouselImage2, previewImage_CarouselImage2, previewText_CarouselImage2, "fileCarousel_Img2");
+setImage(inpFile_CarouselImage3, previewImage_CarouselImage3, previewText_CarouselImage3, "fileCarousel_Img3");
+setImage(inpFile_CarouselImage4, previewImage_CarouselImage4, previewText_CarouselImage4, "fileCarousel_Img4");
+setImage(inpFile_CarouselImage5, previewImage_CarouselImage5, previewText_CarouselImage5, "fileCarousel_Img5");
+
 setImage(inpFile_FeaturedImage1, previewImage_FeaturedImage1, previewText_FeaturedImage1, "fileFeatured_Img1");
 setImage(inpFile_FeaturedImage2, previewImage_FeaturedImage2, previewText_FeaturedImage2, "fileFeatured_Img2");
 setImage(inpFile_FeaturedImage3, previewImage_FeaturedImage3, previewText_FeaturedImage3, "fileFeatured_Img3");
@@ -334,6 +405,28 @@ function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
             });
             reader.readAsDataURL(file);
             switch (imgNmae) {
+
+                case "fileCarousel_Img1":
+                    fileCarousel_Img1 = file;
+                    break;
+
+                case "fileCarousel_Img2":
+                        fileCarousel_Img2 = file;
+                        break;
+
+                case "fileCarousel_Img3":
+                        fileCarousel_Img3 = file;
+                        break;
+                
+                case "fileCarousel_Img4":
+                        fileCarousel_Img4 = file;
+                        break;
+
+                case "fileCarousel_Img5":
+                        fileCarousel_Img5 = file;
+                        break;
+                
+
                 case "fileFeatured_Img1":
                     fileFeatured_Img1 = file;
                     break;
@@ -440,7 +533,7 @@ function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
 
     console.log(file.size);
 
-    if (file.size > 102400) {
+    if (file.size > 10240000) {
         alert("File cannot be more than 100 KB");
         return;
     }
@@ -458,6 +551,30 @@ function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
         imgProgress.style.display = "none";
         msgUpload.style.display = "block";
         url = imgUrl;
+
+        if (groupName == "Carousel") {
+            if (imageName == "Image1") {
+                url_Carousel_Img1 = url;
+            }
+
+            if (imageName == "Image2") {
+                url_Carousel_Img2 = url;
+            }
+
+            if (imageName == "Image3") {
+                url_Carousel_Img3 = url;
+            }
+
+            if (imageName == "Image4") {
+                url_Carousel_Img4 = url;
+            }
+
+            if (imageName == "Image5") {
+                url_Carousel_Img5 = url;
+            }
+
+        }
+
         if (groupName == "Featured") {
             if (imageName == "Image1") {
                 url_Featured_Img1 = url;
@@ -570,6 +687,26 @@ function saveImageAtFirebase(file, groupname) {
     });
 }
 
+btnUploadCarouselImage1.addEventListener("click", function(){
+    uploadFile(fileCarousel_Img1, imgProgressCarouselImage1, uploadMsgCarouselImage1, url_Carousel_Img1, "Carousel", "Image1");
+})
+
+btnUploadCarouselImage2.addEventListener("click", function(){
+    uploadFile(fileCarousel_Img2, imgProgressCarouselImage2, uploadMsgCarouselImage2, url_Carousel_Img2, "Carousel", "Image2");
+})
+
+btnUploadCarouselImage3.addEventListener("click", function(){
+    uploadFile(fileCarousel_Img3, imgProgressCarouselImage3, uploadMsgCarouselImage3, url_Carousel_Img3, "Carousel", "Image3");
+})
+
+btnUploadCarouselImage4.addEventListener("click", function(){
+    uploadFile(fileCarousel_Img4, imgProgressCarouselImage4, uploadMsgCarouselImage4, url_Carousel_Img4, "Carousel", "Image4");
+})
+
+btnUploadCarouselImage5.addEventListener("click", function(){
+    uploadFile(fileCarousel_Img5, imgProgressCarouselImage5, uploadMsgCarouselImage5, url_Carousel_Img5, "Carousel", "Image5");
+})
+
 btnUploadFeaturedImage1.addEventListener("click", function () {
     uploadFile(fileFeatured_Img1, imgProgressFeaturedImage1, uploadMsgFeaturedImage1, url_Featured_Img1, "Featured", "Image1");
 })
@@ -668,6 +805,36 @@ function validateFormDetails() {
     var errorFound = false;
     console.log("going to validate form details");
 
+    if (txtImag1Tag_carousel.value == "") {
+        errorMsg += "Please enter the tag for Carousel Image 1";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (txtImag2Tag_carousel.value == "") {
+        errorMsg += "Please enter the tag for Carousel Image 2";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (txtImag3Tag_carousel.value == "") {
+        errorMsg += "Please enter the tag for Carousel Image 3";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (txtImag4Tag_carousel.value == "") {
+        errorMsg += "Please enter the tag for Carousel Image 4";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (txtImag5Tag_carousel.value == "") {
+        errorMsg += "Please enter the tag for Carousel Image 5";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
     if (txtImag1Tag_featured.value == "") {
         errorMsg += "Please enter the tag for Featured Image 1";
         errorMsg += "<br/>";
@@ -697,6 +864,36 @@ function validateFormDetails() {
 
     if (txtImag5Tag_featured.value == "") {
         errorMsg += "Please enter the tag for Featured Image 5";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (url_Carousel_Img1 == null) {
+        errorMsg += "Please upload carousel image 1";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (url_Carousel_Img2 == null) {
+        errorMsg += "Please upload carousel image 2";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (url_Carousel_Img3 == null) {
+        errorMsg += "Please upload carousel image 3";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (url_Carousel_Img4 == null) {
+        errorMsg += "Please upload carousel image 4";
+        errorMsg += "<br/>";
+        errorFound = true;
+    }
+
+    if (url_Carousel_Img5 == null) {
+        errorMsg += "Please upload carousel image 5";
         errorMsg += "<br/>";
         errorFound = true;
     }
@@ -1074,6 +1271,18 @@ function saveDetails() {
     divContent.style.display = "none";
 
     firebase.firestore().collection('dashboard').doc("dashboard").set({
+
+        carousel_img1_tag: txtImag1Tag_carousel.value,
+        carousel_img2_tag: txtImag2Tag_carousel.value,
+        carousel_img3_tag: txtImag3Tag_carousel.value,
+        carousel_img4_tag: txtImag4Tag_carousel.value,
+        carousel_img5_tag: txtImag5Tag_carousel.value,
+        carousel_img1_url: url_Carousel_Img1,
+        carousel_img2_url: url_Carousel_Img2,
+        carousel_img3_url: url_Carousel_Img3,
+        carousel_img4_url: url_Carousel_Img4,
+        carousel_img5_url: url_Carousel_Img5,
+
         featured_img1_tag: txtImag1Tag_featured.value,
         featured_img2_tag: txtImag2Tag_featured.value,
         featured_img3_tag: txtImag3Tag_featured.value,
@@ -1193,6 +1402,19 @@ function getDashboardDetails() {
 }
 
 function updateUI(){
+
+    txtImag1Tag_carousel.value = mDashboard.carousel_img1_tag;
+    txtImag2Tag_carousel.value = mDashboard.carousel_img2_tag;
+    txtImag3Tag_carousel.value = mDashboard.carousel_img3_tag;
+    txtImag4Tag_carousel.value = mDashboard.carousel_img4_tag;
+    txtImag5Tag_carousel.value = mDashboard.carousel_img5_tag;
+    url_Carousel_Img1 = mDashboard.carousel_img1_url;
+    url_Carousel_Img2 = mDashboard.carousel_img2_url;
+    url_Carousel_Img3 = mDashboard.carousel_img3_url;
+    url_Carousel_Img4 = mDashboard.carousel_img4_url;
+    url_Carousel_Img5 = mDashboard.carousel_img5_url;
+
+
     txtImag1Tag_featured.value = mDashboard.featured_img1_tag;
     txtImag2Tag_featured.value = mDashboard.featured_img2_tag;
     txtImag3Tag_featured.value = mDashboard.featured_img3_tag;
@@ -1265,6 +1487,36 @@ function updateUI(){
     url_Group4_Img3 = mDashboard.grp4_img3_url;
     url_Group4_Img4 = mDashboard.grp4_img4_url;
 
+
+    if(mDashboard.carousel_img1_url != null){
+        previewImage_CarouselImage1.src = mDashboard.carousel_img1_url;
+        previewImage_CarouselImage1.style.display = "block";
+        previewText_CarouselImage1.style.display = "none";
+    }
+
+    if(mDashboard.carousel_img2_url != null){
+        previewImage_CarouselImage2.src = mDashboard.carousel_img2_url;
+        previewImage_CarouselImage2.style.display = "block";
+        previewText_CarouselImage2.style.display = "none";
+    }
+
+    if(mDashboard.carousel_img3_url != null){
+        previewImage_CarouselImage3.src = mDashboard.carousel_img3_url;
+        previewImage_CarouselImage3.style.display = "block";
+        previewText_CarouselImage3.style.display = "none";
+    }
+
+    if(mDashboard.carousel_img4_url != null){
+        previewImage_CarouselImage4.src = mDashboard.carousel_img4_url;
+        previewImage_CarouselImage4.style.display = "block";
+        previewText_CarouselImage4.style.display = "none";
+    }
+
+    if(mDashboard.carousel_img5_url != null){
+        previewImage_CarouselImage5.src = mDashboard.carousel_img5_url;
+        previewImage_CarouselImage5.style.display = "block";
+        previewText_CarouselImage5.style.display = "none";
+    }
 
     if(mDashboard.featured_img1_url != null){
         previewImage_FeaturedImage1.src = mDashboard.featured_img1_url;

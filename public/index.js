@@ -8,7 +8,8 @@ let qtyDiscountObjectMap = new Map();
 
 
 //loadAllProducts();
-//loadTags();
+loadTags();
+//makeTagsLower();
 
 
 function addQtyDiscount(productid, discountInPercentMap) {
@@ -299,6 +300,75 @@ function loadTags() {
   })
 }
 
+
+function makeTagsLower() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("products")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var product = doc.data();
+         
+          for (var i = 0; i < product.Tags.length; i++) {
+            var tag = product.Tags[i];
+            tag = tag.toLowerCase();
+            product.Tags[i] = tag;
+            console.log(product.Tags[i]);
+          }
+
+          productList.push(product);
+
+        });
+      })
+      .then(function () {
+      
+        var promiseList = [];
+        for(var i = 0; i < productList.length; i++){
+           promiseList.push(updateTagsLowercase(productList[i]));
+        }
+
+        Promise.all(promiseList).then(()=>{
+
+          resolve();
+          console.log("updated all tags in lower case");
+
+        })
+       
+      
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function updateTagsLowercase(product) {
+
+  return new Promise((resolve, reject) =>{
+
+    var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
+    //console.log("qty discount = " + qtyDiscounts);
+    washingtonRef.update({
+      Tags: product.Tags
+    })
+      .then(function () {
+        console.log("updated for product - " + product.Product_Id);
+         resolve();
+      })
+      .catch(function (error) {
+        // The document probably doesn't exist.
+        reject();
+  
+      });
+
+  })
+
+
+}
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

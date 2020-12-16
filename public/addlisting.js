@@ -153,6 +153,7 @@ var rbNoVariantPricing = document.getElementById("rbNoVariantPricing");
 var divVariantSelection = document.getElementById("divVariantSelection");
 var selectVariant = document.getElementById("selectVariant");
 var table = document.getElementById("tblVariantPrice");
+var cmbSubCategory = document.getElementById("cmbSubCategory");
 
 var fileCover;
 var fileImg1;
@@ -181,11 +182,19 @@ let variantPriceMap = new Map();
 var variantList = [];
 var mProduct;
 
+var subCategoryMap = new Map();
+
+loadSubCategories();
 loadTags();
 getSellerDetails();
 
 var bUpdate = false;
 
+
+productCategory.addEventListener("change", function(){
+    addSubCategoryInDropDown();
+    
+})
 rbYesVariantPricing.addEventListener("change", function () {
     if (this.checked) {
         divVariantSelection.style.display = "block";
@@ -1618,6 +1627,15 @@ function deleteAllElementsFromVariantDropDown() {
     }
 }
 
+function deleteAllElementsFromSubCategoriesDropDown() {
+    //e.firstElementChild can be used. 
+    var child = cmbSubCategory.lastElementChild;
+    while (child) {
+        cmbSubCategory.removeChild(child);
+        child = cmbSubCategory.lastElementChild;
+    }
+}
+
 function addVariantsInDropDown() {
 
     deleteAllElementsFromVariantDropDown();
@@ -1731,9 +1749,6 @@ function createTable() {
 
 }
 
-function saveTags() {
-
-}
 
 function loadTags() {
     return new Promise((resolve, reject) => {
@@ -1800,6 +1815,56 @@ function addTags() {
             });
 
     })
+
+
+}
+
+function loadSubCategories(){
+    return new Promise((resolve, reject) => {
+        firebase.firestore().collection("categories")
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    var objCategory = doc.data();
+                    subCategoryMap.set(objCategory.Category, objCategory.sub_categories);
+                });
+            })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+
+    })
+}
+
+function addSubCategoryInDropDown() {
+
+    deleteAllElementsFromSubCategoriesDropDown();
+    var category = productCategory.value;
+    var sc = subCategoryMap.get(category);
+    
+    var option = document.createElement("option");
+    option.selected = true;
+    option.disabled = true;
+    option.hidden = true;
+    option.value = null;
+    option.textContent = "Select Sub-Category";
+    cmbSubCategory.appendChild(option);
+
+    for (var i = 0 ; i < sc.length; i++) {
+        var option = document.createElement("option");
+        var subC = sc[i];
+        option.value = subC;
+        option.textContent = subC;
+        cmbSubCategory.appendChild(option);
+    }
+
+    //  var tdProductName = document.createElement("td");
 
 
 }

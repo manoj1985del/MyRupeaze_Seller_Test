@@ -533,7 +533,7 @@ function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
 
     console.log(file.size);
 
-    if (file.size > 10240000) {
+    if (file.size > 102400) {
         alert("File cannot be more than 100 KB");
         return;
     }

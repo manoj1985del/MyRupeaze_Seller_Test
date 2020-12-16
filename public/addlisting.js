@@ -985,7 +985,7 @@ btnSubmit.addEventListener("click", function () {
 
     tmpTags = txtTags.value.split(',');
     for (var i = 0; i < tmpTags.length; i++) {
-        var tag = tmpTags[i].trim();
+        var tag = tmpTags[i].trim().toLowerCase();
         tags.push(tag);
         if (!globalTagList.includes(tag)) {
             localTagList.push(tag);
@@ -1018,7 +1018,7 @@ btnUpdate.addEventListener("click", function () {
 
     tmpTags = txtTags.value.split(',');
     for (var i = 0; i < tmpTags.length; i++) {
-        var tag = tmpTags[i].trim();
+        var tag = tmpTags[i].trim().toLowerCase();
         tags.push(tag);
         if (!globalTagList.includes(tag)) {
             localTagList.push(tag);
@@ -1447,7 +1447,6 @@ function saveImageAtFirebase(file, productId) {
 
 function updateProductDetails() {
     var washingtonRef = firebase.firestore().collection('products').doc(productId);
-    console.log(tags);
 
     productVariants = null;
     if (rbVariantYes.checked && variantMap.size > 0) {
@@ -1749,7 +1748,7 @@ function loadTags() {
 
                     var tags = product_tags.tags;
                     for (var i = 0; i < tags.length; i++) {
-                        var tag = tags[i];
+                        var tag = tags[i].toLowerCase();
                         if (product_tags.active == true) {
                             localTagList.push(tag);
                         }

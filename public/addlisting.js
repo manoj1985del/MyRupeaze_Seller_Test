@@ -529,6 +529,8 @@ function loadUI(bProductIdEntered, p_ProductId) {
                 txtReturnWindow.value = product.returning_window;
                 txtCountryOfOrigin.value = product.CountryOfOrigin;
                 productCategory.value = product.Category;
+                addSubCategoryInDropDown();
+                cmbSubCategory.value = product.SubCategory;
                 if (product.ExpiryDate != null) {
                     txtExpiryDate.value = product.ExpiryDate;
                 }
@@ -721,6 +723,11 @@ function validateFormDetails() {
 
     if (productCategory.value == "null") {
         errorMsg = "Please select product category<br/>"
+        errorFound = true;
+    }
+
+    if (cmbSubCategory.value == "null") {
+        errorMsg = "Please select product SubCategory<br/>"
         errorFound = true;
     }
 
@@ -994,7 +1001,7 @@ btnSubmit.addEventListener("click", function () {
 
     tmpTags = txtTags.value.split(',');
     for (var i = 0; i < tmpTags.length; i++) {
-        var tag = tmpTags[i].trim();
+        var tag = tmpTags[i].trim().toLowerCase();
         tags.push(tag);
         if (!globalTagList.includes(tag)) {
             localTagList.push(tag);
@@ -1027,7 +1034,7 @@ btnUpdate.addEventListener("click", function () {
 
     tmpTags = txtTags.value.split(',');
     for (var i = 0; i < tmpTags.length; i++) {
-        var tag = tmpTags[i].trim();
+        var tag = tmpTags[i].trim().toLowerCase();
         tags.push(tag);
         if (!globalTagList.includes(tag)) {
             localTagList.push(tag);
@@ -1399,6 +1406,7 @@ function saveProductDetails() {
         CountryOfOrigin: txtCountryOfOrigin.value,
         ExpiryDate: expiryDate,
         Category: productCategory.value,
+        SubCategory: cmbSubCategory.value,
         ImageUrlCover: coverImageUrl,
         VariantsAvailable: rbVariantYes.checked,
         Variants: productVariants,
@@ -1516,6 +1524,7 @@ function updateProductDetails() {
         CountryOfOrigin: txtCountryOfOrigin.value,
         ExpiryDate: expiryDate,
         Category: productCategory.value,
+        SubCategory: cmbSubCategory.value,
         ImageUrlCover: coverImageUrl,
         VariantsAvailable: rbVariantYes.checked,
         Variants: productVariants,
@@ -1764,7 +1773,7 @@ function loadTags() {
 
                     var tags = product_tags.tags;
                     for (var i = 0; i < tags.length; i++) {
-                        var tag = tags[i];
+                        var tag = tags[i].toLowerCase();
                         if (product_tags.active == true) {
                             localTagList.push(tag);
                         }
@@ -1859,6 +1868,9 @@ function addSubCategoryInDropDown() {
     for (var i = 0 ; i < sc.length; i++) {
         var option = document.createElement("option");
         var subC = sc[i];
+        if(subC.toUpperCase().trim() == "ALL"){
+            continue;
+        }
         option.value = subC;
         option.textContent = subC;
         cmbSubCategory.appendChild(option);

@@ -6,7 +6,13 @@ var update = getQueryVariable("update");
 var bUpdate = false;
 
 var sellerProductMap = new Map();
+var subCategoryMap = new Map();
+var arrSubCategories = [];
+var arrSelectedSubCategories = [];
+var arrLabels = [];
+var checkBoxes = [];
 
+var divSubCategories = document.getElementById("divSubCategories");
 var txtNmae = document.getElementById("txtName");
 var txtMobile = document.getElementById("txtMobile");
 var txtCompanyName = document.getElementById("txtCompanyName");
@@ -68,6 +74,7 @@ var txtOffer = document.getElementById("txtOffer");
 var txtEmail = document.getElementById("txtEmail");
 var email = localStorage.getItem("sellerEmail");
 
+
 var shop_opening_time = null;
 var shop_closing_time = null;
 var shop_offers = null;
@@ -83,15 +90,21 @@ var uploadFileUrl = null;
 var gstURL = null;
 var chequeURL = null;
 
-loadSellerDetails(sellerId).then(() => {
-   //seller exists.. we are at this form for updation
-   if (mSeller != null) {
-      bUpdate = true;
-      loadShopDetails(sellerId).then(() => {
-         loadUI();
-      })
-   }
-})
+
+loadSubCategories().then(() => {
+
+   loadSellerDetails(sellerId).then(() => {
+      //seller exists.. we are at this form for updation
+      if (mSeller != null) {
+         bUpdate = true;
+         loadShopDetails(sellerId).then(() => {
+            loadUI();
+         })
+      }
+   })
+
+});
+
 
 btnUplaodGST.addEventListener("click", function () {
    uploadFileUrl = null;
@@ -102,7 +115,7 @@ btnUplaodGST.addEventListener("click", function () {
    gstProgress.style.display = "block";
    saveFileToFirebase(fileGST).then(() => {
       gstURL = uploadFileUrl;
-     
+
       if (bUpdate) {
          mSeller.gst_url = gstURL;
          updateGSTURL();
@@ -122,7 +135,7 @@ btnUploadCancelCheque.addEventListener("click", function () {
    chequeProgress.style.display = "block";
    saveFileToFirebase(fileCancelledCheque).then(() => {
       chequeURL = uploadFileUrl;
-     
+
       if (bUpdate) {
          mSeller.cheque_url = chequeURL;
          updateChequeURL();
@@ -216,6 +229,20 @@ function loadUI() {
    txtMerchantId.value = mSeller.merchant_id;
    txtAccountNumber.value = mSeller.account_no;
    cmbSellerCategory.value = mSeller.seller_category;
+   createSubCategoryCheckBoxes(cmbSellerCategory.value);
+   if (mSeller.seller_subcategories != null) {
+      for (var i = 0; i < mSeller.seller_subcategories.length; i++) {
+         var subCategory = mSeller.seller_subcategories[i];
+         for(var j = 0; j < arrLabels.length; j++){
+            if(arrLabels[j].textContent == subCategory){
+               var inputElement = checkBoxes[j];
+               inputElement.checked = true;
+               break;
+            }
+         }
+      }
+   }
+
    txtIFSCCode.value = mSeller.ifsc;
    txtBankName.value = mSeller.bank_name;
    txtNmae.value = mSeller.seller_name;
@@ -253,7 +280,7 @@ function loadUI() {
    btnViewGST.style.display = "block";
 
    //approved customer are allowed to edit only certain things
-   if(mSeller.status == "approved"){
+   if (mSeller.status == "approved") {
       txtCompanyName.disabled = true;
       txtAddressLine1.disabled = true;
       txtAddressLine2.disabled = true;
@@ -528,10 +555,10 @@ btnSubmit.addEventListener("click", function () {
       registerSeller();
    }
    else {
-         
-               
-         updateSellerDetails();
-      
+
+
+      updateSellerDetails();
+
    }
 });
 
@@ -555,12 +582,12 @@ function registerSeller() {
    divContent.style.display = "none";
 
    var citySeller = rbCityYes.checked;
-   if(citySeller){
+   if (citySeller) {
       shop_opening_time = txtOpeningTime.value;
       shop_closing_time = txtClosingTime.value;
       shop_offers = txtOffer.value;
    }
-   else{
+   else {
 
       shop_opening_time = null;
       shop_closing_time = null;
@@ -568,7 +595,7 @@ function registerSeller() {
 
    }
 
-   saveSellerDetails().then(()=>{
+   saveSellerDetails().then(() => {
       sendWelcomeEmail();
    })
 
@@ -581,12 +608,12 @@ function registerSeller() {
    //    saveShopDetail().then(() => {
    //       saveSellerDetails().then(() => {
    //          sendWelcomeEmail();
-           
+
    //       });
    //    });
    // }
 
-   
+
 }
 
 function loadSellerDetails(sellerid) {
@@ -660,12 +687,12 @@ function updateSellerDetails() {
    }
 
    var citySeller = rbCityYes.checked;
-   if(citySeller){
+   if (citySeller) {
       shop_opening_time = txtOpeningTime.value;
       shop_closing_time = txtClosingTime.value;
       shop_offers = txtOffer.value;
    }
-   else{
+   else {
 
       shop_opening_time = null;
       shop_closing_time = null;
@@ -673,9 +700,9 @@ function updateSellerDetails() {
 
    }
    var status;
-   if(mSeller.status == "approved"){
+   if (mSeller.status == "approved") {
       status = "approved";
-   }else{
+   } else {
       status = "pending";
    }
 
@@ -706,6 +733,7 @@ function updateSellerDetails() {
       accountType: accountType,
       merchant_id: txtMerchantId.value,
       seller_category: cmbSellerCategory.value,
+      seller_subcategories: arrSelectedSubCategories,
       city_seller: citySeller,
       shop_opening_time: shop_opening_time,
       shop_closing_time: shop_closing_time,
@@ -715,20 +743,20 @@ function updateSellerDetails() {
    })
       .then(function () {
 
-            divProgress.style.display = "none";
-            divContent.style.display = "block";
-   
-            if(mSeller.status != "approved"){
+         divProgress.style.display = "none";
+         divContent.style.display = "block";
+
+         if (mSeller.status != "approved") {
             window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
                + "&name=" + mSeller.company_name + "&status=pending"
                + "&rejection_reason=null";
-            }
-            else{
-               window.location.href = "home.html?sellerid=" + sellerId;
-            }
-   
-            console.log("Document successfully updated!");
-        
+         }
+         else {
+            window.location.href = "home.html?sellerid=" + sellerId;
+         }
+
+         console.log("Document successfully updated!");
+
       })
       .catch(function (error) {
          // The document probably doesn't exist.
@@ -798,6 +826,7 @@ function saveSellerDetails() {
          accountType: accountType,
          merchant_id: txtMerchantId.value,
          seller_category: cmbSellerCategory.value,
+         seller_subcategories: arrSelectedSubCategories,
          city_seller: citySeller,
          status: "pending",
          suspension_reason: null,
@@ -806,7 +835,7 @@ function saveSellerDetails() {
          subscription_start_date: null,
          subscription_end_date: null,
          subscription_amount: null,
-         subscription_payment_id:null,
+         subscription_payment_id: null,
          subscription_type: null,
          shop_opening_time: shop_opening_time,
          shop_closing_time: shop_closing_time,
@@ -873,8 +902,8 @@ function sendWelcomeEmail() {
    sendEmail(txtEmail.value, "My Rupeaze: Your Request Under Review", msg);
 
    window.location.href = "seller_approval.html?sellerid=" + sellerId + "&merchant_id=" + txtMerchantId.value
-         + "&name=" + txtNmae.value + "&status=pending"
-         + "&rejection_reason=null";
+      + "&name=" + txtNmae.value + "&status=pending"
+      + "&rejection_reason=null";
 
 }
 
@@ -903,6 +932,93 @@ btnViewCancelledCheque.addEventListener("click", function () {
       document.body.removeChild(link);
    }
 })
+
+cmbSellerCategory.addEventListener("change", function () {
+   createSubCategoryCheckBoxes(cmbSellerCategory.value);
+})
+
+function deleteElements(parentElement) {
+   //e.firstElementChild can be used. 
+   var child = parentElement.lastElementChild;
+   while (child) {
+      parentElement.removeChild(child);
+      child = parentElement.lastElementChild;
+   }
+}
+
+
+function createSubCategoryCheckBoxes(sCategory) {
+   arrLabels = [];
+   checkBoxes = [];
+   deleteElements(divSubCategories);
+   arrSubCategories = subCategoryMap.get(sCategory);
+
+   for (var i = 0; i < arrSubCategories.length; i++) {
+      var subCategory = arrSubCategories[i];
+      if (subCategory.toUpperCase().trim() == "ALL") {
+         continue;
+      }
+
+      var divCheckbox = document.createElement("div");
+      var inputElement = document.createElement("input");
+      inputElement.setAttribute("type", "checkbox");
+      inputElement.setAttribute("id", i.toString());
+      inputElement.classList.add("form-check-input");
+      checkBoxes.push(inputElement);
+
+      var labelElemet = document.createElement("label");
+      labelElemet.classList.add("form-check-label");
+      labelElemet.setAttribute("for", i.toString());
+      labelElemet.setAttribute("id", i.toString());
+      labelElemet.textContent = subCategory;
+      arrLabels.push(labelElemet);
+
+      divCheckbox.appendChild(inputElement);
+      divCheckbox.appendChild(labelElemet);
+      divSubCategories.appendChild(divCheckbox);
+
+
+      inputElement.addEventListener("change", function () {
+
+         if (this.checked) {
+            var id = this.id;
+            var le = null;
+            for (var i = 0; i < arrLabels.length; i++) {
+               var label = arrLabels[i];
+               if (label.id == id) {
+                  le = label;
+                  break;
+               }
+            }
+            arrSelectedSubCategories.push(le.textContent);
+
+         }
+      })
+   }
+}
+
+function loadSubCategories() {
+   return new Promise((resolve, reject) => {
+      firebase.firestore().collection("categories")
+         .get()
+         .then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+               // doc.data() is never undefined for query doc snapshots
+               var objCategory = doc.data();
+               subCategoryMap.set(objCategory.Category, objCategory.sub_categories);
+            });
+         })
+         .then(function () {
+            resolve();
+         })
+         .catch(function (error) {
+            console.log("Error getting documents: ", error);
+            reject();
+         });
+
+
+   })
+}
 
 
 

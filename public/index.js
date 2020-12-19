@@ -8,7 +8,7 @@ let qtyDiscountObjectMap = new Map();
 
 
 //loadAllProducts();
-loadTags();
+//loadTags();
 //makeTagsLower();
 
 

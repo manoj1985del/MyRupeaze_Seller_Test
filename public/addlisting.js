@@ -2,6 +2,8 @@ var sellerId = localStorage.getItem("sellerid");
 var mSeller;
 var sellerName = localStorage.getItem("sellerName");
 var nav = document.getElementById("nav");
+var txtProductRating = document.getElementById("txtProductRating");
+var divProductRating = document.getElementById("divProductRating");
 
 
 
@@ -481,6 +483,12 @@ btnSearchProduct.addEventListener("click", function () {
 })
 var productId = getQueryVariable("productid");
 var admin = getQueryVariable("admin");
+if(admin){
+    divProductRating.style.display = "block";
+}
+else{
+    divProductRating.style.display = "none";
+}
 
 if (productId != null) {
     bUpdate = true;
@@ -523,6 +531,8 @@ function loadUI(bProductIdEntered, p_ProductId) {
 
                 }
 
+                
+                txtProductRating.value = product.Avg_Rating;
                 txtGST.value = product.GST;
                 txtBrand.value = product.Brand;
                 txtTags.value = product.Tags;
@@ -1385,7 +1395,7 @@ function saveProductDetails() {
     }
 
     firebase.firestore().collection('products').doc(productId).set({
-        Avg_Rating: 0,
+        Avg_Rating: parseFloat(txtProductRating.value),
         Active: true,
         Brand: txtBrand.value,
         COD: rbYes.checked,
@@ -1507,6 +1517,7 @@ function updateProductDetails() {
 
     // Set the "capital" field of the city 'DC'
     return washingtonRef.update({
+        Avg_Rating: parseFloat(txtProductRating.value),
         Brand: txtBrand.value,
         COD: rbYes.checked,
         Description: txtProductDescription.value,

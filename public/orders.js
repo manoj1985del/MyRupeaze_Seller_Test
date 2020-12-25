@@ -58,7 +58,9 @@ errMsg.textContent = "";
 var statusValues = ["Select Status",
     "Order Confirmed. Preparing for Dispatch",
     "Order received. Seller Confirmation pending.",
-    "Ready For Dispatch"];
+    "Ready For Dispatch",
+    "Order Ready. Waiting for Customre's Pickup",
+    "Local Delivery Successful"];
 
 var table = document.getElementById("tblPendingOrders");
 
@@ -85,7 +87,7 @@ btnNext.addEventListener("click", function () {
 
     ordersUsersMap.clear();
     ordersAddressMap.clear();
-   
+
     deleteTableRows();
     // table = document.getElementById("tblPendingOrders");
 
@@ -247,7 +249,7 @@ btnPrevious.addEventListener("click", function () {
     pendingOrders = [];
     ordersUsersMap.clear();
     ordersAddressMap.clear();
-    
+
     deleteTableRows();
     // table = document.getElementById("tblPendingOrders");
 
@@ -605,20 +607,20 @@ function fetchOrders(query) {
 
 function fetchUserAgainstOrder(order) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
         var query = firebase.firestore()
-                .collection('users').doc(order.customer_id);
-    
+            .collection('users').doc(order.customer_id);
+
         query.get()
             .then(function (doc) {
-    
-                if(doc.exists){
-    
+
+                if (doc.exists) {
+
                     var user = doc.data();
                     ordersUsersMap.set(order.order_id, user);
                     resolve();
                 }
-                else{
+                else {
                     alert("Deleted user found against order id - " + order.order_id);
                     resolve();
                 }
@@ -643,7 +645,7 @@ function fetchUsers() {
             // query.get()
             //     .then(function (doc) {
             //         var user = doc.data();
-                    
+
             //         console.log(user.Name);
             //         users.push(user);
             //         if (users.length == pendingOrders.length) {
@@ -653,7 +655,7 @@ function fetchUsers() {
             //     })
 
         }
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
             resolve();
         })
 
@@ -664,28 +666,28 @@ function fetchUsers() {
 
 function fetchAddressAgainstOrder(order) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
 
         var user = ordersUsersMap.get(order.order_id);
-        if(user == null || user == undefined){
+        if (user == null || user == undefined) {
             alert("Order found against a deleted user - " + order.customer_id);
             resolve();
             return;
         }
-    
+
         var query = firebase.firestore()
             .collection('users').doc(order.customer_id).collection("Addresses").doc(user.AddressId);
-    
+
         query.get()
             .then(function (doc) {
-    
-                if(doc.exists){
-    
+
+                if (doc.exists) {
+
                     var address = doc.data();
                     ordersAddressMap.set(order.order_id, address);
                     resolve();
                 }
-                else{
+                else {
                     resolve();
                 }
             });
@@ -705,7 +707,7 @@ function fetchAddresses() {
         for (var i = 0; i < pendingOrders.length; i++) {
             var order = pendingOrders[i];
             promiseList.push(fetchAddressAgainstOrder(order));
-          
+
 
             // var query = firebase.firestore()
             //     .collection('users').doc(order.customer_id).collection("Addresses").doc(user.AddressId);
@@ -723,10 +725,10 @@ function fetchAddresses() {
 
             //     });
         }
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
             resolve();
         })
-        
+
     });
 }
 
@@ -879,6 +881,19 @@ function addPendingOrdersToTable() {
         orderId.textContent = order.order_id;
         divOrderId.appendChild(orderId);
 
+        if (order.pickup_from_store != null) {
+            if (order.pickup_from_store) {
+                var divPikcupFromStore = document.createElement('div');
+                var spanPickupFromStore = document.createElement('span');
+                spanPickupFromStore.textContent = "Pickup from the store order";
+                spanPickupFromStore.style.color = "#ff0000";
+                spanPickupFromStore.style.marginTop = "10px";
+                spanPickupFromStore.style.fontWeight = "bold";
+                divPikcupFromStore.appendChild(spanPickupFromStore);
+                divOrderId.appendChild(divPikcupFromStore);
+            }
+        }
+
         var orderDate = document.createElement("span");
         var ord = order.order_date.toDate();
         var dd = ord.getDate();
@@ -914,6 +929,15 @@ function addPendingOrdersToTable() {
 
 
 
+        var divViewProducts = document.createElement("div");
+        divViewProducts.style.marginBottom = "10px";
+        var btnViewOrders = document.createElement("button");
+        btnViewOrders.textContent = "View Products";
+        btnViewOrders.style.width = "150px";
+        btnViewOrders.setAttribute("id", order.order_id);
+        divViewProducts.appendChild(btnViewOrders);
+        divConfirm.appendChild(divViewProducts);
+
 
         var divCancelOrder = document.createElement("div");
         divCancelOrder.style.marginBottom = "10px";
@@ -928,9 +952,11 @@ function addPendingOrdersToTable() {
             || order.Status == "Delivery Failed." || order.Status == "Customer denied delivery") {
             //console.log("hiding cancel order div for status " + order.Status);
             divCancelOrder.style.display = "block";
+            divViewProducts.style.display = "block";
         }
         else {
             divCancelOrder.style.display = "none";
+            divViewProducts.style.display = "none";
         }
 
         //append confirm button and cancel button to divActoin
@@ -982,10 +1008,10 @@ function addPendingOrdersToTable() {
 
 
 
-        if(order.delivery_agent_id != null){
+        if (order.delivery_agent_id != null) {
             btnLocalDelivery.disabled = true;
         }
-        else{
+        else {
             btnLocalDelivery.disabled = false;
         }
 
@@ -1007,7 +1033,7 @@ function addPendingOrdersToTable() {
         var divChangeStatus = document.createElement("div");
         var textChangeStatus = document.createElement("span");
         textChangeStatus.innerHTML = "<b>Change Status:</b>";
-        divChangeStatus.appendChild(textChangeStatus);    
+        divChangeStatus.appendChild(textChangeStatus);
         var select = document.createElement("select");
         var btnSetStatus = document.createElement("button");
         btnSetStatus.setAttribute("id", "status|" + order.order_id);
@@ -1028,40 +1054,40 @@ function addPendingOrdersToTable() {
             select.disabled = true;
         }
 
-       
+
 
 
         for (const val of statusValues) {
             var option = document.createElement("option");
-            if(val == "Select Status")
-            {
+            if (val == "Select Status") {
                 option.selected = true;
                 option.hidden = true;
                 option.disabled = true;
                 option.value = null;
                 option.text = val.charAt(0).toUpperCase() + val.slice(1);
             }
-            else
-            {
+            else {
 
-            option.value = val;
-            option.text = val.charAt(0).toUpperCase() + val.slice(1);
+                option.value = val;
+                option.text = val.charAt(0).toUpperCase() + val.slice(1);
             }
             select.appendChild(option);
         }
 
         var status = order.Status;
 
-        if(status == "Order Confirmed. Preparing for Dispatch" || status == 
-        "Order received. Seller Confirmation pending."){
-            divChangeStatus.style.display = "block";
-        }else{
-            divChangeStatus.style.display = "none";
+        if (order.pickup_from_store == false) {
+            if (status == "Order Confirmed. Preparing for Dispatch" || status ==
+                "Order received. Seller Confirmation pending.") {
+                divChangeStatus.style.display = "block";
+            } else {
+                divChangeStatus.style.display = "none";
+            }
         }
 
         btnSetStatus.style.display = "none";
 
-       // select.value = status;
+        // select.value = status;
 
         select.addEventListener("change", function () {
             for (var i = 0; i < pendingOrders.length; i++) {
@@ -1083,9 +1109,9 @@ function addPendingOrdersToTable() {
             var res = id.split("|");
             var orderid = res[1];
             var lOrder;
-            for(var i =0; i < pendingOrders.length; i++){
+            for (var i = 0; i < pendingOrders.length; i++) {
                 var ord = pendingOrders[i];
-                if(ord.order_id == orderid){
+                if (ord.order_id == orderid) {
                     lOrder = ord;
                     break;
                 }
@@ -1110,7 +1136,7 @@ function addPendingOrdersToTable() {
         var divAmountPayable = document.createElement("div");
 
 
-
+        var totalAmtPayable = 0;
         var productList = ordersProductMap.get(order.order_id);
         for (var j = 0; j < productList.length; j++) {
             var product = productList[j];
@@ -1126,8 +1152,6 @@ function addPendingOrdersToTable() {
 
             var divImgLocal = document.createElement("div");
             divImgLocal.style.marginBottom = "10px";
-
-
             var imgProduct = document.createElement("Img");
             imgProduct.style.width = "50px";
             imgProduct.style.height = "50px";
@@ -1158,16 +1182,24 @@ function addPendingOrdersToTable() {
             }
 
             var spanReplacement = document.createElement("span");
-            if(product.replacement_requested != null){
-                if(product.replacement_requested){
+            if (product.replacement_requested != null) {
+                if (product.replacement_requested) {
                     spanReplacement.style.color = "#ff0000";
                     spanReplacement.innerHTML = "<br/><b>Replacement Requested (Qty : " + product.replacement_qty + ")</b>"
                 }
             }
 
+            var spanCancellation = document.createElement("span");
+            if (product.cancelled_by_seller != null) {
+                if (product.cancelled_by_seller) {
+                    spanCancellation.style.color = "#ff0000";
+                    spanCancellation.innerHTML = "<b>(Product Cancelled by Seller)</b>"
+                }
+            }
+
             var spanIsReplaceOrder = document.createElement("span");
-            if(order.replacement_order != null){
-                if(order.replacement_order){
+            if (order.replacement_order != null) {
+                if (order.replacement_order) {
                     spanIsReplaceOrder.style.color = "#ff0000";
                     spanIsReplaceOrder.innerHTML = "<br/><b>Replacement Order (Original Order Id : " + order.original_order_id + ")</b>"
                 }
@@ -1180,6 +1212,7 @@ function addPendingOrdersToTable() {
             divProductName.appendChild(spanReturn);
             divProductName.appendChild(spanReplacement);
             divProductName.appendChild(spanIsReplaceOrder);
+            divProductName.appendChild(spanCancellation);
 
             var divQtyLocal = document.createElement("div");
             divQtyLocal.style.marginBottom = "10px";
@@ -1196,10 +1229,15 @@ function addPendingOrdersToTable() {
                 amtPayable = 0;
             }
 
+            if(product.cancelled_by_seller){
+                amtPayable = 0;
+            }
+
             if (product.return_requested && product.return_processed) {
                 amtPayable = amtPayable - product.return_amount;
             }
 
+            totalAmtPayable += amtPayable;
             var formattedAmtPayable = rupeeSymbol + numberWithCommas(amtPayable);
             var amountPayable = document.createElement("span");
 
@@ -1210,10 +1248,10 @@ function addPendingOrdersToTable() {
 
             seller_part = seller_part.toFixed(2);
             admin_part = admin_part.toFixed(2);
-            var text = "<hr /><b>Commission: </b> " + commission + "%<br/>"
-                + "<b>Seller: </b>" + seller_part + "<br/>"
-                + "<b>Admin: </b>" + admin_part;
-            //  var text = " (C: " + commission + "%, S: " + seller_part + ", A: " + admin_part + ")";
+            // var text = "<hr /><b>Commission: </b> " + commission + "%<br/>"
+            //     + "<b>Seller: </b>" + seller_part + "<br/>"
+            //     + "<b>Admin: </b>" + admin_part;
+              var text = "";
             formattedAmtPayable += "<br/>" + text;
             amountPayable.innerHTML = formattedAmtPayable;
             divAmtPayableLocal.appendChild(amountPayable);
@@ -1224,8 +1262,12 @@ function addPendingOrdersToTable() {
             // amountPayable.textContent = formattedAmtPayable;
             // divAmtPayableLocal.appendChild(amountPayable);
             // divAmountPayable.appendChild(divAmtPayableLocal);
-
         }
+
+        var span = document.createElement("span");
+        var text = "<br/><hr/>Total: " + rupeeSymbol + numberWithCommas(totalAmtPayable);
+        span.innerHTML = text;
+        divAmountPayable.appendChild(span);
 
         if (order.cancelled) {
             var spanCancel = document.createElement("span");
@@ -1318,7 +1360,12 @@ function addPendingOrdersToTable() {
             window.location.href = "pdf.html?invoiceid=" + order.invoice_id;
         })
 
-        btnLocalDelivery.addEventListener("click", function(){
+        btnViewOrders.addEventListener("click", function(){
+            var orderId = this.id.toString();
+            window.location.href = "view_products_against_order.html?order_id=" + orderId;
+        })
+
+        btnLocalDelivery.addEventListener("click", function () {
             var index = parseInt(this.id);
             var order = pendingOrders[index];
             window.location.href = "local_delivery.html?orderid=" + order.order_id;
@@ -1327,25 +1374,35 @@ function addPendingOrdersToTable() {
         btnPrintShipLabel.addEventListener("click", function () {
             var index = parseInt(this.id);
             console.log(pendingOrders);
-           // alert(index);
-           
+            // alert(index);
+
             var invoiceId = pendingOrders[index].invoice_id;
-           // alert(invoiceId);
+            // alert(invoiceId);
             window.location.href = "shipping_label.html?invoiceid=" + invoiceId;
         })
 
         btnCancelOrder.addEventListener("click", function () {
             if (confirm("Are you sure you want to cancel this order?")) {
-                cancelOrder(this.id);
+                var index = parseInt(this.id);
+                var order;
+                for(var i = 0; i < pendingOrders.length; i++){
+                    var ord = pendingOrders[i];
+                    if(ord.order_id == this.id){
+                        order = ord;
+                        break;
+                    }
+                }
+                
+                cancelOrder(order);
             }
         })
 
     }
 }
 
-function cancelOrder(orderid) {
+function cancelOrder(order) {
 
-    var washingtonRef = firebase.firestore().collection("orders").doc(orderid);
+    var washingtonRef = firebase.firestore().collection("orders").doc(order.order_id);
 
     // Set the "capital" field of the city 'DC'
     return washingtonRef.update({
@@ -1353,7 +1410,10 @@ function cancelOrder(orderid) {
         cancelled: true
     })
         .then(function () {
-            alert("order cancelled successfully");
+            creditPoints(order).then(()=>{
+                alert("order cancelled successfully");
+            })
+          
         })
         .catch(function (error) {
             // The document probably doesn't exist.
@@ -1645,8 +1705,6 @@ function updateOrderInvoice(orderid, invoiceId) {
 
 function updateOrderStatus(ordrid, status) {
 
-    console.log("going to update order status with status: " + status);
-
     return new Promise((resolve, reject) => {
 
         var docRef = firebase.firestore().collection("orders").doc(ordrid);
@@ -1732,5 +1790,44 @@ function loadComissionMap() {
 
         }
     })
+
+}
+
+function creditPoints(order){
+    return new Promise((resolve, reject) => {
+        var productList = ordersProductMap.get(order.order_id);
+        var totalPoints = 0;
+        var totalPrice = 0;
+        var pointsEarned = 0;
+        for(var i = 0; i < productList.length; i++){
+            var product = productList[i];
+            if(product.cancelled_by_seller){
+                continue;
+            }
+            pointsEarned += product.points_added;
+            totalPrice += product.Offer_Price * product.Qty;
+        }
+        //for a non code order points credited should be (points against price of product) - (points earned while purchase)
+        totalPoints = (totalPrice * 8) - pointsEarned;
+        if(order.COD){
+            totalPoints = -pointsEarned;
+        }
+
+        var docRef = firebase.firestore().collection("users").doc(order.customer_id);
+
+        // Set the "capital" field of the city 'DC'
+        return docRef.update({
+            points: firebase.firestore.FieldValue.increment(totalPoints)
+        }).then(function () {
+            resolve();
+
+        })
+            .catch(function (error) {
+                reject();
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+            });
+
+    });
 
 }

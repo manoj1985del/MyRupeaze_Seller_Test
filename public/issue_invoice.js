@@ -90,6 +90,13 @@ btnMobile.addEventListener("click", function () {
     console.log("goint to set display as block");
     imgSaving.style.display = "block";
 
+    customer = null;
+    spCustomerName.textContent = "";
+    spCustomerMobile.timestamp = "";
+    spEmail.textContent = "";
+    spPoints.textContent = "";
+    customerExist = false;
+    
     getCustomerDetails(txtMobile.value).then(() => {
         if (customer != null) {
             customerExist = true;

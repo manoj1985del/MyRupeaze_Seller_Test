@@ -10,6 +10,28 @@ let qtyDiscountObjectMap = new Map();
 //loadAllProducts();
 //loadTags();
 
+//loadProducts();
+
+//uncomment this block to update merchant id of products
+
+// loadProducts().then(()=>{
+//   var promiseList = [];
+//   for(var i = 0; i < productList.length; i++){
+//     var product = productList[i];
+//     promiseList.push(loadSellerDetails(product));
+//   }
+
+//   Promise.all(promiseList).then(()=>{
+//     for(var i = 0; i < productList.length; i++){
+//       var product = productList[i];
+//       updateMerchantId(product);
+//     }
+    
+//     console.log("sellers retrieved");
+//     console.log(sellerProductMap);
+//   })
+// })
+
 
 function addQtyDiscount(productid, discountInPercentMap) {
   qtyDiscountMap.set(productid, discountInPercentMap);
@@ -147,11 +169,13 @@ function loadProducts() {
         querySnapshot.forEach(function (doc) {
           // doc.data() is never undefined for query doc snapshots
           var product = doc.data();
+          console.log(product.Product_Id);
           productList.push(product);
 
         });
       })
       .then(function () {
+        console.log("products retrieved. Total Products  = " + productList.length);
         resolve();
       })
       .catch(function (error) {
@@ -161,6 +185,47 @@ function loadProducts() {
 
 
   })
+}
+
+var sellerProductMap = new Map();
+function loadSellerDetails(product){
+  return new Promise((resolve, reject) =>{
+    var docRef = firebase.firestore().collection("seller").doc(product.seller_id);
+
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            var seller = doc.data();
+            sellerProductMap.set(product.Product_Id, seller);
+            resolve();
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            reject();
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+        reject();
+    });
+  })
+
+}
+
+function updateMerchantId(product){
+
+  var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
+  var seller = sellerProductMap.get(product.Product_Id);
+  washingtonRef.update({
+    merchant_id: seller.merchant_id
+  })
+    .then(function () {
+      console.log("updated merchant id for product - " + product.Product_Id);
+    })
+    .catch(function (error) {
+      // The document probably doesn't exist.
+      console.log("doc does not exist");
+
+    });
+
 }
 
 function setQtyDiscounts() {
@@ -328,3 +393,108 @@ function addTags(size, limit) {
       console.error("Error writing document: ", error);
     });
 }
+
+var orderList = [];
+function loadOrders() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("orders")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var order = doc.data();
+          orderList.push(order);
+
+        });
+      })
+      .then(function () {
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+var orderPrductMap = new Map();
+function getProductListAgainstOrders(order) {
+  return new Promise((resolve, reject) => {
+    var productList = [];
+    firebase.firestore().collection("orders").collection(order.order_id).collection("products")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var product = doc.data();
+          productList.push(product);
+
+        });
+      })
+      .then(function () {
+        ordersProductMap.set(order.order_id, productList);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+var orderCustomerMap = new Map();
+function getUserDetails(order){
+
+  return new Promise((resolve, reject) =>{
+    var docRef = db.collection("users").doc(order.customer_id);
+
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            var user = doc.data();
+            orderCustomerMap.set(order.order_id, user);
+            resolve();
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            reject();
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+        reject();
+    });
+  })
+
+
+
+}
+
+var orderAddressMap = new Map();
+function getUserAddressDetails(order){
+
+  var user = orderCustomerMap.get(order.order_id);
+  return new Promise((resolve, reject) =>{
+    var docRef = db.collection("users").doc(order.customer_id).collection("Addresses").doc(user.AddressId);
+
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            var address = doc.data();
+            orderAddressMap.set(order.order_id, address);
+            resolve();
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            reject();
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+        reject();
+    });
+  })
+
+}
+
+

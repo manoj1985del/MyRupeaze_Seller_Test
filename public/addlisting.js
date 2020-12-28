@@ -1403,7 +1403,7 @@ function saveProductDetails() {
         seller_area_pin: mSeller.seller_area_pin,
         selling_offline: false,
         shop_price: 0,
-        status: "pending",
+        status: "approved", //status: "pending",
         variant_pricing: variant_pricing,
         variant_pricing_attribute: variant_pricing_attribute,
         variant_price_map: vp,

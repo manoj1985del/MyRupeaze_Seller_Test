@@ -1,8 +1,10 @@
 
-
 var invoice;
 var productList = [];
 var gstMap = new Map();
+var mInvoice;
+
+var sellerId = localStorage.getItem("sellerid");
 
 window.onload = function () {
 
@@ -13,6 +15,7 @@ window.onload = function () {
     // console.log("invoice = " + invoice);
     loadInvoice();
   })
+
 
 }
 
@@ -558,7 +561,10 @@ function fetchInvoice(invoiceId) {
             snapshot.forEach(function (doc) {
               var product = doc.data();
               console.log("got product - " + product.Title);
-              productList.push(product);
+              if(product.seller_id == sellerId)
+              {
+                productList.push(product);
+              }
             })
 
             console.log("products retreived. Finally resolving");
@@ -570,6 +576,29 @@ function fetchInvoice(invoiceId) {
 }
 
 
+
+function loadProducts(invoiceId){
+
+  return new Promise((resolve, reject)=>{
+    var query = firebase.firestore()
+              .collection('invoices').doc(invoiceId).collection("products");
+    
+            query.get()
+              .then(function (snapshot) {
+                snapshot.forEach(function (doc) {
+                  var product = doc.data();
+                  console.log("got product - " + product.Title);
+                  if(product.seller_id == sellerId)
+                  {
+                    productList.push(product);
+                  }
+                })
+    
+                console.log("products retreived. Finally resolving");
+                resolve();
+              })
+  })
+}
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 

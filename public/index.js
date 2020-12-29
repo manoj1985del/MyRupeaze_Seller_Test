@@ -5,12 +5,15 @@ var videoList = [];
 var productList = [];
 let qtyDiscountMap = new Map();
 let qtyDiscountObjectMap = new Map();
+var newInvoiceId;
 
 
 //loadAllProducts();
 //loadTags();
 
 //loadProducts();
+
+//createInvoicesAgainstOrder();
 
 //uncomment this block to update merchant id of products
 
@@ -26,11 +29,13 @@ let qtyDiscountObjectMap = new Map();
 //       var product = productList[i];
 //       updateMerchantId(product);
 //     }
-    
+
 //     console.log("sellers retrieved");
 //     console.log(sellerProductMap);
 //   })
 // })
+
+
 
 
 function addQtyDiscount(productid, discountInPercentMap) {
@@ -188,29 +193,29 @@ function loadProducts() {
 }
 
 var sellerProductMap = new Map();
-function loadSellerDetails(product){
-  return new Promise((resolve, reject) =>{
+function loadSellerDetails(product) {
+  return new Promise((resolve, reject) => {
     var docRef = firebase.firestore().collection("seller").doc(product.seller_id);
 
-    docRef.get().then(function(doc) {
-        if (doc.exists) {
-            var seller = doc.data();
-            sellerProductMap.set(product.Product_Id, seller);
-            resolve();
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-            reject();
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
+    docRef.get().then(function (doc) {
+      if (doc.exists) {
+        var seller = doc.data();
+        sellerProductMap.set(product.Product_Id, seller);
+        resolve();
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
         reject();
+      }
+    }).catch(function (error) {
+      console.log("Error getting document:", error);
+      reject();
     });
   })
 
 }
 
-function updateMerchantId(product){
+function updateMerchantId(product) {
 
   var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
   var seller = sellerProductMap.get(product.Product_Id);
@@ -341,7 +346,7 @@ function loadTags() {
             if (!gloablTagList.includes(tag)) {
               tagList.push(tag);
               gloablTagList.push(tag);
-              if(tagList.length >= 2000){
+              if (tagList.length >= 2000) {
                 addTags(tagList.length, 2000);
                 tagList = [];
               }
@@ -352,7 +357,7 @@ function loadTags() {
       })
       .then(function () {
         addTags(tagList.length, 2000);
-        console.log("Total tags = " +  gloablTagList.length);
+        console.log("Total tags = " + gloablTagList.length);
         resolve();
       })
       .catch(function (error) {
@@ -367,8 +372,8 @@ function loadTags() {
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
   });
 }
 
@@ -377,13 +382,13 @@ function addTags(size, limit) {
 
   var tagId = generateUUID();
   var active = true;
-  if(size >= limit){
+  if (size >= limit) {
     active = false;
   }
   // Add a new document in collection "cities"
   firebase.firestore().collection("product_tags").doc(tagId).set({
     tag_id: tagId,
-    active : active,
+    active: active,
     tags: tagList
   })
     .then(function () {
@@ -419,18 +424,17 @@ function loadOrders() {
   })
 }
 
-var orderPrductMap = new Map();
+var ordersProductMap = new Map();
 function getProductListAgainstOrders(order) {
   return new Promise((resolve, reject) => {
     var productList = [];
-    firebase.firestore().collection("orders").collection(order.order_id).collection("products")
+    firebase.firestore().collection("orders").doc(order.order_id).collection("products")
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           // doc.data() is never undefined for query doc snapshots
           var product = doc.data();
           productList.push(product);
-
         });
       })
       .then(function () {
@@ -447,24 +451,24 @@ function getProductListAgainstOrders(order) {
 }
 
 var orderCustomerMap = new Map();
-function getUserDetails(order){
+function getUserDetails(order) {
 
-  return new Promise((resolve, reject) =>{
-    var docRef = db.collection("users").doc(order.customer_id);
+  return new Promise((resolve, reject) => {
+    var docRef = firebase.firestore().collection("users").doc(order.customer_id);
 
-    docRef.get().then(function(doc) {
-        if (doc.exists) {
-            var user = doc.data();
-            orderCustomerMap.set(order.order_id, user);
-            resolve();
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-            reject();
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
+    docRef.get().then(function (doc) {
+      if (doc.exists) {
+        var user = doc.data();
+        orderCustomerMap.set(order.order_id, user);
+        resolve();
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
         reject();
+      }
+    }).catch(function (error) {
+      console.log("Error getting document:", error);
+      reject();
     });
   })
 
@@ -473,28 +477,223 @@ function getUserDetails(order){
 }
 
 var orderAddressMap = new Map();
-function getUserAddressDetails(order){
+function getUserAddressDetails(order) {
 
   var user = orderCustomerMap.get(order.order_id);
-  return new Promise((resolve, reject) =>{
-    var docRef = db.collection("users").doc(order.customer_id).collection("Addresses").doc(user.AddressId);
+  return new Promise((resolve, reject) => {
+    var docRef = firebase.firestore().collection("users").doc(order.customer_id).collection("Addresses").doc(user.AddressId);
 
-    docRef.get().then(function(doc) {
-        if (doc.exists) {
-            var address = doc.data();
-            orderAddressMap.set(order.order_id, address);
-            resolve();
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-            reject();
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
+    docRef.get().then(function (doc) {
+      if (doc.exists) {
+        var address = doc.data();
+        orderAddressMap.set(order.order_id, address);
+        resolve();
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
         reject();
+      }
+    }).catch(function (error) {
+      console.log("Error getting document:", error);
+      reject();
     });
   })
 
 }
+
+function createInvoicesAgainstOrder()
+{
+
+    loadProducts().then(() => {
+  var promiseList = [];
+  for (var i = 0; i < productList.length; i++) {
+    var product = productList[i];
+    promiseList.push(loadSellerDetails(product));
+  }
+
+  Promise.all(promiseList).then(() => {
+    loadOrders().then(() => {
+      var promiseList = [];
+      for (var i = 0; i < orderList.length; i++) {
+        var order = orderList[i];
+        promiseList.push(getProductListAgainstOrders(order));
+      }
+
+      Promise.all(promiseList).then(() => {
+        var promiseList = [];
+        for (var i = 0; i < orderList.length; i++) {
+          var order = orderList[i];
+          promiseList.push(getUserDetails(order));
+        }
+
+        Promise.all(promiseList).then(() => {
+          var promiseList = [];
+          for (var i = 0; i < orderList.length; i++) {
+            var order = orderList[i];
+            promiseList.push(getUserAddressDetails(order));
+          }
+
+          Promise.all(promiseList).then(() => {
+            console.log("everything retreived");
+            var newPromiseList = [];
+            for (var i = 0; i < orderList.length; i++) {
+              var order = orderList[i];
+              var productList = ordersProductMap.get(order.order_id);
+              var seller = sellerProductMap.get(productList[0].Product_Id);
+              console.log("getting seller for product id - " + productList[0].Product_Id + " and merchant id - " + seller.merchant_id);
+
+              getNewInvoiceId(seller, order);
+
+            }
+
+          })
+        })
+      })
+    })
+  })
+})
+
+}
+function createInvoice(order, seller, invoiceId) {
+
+  return new Promise((resolve, reject) => {
+
+    console.log("creating invoice for order id - " + order.order_id);
+    var address = orderAddressMap.get(order.order_id);
+    var user = orderCustomerMap.get(order.order_id);
+    var productList = ordersProductMap.get(order.order_id);
+    // console.log("productList - " + productList);
+
+    //console.log('seller - ' + seller);
+
+    // Add a new document in collection "cities"
+    console.log("seller id = " + seller.merchant_id);
+    console.log("new invoice id = " + invoiceId);
+    firebase.firestore().collection("online_invoices").doc(invoiceId).set({
+      COD: order.COD,
+      bill_to_name: user.Name,
+      bill_to_address_line1: user.AddressLine1,
+      bill_to_address_line2: user.AddressLine2,
+      bill_to_address_line3: user.AddressLine3,
+      bill_to_city: user.City,
+      bill_to_phone: user.Phone,
+      bill_to_state: user.State,
+      bill_to_landmark: user.Landmark,
+      bill_to_pin: user.Pincode,
+
+      ship_to_name: address.Name,
+      ship_to_address_line1: address.AddressLine1,
+      ship_to_address_line2: address.AddressLine2,
+      ship_to_address_line3: address.AddressLine3,
+      ship_to_city: address.City,
+      ship_to_phone: address.Phone,
+      ship_to_state: address.State,
+      ship_to_landmark: address.Landmark,
+      ship_to_pin: address.Pincode,
+
+      invoice_id: invoiceId,
+      order_id: order.order_id,
+      order_date: order.order_date,
+      COD: order.COD,
+      seller_id: order.seller_id,
+      seller_name: seller.company_name,
+      sellerAddressLine1: seller.address_line1,
+      sellerAddressLine2: seller.address_line2,
+      sellerAddressLine3: seller.address_line3,
+      sellerCity: seller.city,
+      sellerState: seller.state,
+      sellerCountry: "INDIA",
+      sellerPin: seller.pincode,
+      sellerPAN: seller.pan_no,
+      sellerGST: seller.gstin,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+      .then(function () {
+
+        var productList = ordersProductMap.get(order.order_id);
+        console.log(productList);
+        for (var i = 0; i < productList.length; i++) {
+          var product = productList[i];
+
+          firebase.firestore().collection('online_invoices').doc(invoiceId).collection("products").doc(product.Product_Id).set({
+            GST: product.GST,
+            ImageUrlCover: product.ImageUrlCover,
+            MRP: product.MRP,
+            Offer_Price: product.Offer_Price,
+            Product_Id: product.Product_Id,
+            Qty: product.Qty,
+            SoldBy: product.SoldBy,
+            Title: product.Title,
+            seller_id: order.seller_id,
+          })
+        }
+      })
+      .then(function () {
+        console.log("tags added successfully!");
+        resolve();
+      })
+      .catch(function (error) {
+        console.error("Error writing document: ", error);
+        reject();
+      });
+
+  })
+
+}
+
+
+
+
+var sellerInvoiceMap = new Map();
+function getNewInvoiceId(seller, order) {
+  var invoiceId = sellerInvoiceMap.get(seller.seller_id);
+  if (invoiceId == null) {
+    invoiceId = seller.merchant_id + "_INV001";
+    
+  }
+  else {
+    var tmpInvoice = invoiceId.split('_');
+    var tmpInvoiceId = tmpInvoice[1];
+    var invoiceNum = parseInt(tmpInvoiceId.substring(3, tmpInvoiceId.length));
+    invoiceNum = invoiceNum + 1;
+    var newInvoiceNum = appendNumber(invoiceNum, 3);
+    invoiceId = seller.merchant_id + "_INV" + newInvoiceNum;
+  }
+
+  sellerInvoiceMap.set(seller.seller_id, invoiceId);
+  updateOrderInvoiceId(order, invoiceId).then(()=>{
+    createInvoice(order, seller, invoiceId);
+  })
+
+
+}
+
+function updateOrderInvoiceId(order, invoiceId) {
+
+  return new Promise((resolve, reject)=>{
+
+    var washingtonRef = firebase.firestore().collection("orders").doc(order.order_id);
+    washingtonRef.update({
+      invoice_id: invoiceId
+    })
+      .then(function () {
+        resolve();
+      })
+      .catch(function (error) {
+        // The document probably doesn't exist.
+        console.log("doc does not exist");
+        reject();
+      });
+  
+
+  })
+
+
+}
+
+function appendNumber(number, digits) {
+  return String(number).padStart(digits, '0');
+}
+
 
 

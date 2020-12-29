@@ -23,6 +23,8 @@ let ordersAddressMap = new Map();
 let productList = [];
 var commision_map = new Map();
 
+var mSeller;
+
 
 
 var orderId;
@@ -68,7 +70,9 @@ var pageHeader = document.getElementById("pageHeader");
 var orderType = getQueryVariable("type");
 
 loadComissionMap().then(() => {
-    loadOrders();
+    loadSellerDetails(sellerId).then(()=>{
+        loadOrders();
+    })
 })
 
 btnNext.addEventListener("click", function () {
@@ -1287,7 +1291,8 @@ function addPendingOrdersToTable() {
 
             //console.log(pendingOrders[index]);
 
-            getInvoiceId().then(() => {
+            newInvoiceId = null;
+            getNewInvoiceId().then(() => {
                 pendingOrders[index].invoice_id = newInvoiceId;
                 invoices.push(newInvoiceId);
                 updateOrderInvoice(order.order_id, newInvoiceId).then(() => {
@@ -1409,105 +1414,45 @@ function createTableHeaders() {
 
 }
 
-function loadProductsAgainstInvoice(invoice) {
+
+function getNewInvoiceId() {
 
     return new Promise((resolve, reject) => {
 
-        var products = [];
-
-        firebase.firestore().collection("invoices").doc(invoice.invoice_id).collection("products")
-            .get()
+        firebase.firestore().collection('online_invoices')
+        .where("seller_id", '==', mSeller.seller_id)
+        .orderBy("timestamp", "desc").limit(1)
+        .get()
             .then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    var product = doc.data();
-                    products.push(product);
-
-                });
-            })
-            .then(function () {
-                invoiceProductMap.set(invoice.invoice_id, products);
-                resolve();
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-                reject();
-            });
-
-
-    })
-
-}
-
-function loadInvoices() {
-
-    // console.log("loading invoice for seller " + sellerId);
-
-    return new Promise((resolve, reject) => {
-
-        firebase.firestore().collection("invoices")
-            .where("seller_id", "==", sellerId)
-            .orderBy("timestamp", "desc").limit(1)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    var invoice = doc.data();
-                    loadProductsAgainstInvoice(invoice).then(() => {
-                        invoices.push(invoice);
-
-                    }).then(function () {
-                        resolve();
-                    })
-
-                });
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-                reject();
-            });
-
-
-    })
-
-
-}
-
-function getInvoiceId() {
-
-    return new Promise((resolve, reject) => {
-
-        firebase.firestore().collection("invoices").orderBy("timestamp", "desc").limit(1)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
                     var invoice = doc.data();
                     var invoiceId = invoice.invoice_id;
-                    var invoiceNum = parseInt(invoiceId.substring(3, invoiceId.length));
+                    var tmpInvoice = invoiceId.split('_');
+                    var tmpInvoiceId = tmpInvoice[1];
+                    var invoiceNum = parseInt(tmpInvoiceId.substring(3, tmpInvoiceId.length));
                     invoiceNum = invoiceNum + 1;
                     var newInvoiceNum = appendNumber(invoiceNum, 3);
-                    newInvoiceId = "INV" + newInvoiceNum;
+                    newInvoiceId = mSeller.merchant_id +  "_INV" + newInvoiceNum;
                     resolve();
 
 
                 });
             })
             .then(function () {
+                console.log("no invoice found");
                 if (newInvoiceId == null) {
-                    newInvoiceId = "INV001";
+                    newInvoiceId = mSeller.merchant_id +  "_INV001";
                     resolve();
                 }
             })
             .catch(function (error) {
-                console.log("Error getting documents: ", error);
-                reject();
+                console.log(error);
+                newInvoiceId = mSeller.merchant_id +  "_INV001";
+                resolve();
             });
 
 
     })
-
-
 
 }
 
@@ -1521,34 +1466,34 @@ function createInvoice(order, user, address) {
 
 
 
-        var sellerName = localStorage.getItem("sellerName");
-        var sellerAddressLine1 = localStorage.getItem("sellerAddressLine1");
-        var sellerAddressLine2 = localStorage.getItem("sellerAddressLine2");
-        var sellerAddressLine3 = localStorage.getItem("sellerAddressLine3");
-        var sellerCity = localStorage.getItem("sellerCity");
-        var sellerState = localStorage.getItem("sellerState");
-        var sellerCountry = "INDIA";
-        var sellerPin = localStorage.getItem("sellerpin");
-        var sellerPAN = localStorage.getItem("sellerPAN");
-        var sellerGST = localStorage.getItem("sellerGST");
+        // var sellerName = mSeller.company_name;
+        // var sellerAddressLine1 = mSeller.
+        // var sellerAddressLine2 = localStorage.getItem("sellerAddressLine2");
+        // var sellerAddressLine3 = localStorage.getItem("sellerAddressLine3");
+        // var sellerCity = localStorage.getItem("sellerCity");
+        // var sellerState = localStorage.getItem("sellerState");
+        // var sellerCountry = "INDIA";
+        // var sellerPin = localStorage.getItem("sellerpin");
+        // var sellerPAN = localStorage.getItem("sellerPAN");
+        // var sellerGST = localStorage.getItem("sellerGST");
 
-        firebase.firestore().collection('invoices').doc(newInvoiceId).set({
+        firebase.firestore().collection('online_invoices').doc(newInvoiceId).set({
             invoice_id: newInvoiceId,
             order_id: order.order_id,
             order_date: order.order_date,
             COD: order.COD,
             seller_id: order.seller_id,
             Status: order.Status,
-            seller_name: sellerName,
-            sellerAddressLine1: sellerAddressLine1,
-            sellerAddressLine2: sellerAddressLine2,
-            sellerAddressLine3: sellerAddressLine3,
-            sellerCity: sellerCity,
-            sellerState: sellerState,
-            sellerCountry: sellerCountry,
-            sellerPin: sellerPin,
-            sellerPAN: sellerPAN,
-            sellerGST: sellerGST,
+            seller_name: mSeller.company_name,
+            sellerAddressLine1: mSeller.address_line1,
+            sellerAddressLine2: mSeller.address_line2,
+            sellerAddressLine3:mSeller.address_line3,
+            sellerCity: mSeller.city,
+            sellerState: mSeller.state,
+            sellerCountry: "INDIA",
+            sellerPin: mSeller.pincode,
+            sellerPAN: mSeller.pan_no,
+            sellerGST: mSeller.gstin,
             ship_to_name: address.Name,
             ship_to_address_line1: address.AddressLine1,
             ship_to_address_line2: address.AddressLine2,
@@ -1576,7 +1521,7 @@ function createInvoice(order, user, address) {
                 for (var i = 0; i < productList.length; i++) {
                     var product = productList[i];
 
-                    firebase.firestore().collection('invoices').doc(newInvoiceId).collection("products").doc(product.Product_Id).set({
+                    firebase.firestore().collection('online_invoices').doc(newInvoiceId).collection("products").doc(product.Product_Id).set({
                         GST: product.GST,
                         ImageUrlCover: product.ImageUrlCover,
                         MRP: product.MRP,
@@ -1588,6 +1533,9 @@ function createInvoice(order, user, address) {
                         seller_id: order.seller_id,
                     })
                 }
+              
+            })
+            .then(()=>{
                 resolve();
             })
             .catch(function (error) {
@@ -1734,3 +1682,25 @@ function loadComissionMap() {
     })
 
 }
+
+function loadSellerDetails(sellerid) {
+    return new Promise((resolve, reject) => {
+ 
+       var docRef = firebase.firestore().collection("seller").doc(sellerid);
+ 
+       docRef.get().then(function (doc) {
+          if (doc.exists) {
+             mSeller = doc.data();
+             resolve();
+          } else {
+             mSeller = null;
+             resolve();
+          }
+       }).catch(function (error) {
+          console.log("Error getting document:", error);
+          reject();
+       });
+ 
+    })
+ 
+ }

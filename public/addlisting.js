@@ -1386,7 +1386,7 @@ function saveProductDetails() {
         bullet_points: arrBullets,
         stock_qty: parseInt(txtStockQty.value),
         seller_id: sellerId,
-        merchant_id = mSeller.merchant_id,
+        merchant_id: mSeller.merchant_id,
         SoldBy: sellerName,
         CountryOfOrigin: txtCountryOfOrigin.value,
         ExpiryDate: expiryDate,

@@ -333,41 +333,7 @@ function createInvoice(invoiceId) {
 
 
 
-function getInvoiceId() {
 
-    return new Promise((resolve, reject) => {
-
-        firebase.firestore().collection('seller').doc(sellerId).collection("invoices").orderBy("timestamp", "desc").limit(1)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    var invoice = doc.data();
-                    var invoiceId = invoice.invoice_id;
-                    var invoiceNum = parseInt(invoiceId.substring(3, invoiceId.length));
-                    invoiceNum = invoiceNum + 1;
-                    var newInvoiceNum = appendNumber(invoiceNum, 3);
-                    newInvoiceId = "INS" + newInvoiceNum;
-                    resolve();
-
-
-                });
-            })
-            .then(function () {
-                if (newInvoiceId == null) {
-                    newInvoiceId = "INS001";
-                    resolve();
-                }
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-                reject();
-            });
-
-
-    })
-
-}
 
 function getNewInvoiceId() {
 

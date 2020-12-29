@@ -138,7 +138,7 @@ function fetchInvoice(invoiceId) {
 
   return new Promise((resolve, reject) => {
     var query = firebase.firestore()
-      .collection('invoices').doc(invoiceId)
+      .collection('online_invoices').doc(invoiceId)
 
     query.get()
       .then(function (doc) {
@@ -153,7 +153,7 @@ function fetchInvoice(invoiceId) {
       }).then(function () {
 
         var query = firebase.firestore()
-          .collection('invoices').doc(invoiceId).collection("products");
+          .collection('online_invoices').doc(invoiceId).collection("products");
 
         query.get()
           .then(function (snapshot) {

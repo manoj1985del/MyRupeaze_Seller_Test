@@ -1061,6 +1061,15 @@ function addPendingOrdersToTable() {
                 divPendingOrders.style.display = "none";
                 divAction.appendChild(divPendingOrders);
 
+                var divViewProducts = document.createElement("div");
+                divViewProducts.style.marginBottom = "10px";
+                var btnViewOrders = document.createElement("button");
+                btnViewOrders.textContent = "View Products";
+                btnViewOrders.style.width = "150px";
+                btnViewOrders.setAttribute("id", order.order_id);
+                divViewProducts.appendChild(btnViewOrders);
+                divAction.appendChild(divViewProducts);
+
 
 
 
@@ -1197,7 +1206,7 @@ function addPendingOrdersToTable() {
                     var statusElement = document.getElementById("StatusText|" + lOrder.order_id);
                     statusElement.textContent = status;
 
-                    updateOrderStatusFromInvoice(lOrder.invoice_id, lOrder.order_id, lOrder.product_id, status);
+                    updateOrderStatusFromInvoice(lOrder, status);
                     this.style.display = "none";
 
                 })
@@ -1211,6 +1220,7 @@ function addPendingOrdersToTable() {
 
 
                 var productList = ordersProductMap.get(order.order_id);
+                var totalAmtPayable = 0;
                 for (var j = 0; j < productList.length; j++) {
                     var product = productList[j];
                     var variants = product.Variants;
@@ -1299,6 +1309,7 @@ function addPendingOrdersToTable() {
                         amtPayable = amtPayable - product.return_amount;
                     }
 
+                    totalAmtPayable += amtPayable;
                     var formattedAmtPayable = rupeeSymbol + numberWithCommas(amtPayable);
                     var amountPayable = document.createElement("span");
 
@@ -1313,12 +1324,19 @@ function addPendingOrdersToTable() {
                         + "<b>Seller: </b>" + seller_part + "<br/>"
                         + "<b>Admin: </b>" + admin_part;
                     //  var text = " (C: " + commission + "%, S: " + seller_part + ", A: " + admin_part + ")";
+
+                    text = "";
                     formattedAmtPayable += "<br/>" + text;
                     amountPayable.innerHTML = formattedAmtPayable;
                     divAmtPayableLocal.appendChild(amountPayable);
                     divAmountPayable.appendChild(divAmtPayableLocal);
 
                 }
+
+                var span = document.createElement("span");
+                var text = "<br/><hr/>Total: " + rupeeSymbol + numberWithCommas(totalAmtPayable);
+                span.innerHTML = text;
+                divAmountPayable.appendChild(span);
 
 
 
@@ -1389,6 +1407,11 @@ function addPendingOrdersToTable() {
 
                 })
 
+                btnViewOrders.addEventListener("click", function(){
+                    var orderId = this.id.toString();
+                    window.location.href = "view_products_against_order.html?order_id=" + orderId + "&admin=true";
+                })
+
                 btnDeleteOrder.addEventListener("click", function () {
                     var index = parseInt(this.id);
                     var order = pendingOrders[index];
@@ -1428,8 +1451,8 @@ function addPendingOrdersToTable() {
                 btnCancelOrder.addEventListener("click", function () {
                     var index = parseInt(this.id);
                     var order = pendingOrders[index];
-                    var seller = orderSellerMap.get(order.order_id);
-                    cancelOrder(order, seller);
+                  //  var seller = orderSellerMap.get(order.order_id);
+                    cancelOrder(order);
                 })
             }
 
@@ -1446,8 +1469,9 @@ function deleteOrder(order) {
 
 
 
-function cancelOrder(order, seller) {
+function cancelOrder(order) {
 
+    var seller = orderSellerMap.get(order.order_id);
     var washingtonRef = firebase.firestore().collection("orders").doc(order.order_id);
 
     // Set the "capital" field of the city 'DC'
@@ -1582,19 +1606,21 @@ function updateOrderInvoice(orderid, invoiceId) {
 }
 
 
-function updateOrderStatus(ordrid, status) {
+function updateOrderStatus(order, status) {
 
     return new Promise((resolve, reject) => {
 
-        var docRef = firebase.firestore().collection("orders").doc(ordrid);
+        var docRef = firebase.firestore().collection("orders").doc(order.order_id);
 
         // Set the "capital" field of the city 'DC'
         return docRef.update({
             Status: status // "Order Confirmed. Preparing for Dispatch"
         }).then(function () {
             if (status == "Delivered") {
-                updateDeliveryTimestamp(ordrid);
-
+                updateDeliveryTimestamp(order.order_id);
+            }
+            if(status == "Cancelled"){
+                cancelOrder(order);
             }
             resolve();
         })
@@ -1606,24 +1632,24 @@ function updateOrderStatus(ordrid, status) {
 
 
     });
-
 }
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function updateOrderStatusFromInvoice(invoice_id, order_id, product_id, value) {
+function updateOrderStatusFromInvoice(order, value) {
+
 
     return new Promise((resolve, reject) => {
 
-        var docRef = firebase.firestore().collection("invoices").doc(invoice_id)
+        var docRef = firebase.firestore().collection("online_invoices").doc(order.invoice_id)
 
         // Set the "capital" field of the city 'DC'
         return docRef.update({
             Status: value
         }).then(function () {
-            updateOrderStatus(order_id, value).then(() => {
+            updateOrderStatus(order, value).then(() => {
                 resolve();
             })
 

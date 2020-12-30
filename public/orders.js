@@ -940,7 +940,7 @@ function addPendingOrdersToTable() {
         btnViewOrders.style.width = "150px";
         btnViewOrders.setAttribute("id", order.order_id);
         divViewProducts.appendChild(btnViewOrders);
-        divConfirm.appendChild(divViewProducts);
+        divAction.appendChild(divViewProducts);
 
 
         var divCancelOrder = document.createElement("div");
@@ -956,11 +956,9 @@ function addPendingOrdersToTable() {
             || order.Status == "Delivery Failed." || order.Status == "Customer denied delivery") {
             //console.log("hiding cancel order div for status " + order.Status);
             divCancelOrder.style.display = "block";
-            divViewProducts.style.display = "block";
         }
         else {
             divCancelOrder.style.display = "none";
-            divViewProducts.style.display = "none";
         }
 
         //append confirm button and cancel button to divActoin
@@ -1129,7 +1127,7 @@ function addPendingOrdersToTable() {
             var statusElement = document.getElementById("StatusText|" + lOrder.order_id);
             statusElement.textContent = status;
 
-            updateOrderStatusFromInvoice(lOrder.invoice_id, lOrder.order_id, lOrder.product_id, status);
+            updateOrderStatusFromInvoice(lOrder, status);
             this.style.display = "none";
 
         })
@@ -1338,7 +1336,7 @@ function addPendingOrdersToTable() {
                 pendingOrders[index].invoice_id = newInvoiceId;
                 invoices.push(newInvoiceId);
                 updateOrderInvoice(order.order_id, newInvoiceId).then(() => {
-                    updateOrderStatus(order.order_id, "Order Confirmed. Preparing for Dispatch").then(() => {
+                    updateOrderStatus(order, "Order Confirmed. Preparing for Dispatch").then(() => {
                         createInvoice(order, user, address).then(() => {
 
                             var divConfirmId = "idConfrimDiv" + this.id.toString();
@@ -1651,11 +1649,11 @@ function updateOrderInvoice(orderid, invoiceId) {
 }
 
 
-function updateOrderStatus(ordrid, status) {
+function updateOrderStatus(order, status) {
 
     return new Promise((resolve, reject) => {
 
-        var docRef = firebase.firestore().collection("orders").doc(ordrid);
+        var docRef = firebase.firestore().collection("orders").doc(order.order_id);
 
         // Set the "capital" field of the city 'DC'
         return docRef.update({
@@ -1663,8 +1661,10 @@ function updateOrderStatus(ordrid, status) {
         }).then(function () {
             console.log("order update successful");
             if (status == "Delivered") {
-                updateDeliveryTimestamp(ordrid);
-
+                updateDeliveryTimestamp(order.order_id);
+            }
+            if(status == "Cancelled"){
+                cancelOrder(order);
             }
             resolve();
         })
@@ -1683,17 +1683,17 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function updateOrderStatusFromInvoice(invoice_id, order_id, product_id, value) {
+function updateOrderStatusFromInvoice(order, value) {
 
     return new Promise((resolve, reject) => {
 
-        var docRef = firebase.firestore().collection("invoices").doc(invoice_id)
+        var docRef = firebase.firestore().collection("online_invoices").doc(order.invoice_id)
 
         // Set the "capital" field of the city 'DC'
         return docRef.update({
             Status: value
         }).then(function () {
-            updateOrderStatus(order_id, value).then(() => {
+            updateOrderStatus(order, value).then(() => {
                 resolve();
             })
 

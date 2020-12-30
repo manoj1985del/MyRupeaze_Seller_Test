@@ -1,8 +1,14 @@
-
+var rupeeSymbol = "₹ ";
+var tradeCharges = 28;
 var divProgress = document.getElementById("divProgress");
 var divContent = document.getElementById("divContent");
 var pageHeader = document.getElementById("pageHeader");
 var table = document.getElementById("tblOrders");
+var tblTotal = document.getElementById("tblTotal");
+var commision_map = new Map();
+
+var dTotalSales = 0;
+var dTotalCommission = 0;
 
 var mOrder;
 var productList = [];
@@ -13,12 +19,17 @@ divContent.style.display = "block";
 pageHeader.textContent = "Ordered Product List";
 
 var orderId = getQueryVariable("order_id");
+var admin = getQueryVariable("admin");
 
-getOrderDetail(orderId).then(() => {
-    getProductsAgainstOrder(orderId).then(() => {
-        createTables();
+
+loadComissionMap().then(()=>{
+    getOrderDetail(orderId).then(() => {
+        getProductsAgainstOrder(orderId).then(() => {
+            createTables();
+        })
     })
 })
+
 
 
 
@@ -102,6 +113,22 @@ function createTableHeaders() {
     var thTotal = document.createElement("th");
     thTotal.textContent = "Total";
 
+    var thCommission = document.createElement("th");
+    thCommission.textContent = "Commission (A)";
+
+    var thTradeCharges = document.createElement("th");
+    thTradeCharges.textContent = "Trade Charges (B)";
+
+    var thTaxes = document.createElement("th");
+    thTaxes.textContent = "Taxes (C)";
+
+    var thAdminPart = document.createElement("th");
+    thAdminPart.textContent = "Admin Part (A + B + C)";
+
+    var thSellerPart = document.createElement("th");
+    thSellerPart.textContent = "Seller Part";
+
+
     var thAction = document.createElement("th");
     thAction.textContent = "Action";
 
@@ -110,6 +137,7 @@ function createTableHeaders() {
     tr.appendChild(thPrice);
     tr.appendChild(thQty);
     tr.appendChild(thTotal);
+    tr.appendChild(thCommission);
     tr.appendChild(thAction);
 
     tHead.appendChild(tr);
@@ -130,6 +158,7 @@ function createTables() {
         var tdPrice = document.createElement('td');
         var tdQty = document.createElement('td');
         var tdTotal = document.createElement('td');
+        var tdCommission = document.createElement('td');
         var tdAction = document.createElement('td');
 
         var divImage = document.createElement("div");
@@ -145,6 +174,21 @@ function createTables() {
         spanProductName.innerHTML = product.Title;
         divProductName.appendChild(spanProductName);
 
+        var spanCancellation = document.createElement("span");
+        if(mOrder.cancelled){
+            product.Offer_Price = 0;
+            spanCancellation.style.color = "#ff0000";
+            spanCancellation.innerHTML = "<br/><b>Order Cancelled</b>"
+        }
+        else if (product.cancelled_by_seller != null) {
+            if (product.cancelled_by_seller) {
+                product.Offer_Price = 0;
+                spanCancellation.style.color = "#ff0000";
+                spanCancellation.innerHTML = "<br/><b>(Product Cancelled by Seller)</b>"
+            }  
+        }
+        divProductName.appendChild(spanCancellation);
+
         var divPrice = document.createElement('div');
         var spanProductPrice = document.createElement('span');
         spanProductPrice.innerHTML = product.Offer_Price;
@@ -158,8 +202,24 @@ function createTables() {
         var divTotalPrice = document.createElement('div');
         var spanTotalPrice = document.createElement('span');
         var dTotalPrice = product.Offer_Price * product.Qty;
+        dTotalSales += dTotalPrice;
+        
         spanTotalPrice.innerHTML = dTotalPrice.toString();
         divTotalPrice.appendChild(spanTotalPrice);
+
+        var divCommissoin = document.createElement('div');
+        var spanCommissoin = document.createElement('span');
+        var commission = commision_map.get(product.Category);
+        var dCommission = (dTotalPrice * commission) / 100;
+        dTotalCommission += dCommission;
+        var amtCommission = dCommission.toFixed(2);
+        amtCommission = rupeeSymbol + numberWithCommas(amtCommission);
+        spanCommissoin.innerHTML =  amtCommission + "<br/>(" + commission.toString() + "%)"
+        divCommissoin.appendChild(spanCommissoin);
+
+
+        
+
 
         var divAction = document.createElement('div');
         var btnCancelOrder = document.createElement("button");
@@ -172,11 +232,16 @@ function createTables() {
             btnCancelOrder.disabled = true;
         }
 
+        if(admin == "true"){
+            divAction.style.display = "none";
+        }
+
         tdProductImage.appendChild(divImage);
         tdProductName.appendChild(divProductName);
         tdPrice.appendChild(divPrice);
         tdQty.appendChild(divQty);
         tdTotal.appendChild(divTotalPrice);
+        tdCommission.appendChild(divCommissoin);
         tdAction.appendChild(divAction);
 
         tr.appendChild(tdProductImage);
@@ -184,9 +249,12 @@ function createTables() {
         tr.appendChild(tdPrice);
         tr.appendChild(tdQty);
         tr.appendChild(tdTotal);
+        tr.appendChild(tdCommission);
         tr.append(tdAction);
 
         table.appendChild(tr);
+
+       
 
         btnCancelOrder.addEventListener("click", function () {
            
@@ -201,6 +269,113 @@ function createTables() {
             cancelProduct(orderId, product, reason);
         })
     }
+
+    createTotalTable();
+}
+
+function createTotalTableHeaders() {
+
+    var tHead = document.createElement("thead");
+    var tr = document.createElement("tr");
+
+    var thTotalAmount = document.createElement("th");
+    thTotalAmount.textContent = "Total Amount";
+
+    var thTotalCommission = document.createElement("th");
+    thTotalCommission.textContent = "Total Commission (A)";
+
+    var thTradeCharges = document.createElement("th");
+    thTradeCharges.textContent = "Trade Charges (B)";
+
+    var thTaxes = document.createElement("th");
+    thTaxes.textContent = "Taxes (C)";
+
+    var thAdminPart = document.createElement("th");
+    thAdminPart.textContent = "Admin Part (A+B+C)";
+
+    var thSellerPart = document.createElement("th");
+    thSellerPart.textContent = "Seller Part";
+
+    tr.appendChild(thTotalAmount);
+    tr.appendChild(thTotalCommission);
+    tr.appendChild(thTradeCharges);
+    tr.appendChild(thTaxes);
+    tr.appendChild(thAdminPart);
+    tr.appendChild(thSellerPart);
+
+    tHead.appendChild(tr);
+    tblTotal.appendChild(tHead);
+
+}
+
+function createTotalTable(){
+
+    createTotalTableHeaders();
+
+    var tr = document.createElement("tr");
+    var tdTotalAmount = document.createElement('td');
+    var tdTotalCommission = document.createElement('td');
+    var tdTradeCharges = document.createElement('td');
+    var tdTaxes = document.createElement('td');
+    var tdAdminPart = document.createElement('td');
+    var tdSellerPart = document.createElement('td');
+
+    var divTotalAmout = document.createElement('div');
+    var spanTotalAmount = document.createElement('span');
+    spanTotalAmount.innerHTML = rupeeSymbol + numberWithCommas(dTotalSales.toFixed(2));
+    divTotalAmout.appendChild(spanTotalAmount);
+
+    if(dTotalSales == 0){
+        tradeCharges = 0;
+    }
+
+    var divTotalCommission = document.createElement('div');
+    var spanTotalCommission = document.createElement('span');
+    spanTotalCommission.innerHTML = rupeeSymbol + numberWithCommas(dTotalCommission.toFixed(2));
+    divTotalCommission.appendChild(spanTotalCommission);
+
+    var divTradeCharges = document.createElement('div');
+    var spanTradeCharges = document.createElement('span');
+    spanTradeCharges.innerHTML = rupeeSymbol + numberWithCommas(tradeCharges.toFixed(2));
+    divTradeCharges.appendChild(spanTradeCharges);
+
+    var divTaxes = document.createElement('div');
+    var spanTaxes = document.createElement('span');
+    var dTaxes = ((dTotalCommission + tradeCharges) * 18) / 100;
+    var taxes = dTaxes.toFixed(2);
+    spanTaxes.innerHTML = rupeeSymbol + numberWithCommas(taxes);
+    divTaxes.appendChild(spanTaxes);
+
+    var divAdminPart = document.createElement('div');
+    var spanAdminPart = document.createElement('span');
+    var dAdminPart = dTotalCommission + tradeCharges + dTaxes;
+    spanAdminPart.innerHTML = rupeeSymbol + numberWithCommas(dAdminPart.toFixed(2));
+    divAdminPart.appendChild(spanAdminPart);
+
+    var divSellerPart = document.createElement('div');
+    var spanSellerPart = document.createElement('span');
+    var dSellerPart = dTotalSales - dAdminPart;
+    spanSellerPart.innerHTML = rupeeSymbol + numberWithCommas(dSellerPart.toFixed(2));
+    divSellerPart.appendChild(spanSellerPart);
+
+    tdTotalAmount.appendChild(divTotalAmout);
+    tdTotalCommission.appendChild(divTotalCommission);
+    tdTradeCharges.appendChild(divTradeCharges);
+    tdTaxes.appendChild(divTaxes);
+    tdAdminPart.appendChild(divAdminPart);
+    tdSellerPart.appendChild(divSellerPart);
+
+    tr.appendChild(tdTotalAmount);
+    tr.appendChild(tdTotalCommission);
+    tr.appendChild(tdTradeCharges);
+    tr.appendChild(tdTaxes);
+    tr.appendChild(tdAdminPart);
+    tr.appendChild(tdSellerPart);
+
+    tblTotal.appendChild(tr);
+    
+
+
 }
 
 function cancelProduct(orderId, product, cancellation_reason) {
@@ -292,3 +467,40 @@ function creditPoints(product, points) {
         });
 
 }
+
+function loadComissionMap() {
+    return new Promise((resolve, reject) => {
+        {
+
+            var docRef = firebase.firestore().collection("commission").doc("35zAmgEt2EkrMGb0uzqs");
+
+            docRef.get().then(function (doc) {
+                if (doc.exists) {
+                    var commission = doc.data();
+                    var pf = commission.commision_map;
+
+                    for (const property in pf) {
+                        var propertyName = `${property}`;
+                        var propertyValue = `${pf[property]}`;
+                        commision_map.set(propertyName, propertyValue);
+                    }
+                    resolve();
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                    resolve();
+                }
+            }).catch(function (error) {
+                console.log("Error getting document:", error);
+                reject();
+            });
+
+        }
+    })
+
+}
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+

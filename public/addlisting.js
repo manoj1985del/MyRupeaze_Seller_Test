@@ -2,6 +2,8 @@ var sellerId = localStorage.getItem("sellerid");
 var mSeller;
 var sellerName = localStorage.getItem("sellerName");
 var nav = document.getElementById("nav");
+var txtProductRating = document.getElementById("txtProductRating");
+var divProductRating = document.getElementById("divProductRating");
 
 
 
@@ -153,6 +155,7 @@ var rbNoVariantPricing = document.getElementById("rbNoVariantPricing");
 var divVariantSelection = document.getElementById("divVariantSelection");
 var selectVariant = document.getElementById("selectVariant");
 var table = document.getElementById("tblVariantPrice");
+var cmbSubCategory = document.getElementById("cmbSubCategory");
 
 var fileCover;
 var fileImg1;
@@ -181,11 +184,19 @@ let variantPriceMap = new Map();
 var variantList = [];
 var mProduct;
 
+var subCategoryMap = new Map();
+
+loadSubCategories();
 loadTags();
 getSellerDetails();
 
 var bUpdate = false;
 
+
+productCategory.addEventListener("change", function(){
+    addSubCategoryInDropDown();
+    
+})
 rbYesVariantPricing.addEventListener("change", function () {
     if (this.checked) {
         divVariantSelection.style.display = "block";
@@ -472,6 +483,12 @@ btnSearchProduct.addEventListener("click", function () {
 })
 var productId = getQueryVariable("productid");
 var admin = getQueryVariable("admin");
+if(admin){
+    divProductRating.style.display = "block";
+}
+else{
+    divProductRating.style.display = "none";
+}
 
 if (productId != null) {
     bUpdate = true;
@@ -514,12 +531,16 @@ function loadUI(bProductIdEntered, p_ProductId) {
 
                 }
 
+                
+                txtProductRating.value = product.Avg_Rating;
                 txtGST.value = product.GST;
                 txtBrand.value = product.Brand;
                 txtTags.value = product.Tags;
                 txtReturnWindow.value = product.returning_window;
                 txtCountryOfOrigin.value = product.CountryOfOrigin;
                 productCategory.value = product.Category;
+                addSubCategoryInDropDown();
+                cmbSubCategory.value = product.SubCategory;
                 if (product.ExpiryDate != null) {
                     txtExpiryDate.value = product.ExpiryDate;
                 }
@@ -712,6 +733,11 @@ function validateFormDetails() {
 
     if (productCategory.value == "null") {
         errorMsg = "Please select product category<br/>"
+        errorFound = true;
+    }
+
+    if (cmbSubCategory.value == "null") {
+        errorMsg = "Please select product SubCategory<br/>"
         errorFound = true;
     }
 
@@ -1369,7 +1395,7 @@ function saveProductDetails() {
     }
 
     firebase.firestore().collection('products').doc(productId).set({
-        Avg_Rating: 0,
+        Avg_Rating: parseFloat(txtProductRating.value),
         Active: true,
         Brand: txtBrand.value,
         COD: rbYes.checked,
@@ -1391,6 +1417,7 @@ function saveProductDetails() {
         CountryOfOrigin: txtCountryOfOrigin.value,
         ExpiryDate: expiryDate,
         Category: productCategory.value,
+        SubCategory: cmbSubCategory.value,
         ImageUrlCover: coverImageUrl,
         VariantsAvailable: rbVariantYes.checked,
         Variants: productVariants,
@@ -1490,6 +1517,7 @@ function updateProductDetails() {
 
     // Set the "capital" field of the city 'DC'
     return washingtonRef.update({
+        Avg_Rating: parseFloat(txtProductRating.value),
         Brand: txtBrand.value,
         COD: rbYes.checked,
         Description: txtProductDescription.value,
@@ -1507,6 +1535,7 @@ function updateProductDetails() {
         CountryOfOrigin: txtCountryOfOrigin.value,
         ExpiryDate: expiryDate,
         Category: productCategory.value,
+        SubCategory: cmbSubCategory.value,
         ImageUrlCover: coverImageUrl,
         VariantsAvailable: rbVariantYes.checked,
         Variants: productVariants,
@@ -1615,6 +1644,15 @@ function deleteAllElementsFromVariantDropDown() {
     while (child) {
         selectVariant.removeChild(child);
         child = selectVariant.lastElementChild;
+    }
+}
+
+function deleteAllElementsFromSubCategoriesDropDown() {
+    //e.firstElementChild can be used. 
+    var child = cmbSubCategory.lastElementChild;
+    while (child) {
+        cmbSubCategory.removeChild(child);
+        child = cmbSubCategory.lastElementChild;
     }
 }
 
@@ -1731,9 +1769,6 @@ function createTable() {
 
 }
 
-function saveTags() {
-
-}
 
 function loadTags() {
     return new Promise((resolve, reject) => {
@@ -1800,6 +1835,59 @@ function addTags() {
             });
 
     })
+
+
+}
+
+function loadSubCategories(){
+    return new Promise((resolve, reject) => {
+        firebase.firestore().collection("categories")
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    var objCategory = doc.data();
+                    subCategoryMap.set(objCategory.Category, objCategory.sub_categories);
+                });
+            })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+
+    })
+}
+
+function addSubCategoryInDropDown() {
+
+    deleteAllElementsFromSubCategoriesDropDown();
+    var category = productCategory.value;
+    var sc = subCategoryMap.get(category);
+    
+    var option = document.createElement("option");
+    option.selected = true;
+    option.disabled = true;
+    option.hidden = true;
+    option.value = null;
+    option.textContent = "Select Sub-Category";
+    cmbSubCategory.appendChild(option);
+
+    for (var i = 0 ; i < sc.length; i++) {
+        var option = document.createElement("option");
+        var subC = sc[i];
+        if(subC.toUpperCase().trim() == "ALL"){
+            continue;
+        }
+        option.value = subC;
+        option.textContent = subC;
+        cmbSubCategory.appendChild(option);
+    }
+
+    //  var tdProductName = document.createElement("td");
 
 
 }

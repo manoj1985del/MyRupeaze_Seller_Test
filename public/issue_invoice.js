@@ -89,6 +89,12 @@ getSellerDetails().then(()=>{
 btnMobile.addEventListener("click", function () {
     console.log("goint to set display as block");
     imgSaving.style.display = "block";
+    customer = null;
+    spCustomerName.textContent = "";
+    spCustomerMobile.timestamp = "";
+    spEmail.textContent = "";
+    spPoints.textContent = "";
+    customerExist = false;
 
     customer = null;
     spCustomerName.textContent = "";
@@ -98,6 +104,7 @@ btnMobile.addEventListener("click", function () {
     customerExist = false;
     
     getCustomerDetails(txtMobile.value).then(() => {
+        alert(txtMobile.value);
         if (customer != null) {
             customerExist = true;
             divCustomerDetails.style.display = "block";

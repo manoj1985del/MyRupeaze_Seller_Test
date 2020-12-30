@@ -107,7 +107,7 @@ function loadInvoice() {
   var netPayable = 0;
   for (var i = 0; i < productList.length; i++) {
     var product = productList[i];
-    netPayable = product.Offer_Price;
+    netPayable += product.Offer_Price * product.Qty;
   }
 
  

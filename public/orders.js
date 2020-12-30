@@ -1629,7 +1629,7 @@ function updateOrderStatusFromInvoice(invoice_id, order_id, product_id, value) {
 
     return new Promise((resolve, reject) => {
 
-        var docRef = firebase.firestore().collection("invoices").doc(invoice_id)
+        var docRef = firebase.firestore().collection("online_invoices").doc(invoice_id)
 
         // Set the "capital" field of the city 'DC'
         return docRef.update({

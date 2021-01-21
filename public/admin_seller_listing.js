@@ -1,4 +1,14 @@
 var sellerList = [];
+var allSellerList = [];
+var arrSellerCategory = [];
+var arrSellerCity = [];
+var arrMerchantId = [];
+var arrSellerName = [];
+var arrAreaPin = [];
+
+var arrSearchBy = [];
+
+var cmbSearchBy = document.getElementById("cmbSearchBy");
 var divProgress = document.getElementById("divProgress");
 var pageHeader = document.getElementById("pageHeader");
 var table = document.getElementById("table");
@@ -34,14 +44,42 @@ class SettleAccountProps {
 var type = getQueryVariable("type");
 var query = "";
 
+cmbSearchBy.addEventListener("change", function(){
+
+    if(this.value == "None"){
+        loadOrdersAndProductForSellers(sellerList);
+    }
+
+    if(this.value == "Seller Name"){
+        arrSearchBy = arrSellerName;
+    }
+
+    if(this.value == "Seller City"){
+        arrSearchBy = arrSellerCity;
+    }
+
+    if(this.value == "Seller Category"){
+        arrSearchBy = arrSellerCategory;
+    }
+
+    if(this.value == "Merchant Id"){
+        arrSearchBy = arrMerchantId;
+    }
+
+    if(this.value == "Area Pin"){
+        arrSearchBy = arrAreaPin;
+    }
+
+    autocomplete(txtSearch, arrSearchBy);
+
+})
 if (type == "all") {
-    query = firebase.firestore().collection("seller");
+     query = firebase.firestore().collection("seller");
 }
 
 if (type == "byseller") {
     var merchantid = getQueryVariable("merchant_id");
     query = firebase.firestore().collection("seller").where("merchant_id", "==", merchantid);
-    console.log(query);
 }
 
 if (type == "pending") {
@@ -60,21 +98,87 @@ if (type == null) {
     query = firebase.firestore().collection("seller");
 }
 
-btnSearch.addEventListener("click", function () {
-    var merchatId = txtSearch.value;
-    window.location.href = "admin_seller_listing.html?type=byseller&merchant_id=" + merchatId;
-
-})
-
 loadSellers(query).then(() => {
+
     if (sellerList.length > 0) {
         loadComissionMap().then(() => {
-            loadOrdersAndProductForSellers();
+            loadOrdersAndProductForSellers(sellerList);
         })
     }
+// query = firebase.firestore().collection("seller");
 })
 
-function loadOrdersAndProductForSellers() {
+btnSearch.addEventListener("click", function () {
+
+
+    var localSellerList = [];
+    if(cmbSearchBy.value == "Seller Name"){
+        arrSearchBy = arrSellerName;
+        for(var i = 0; i < sellerList.length; i++){
+            var seller = sellerList[i];
+            if(seller.company_name == txtSearch.value){
+                localSellerList.push(seller);
+            }
+        }
+    }
+
+    if(cmbSearchBy.value == "Seller City"){
+        arrSearchBy = arrSellerCity;
+        for(var i = 0; i < sellerList.length; i++){
+            var seller = sellerList[i];
+            if(seller.city == txtSearch.value){
+                localSellerList.push(seller);
+            }
+        }
+    }
+
+    if(cmbSearchBy.value == "Seller Category"){
+        arrSearchBy = arrSellerCategory;
+        for(var i = 0; i < sellerList.length; i++){
+            var seller = sellerList[i];
+            if(seller.seller_category == txtSearch.value){
+                localSellerList.push(seller);
+            }
+        }
+    }
+
+    if(cmbSearchBy.value == "Merchant Id"){
+        arrSearchBy = arrMerchantId;
+        for(var i = 0; i < sellerList.length; i++){
+            var seller = sellerList[i];
+            if(seller.merchant_id == txtSearch.value){
+                localSellerList.push(seller);
+            }
+        }
+    }
+
+    if(cmbSearchBy.value == "Area Pin"){
+        arrSearchBy = arrMerchantId;
+        for(var i = 0; i < sellerList.length; i++){
+            var seller = sellerList[i];
+            if(seller.seller_area_pin == txtSearch.value){
+                localSellerList.push(seller);
+            }
+        }
+    }
+
+    loadOrdersAndProductForSellers(localSellerList);
+
+    // var merchatId = txtSearch.value;
+    // window.location.href = "admin_seller_listing.html?type=byseller&merchant_id=" + merchatId;
+
+})
+
+// loadSellers(sellerList).then(() => {
+//     if (sellerList.length > 0) {
+//         loadComissionMap().then(() => {
+//             loadOrdersAndProductForSellers();
+//         })
+//     }
+// })
+
+function loadOrdersAndProductForSellers(sellerList) {
+    console.log(sellerList);
     var promiseList = [];
     for (var i = 0; i < sellerList.length; i++) {
         var seller = sellerList[i];
@@ -83,14 +187,13 @@ function loadOrdersAndProductForSellers() {
     Promise.all(promiseList).then(() => {
         divProgress.style.display = "none";
         divContent.style.display = "block";
-        drawTable();
+        drawTable(sellerList);
     })
 }
 //Load Sellers
 function loadSellers(query) {
     return new Promise((resolve, reject) => {
         pageHeader.textContent = "Seller Listing";
-        console.log("going to load sellers");
 
         query
             .get()
@@ -105,6 +208,28 @@ function loadSellers(query) {
                     // doc.data() is never undefined for query doc snapshots
                     var seller = doc.data();
                     sellerList.push(seller);
+
+                    if(!arrSellerCategory.includes(seller.seller_category)){
+                        arrSellerCategory.push(seller.seller_category);
+                    }
+
+                    if(!arrSellerCity.includes(seller.city)){
+                        arrSellerCity.push(seller.city);
+                    }
+
+                    if(!arrMerchantId.includes(seller.merchant_id)){
+                        arrMerchantId.push(seller.merchant_id);
+                    }
+
+                    if(!arrSellerName.includes(seller.company_name)){
+                        arrSellerName.push(seller.company_name);
+                    }
+
+                    if(!arrAreaPin.includes(seller.seller_area_pin)){
+                        arrAreaPin.push(seller.seller_area_pin);
+                    }
+
+                    
                 });
             }).then(function () {
                 console.log("loaded sellers.. resolving");
@@ -118,6 +243,35 @@ function loadSellers(query) {
     })
 
 }
+
+function loadAllSellers() {
+    return new Promise((resolve, reject) => {
+        pageHeader.textContent = "Seller Listing";
+
+            firebase.firestore().collection("seller")
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    var seller = doc.data();
+                    allSellerList.push(seller);
+
+
+
+                   
+                });
+            }).then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+    })
+
+}
+
 
 function getUnSettledOrders(seller) {
 
@@ -159,7 +313,6 @@ function fetchProductsForOrder(order) {
                 snapshot.forEach(function (doc) {
                     var product = doc.data();
                     productList.push(product);
-                    console.log("product added");
                 })
             }).then(function () {
                 ordersProductMap.set(order.order_id, productList);
@@ -248,7 +401,8 @@ function getDaysInMonth(month, year) {
     // return new Date(year, month+1, 0).getDate();
 };
 
-function drawTable() {
+function drawTable(sellerList) {
+    deleteTableRows();
     createTableHeaders();
 
     for (var i = 0; i < sellerList.length; i++) {
@@ -266,7 +420,9 @@ function drawTable() {
         var tdAction = document.createElement("td");
 
         var seller = sellerList[i];
-
+        if(seller.merchant_id == "texpedia"){
+            continue;
+        }
 
         //ADD SELLER DETAILS
         var divSellerDetails = document.createElement("div");
@@ -362,6 +518,7 @@ function drawTable() {
 
         var orderList = sellerOrderMap.get(seller.seller_id);
         for (var orderNumber = 0; orderNumber < orderList.length; orderNumber++) {
+
             var order = orderList[orderNumber];
             //if order was a cancelled one.. no need to process it
             if (order.cancelled == true) {
@@ -371,24 +528,30 @@ function drawTable() {
             var deliveryDate = order.delivery_date;
             var productList = ordersProductMap.get(order.order_id);
 
-
+            var freezedAmountTemp = 0;
+            var freezedCommissionTemp = 0;
+            var disbursableAmountTemp = 0;
+            var availableCommissionTemp = 0;
             for (var productNumber = 0; productNumber < productList.length; productNumber++) {
                 var product = productList[productNumber];
                 var amtToReduce = 0;
                 if (product.return_requested && product.return_processed) {
                     amtToReduce = product.return_amount;
-
                 }
-                var commission = commision_map.get(product.Category);
-                var offer_price = product.Offer_Price * product.Qty;
-                offer_price = offer_price - amtToReduce;
-                var seller_part = offer_price - (offer_price * commission / 100);
-                var admin_part = offer_price - seller_part;
+
+                if(product.cancelled_by_seller){
+                    product.Offer_Price= 0;
+                }
+
+            var commission = commision_map.get(product.Category);
+            var offer_price = product.Offer_Price * product.Qty;
+            offer_price = offer_price - amtToReduce;
+            var commission_value = (offer_price * commission) / 100;
 
                 //If product is not delivered yet.. it will fall in freezed category
                 if (deliveryDate == null) {
-                    freezedAmount += seller_part;
-                    freezedCommission += admin_part;
+                    freezedAmountTemp += offer_price;
+                    freezedCommissionTemp += commission_value;
                 }
                 else {
                     var dtDelivery = deliveryDate.toDate();
@@ -414,9 +577,7 @@ function drawTable() {
                         //jaise hi 16 tarikh aayegi freezing window current month ki 1 tarikh se start ho jayegi
                         //aur ussey pehle ke sabhi orders available me aa jayege
                         dtFreezeWindowStart = new Date(year, month, 1);
-                        console.log(month, year);
                         var numberofDays = getDaysInMonth(month, year);
-                        console.log(numberofDays);
                         //if this is last day of the month move the orders from 1 to 15 in available range
                         if (day == numberofDays) {
                             dtFreezeWindowStart = new Date(year, month, 16);
@@ -424,23 +585,45 @@ function drawTable() {
                     }
 
                     //All the orders that were delivered before freezing window started will be available for disbursement
-                    console.log("Delivery date - " + dtDelivery);
-                    console.log("Freezing window start date - " + dtFreezeWindowStart);
                     if (dtDelivery < dtFreezeWindowStart) {
-                        disbursableAmount += seller_part;
-                        availableCommission += admin_part;
+                        disbursableAmountTemp += offer_price;
+                        availableCommissionTemp += commission_value;
                         arrOrders.push(order);
                       
                     }
                     else {
-                        freezedAmount += seller_part;
-                        freezedCommission += admin_part;
+                        freezedAmountTemp += offer_price;
+                        freezedCommissionTemp += commission_value;
                     }
 
 
                 }
 
             }
+
+        var tradeChargesFreezed = 28;
+        var tradeChargesAvailable = 28;
+
+        if(freezedAmountTemp == 0){
+            tradeChargesFreezed = 0;
+        }
+
+        if(disbursableAmountTemp == 0){
+            tradeChargesAvailable = 0;
+        }
+       
+        var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
+        var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
+        var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
+        freezedAmount += freezedAmountTemp - freezedDeductions;
+        freezedCommission += freezedDeductions;
+
+        var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
+        var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
+        var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
+        disbursableAmount += disbursableAmountTemp - disbursableDeductions;
+        availableCommission += disbursableDeductions;
+        
 
         }
 
@@ -562,10 +745,7 @@ function drawTable() {
             divUnsettledOrders.style.display = "block";
         }
 
-        console.log(disbursableAmount);
-
         if (disbursableAmount == 0) {
-            console.log("disabling settle accounts");
             btnSettleAccount.disabled = true;
         }
 
@@ -640,7 +820,6 @@ function drawTable() {
             getSellerProducts(seller).then(() => {
                 var promiseList = [];
                 var productList = sellerProductMap.get(seller.seller_id);
-                console.log(productList);
                 for (var i = 0; i < productList.length; i++) {
                     var product = productList[i];
                     promiseList.push(enableProducts(product.Product_Id, false));
@@ -686,7 +865,6 @@ function drawTable() {
             getSellerProducts(seller).then(() => {
                 var promiseList = [];
                 var productList = sellerProductMap.get(seller.seller_id);
-                console.log(productList);
                 for (var i = 0; i < productList.length; i++) {
                     var product = productList[i];
                     promiseList.push(enableProducts(product.Product_Id, false));
@@ -727,7 +905,6 @@ function drawTable() {
             getSellerProducts(seller).then(() => {
                 var promiseList = [];
                 var productList = sellerProductMap.get(seller.seller_id);
-                console.log(productList);
                 for (var i = 0; i < productList.length; i++) {
                     var product = productList[i];
                     promiseList.push(enableProducts(product.Product_Id, true));
@@ -814,12 +991,9 @@ function drawTable() {
 
             //var orderList = map
             var orderList = ordersTobeSettled.get(seller.seller_id);
-            console.log(orderList);
             var promiseList = [];
-            console.log("orderlist length = " + orderList.length);
             for (var i = 0; i < orderList.length; i++) {
                 var order = orderList[i];
-                console.log("pushing to promise list");
                 promiseList.push(settleOrders(order));
             }
             Promise.all(promiseList).then(() => {
@@ -845,7 +1019,6 @@ function settleOrders(order) {
             settlement_date: firebase.firestore.FieldValue.serverTimestamp()
         })
             .then(function () {
-                console.log("resolving for order id: " + order.order_id);
                 resolve();
             })
             .catch(function (error) {
@@ -877,12 +1050,10 @@ function getSellerProducts(seller) {
                 querySnapshot.forEach(function (doc) {
                     // doc.data() is never undefined for query doc snapshots
                     var product = doc.data();
-                    console.log("pushing product");
                     productList.push(product);
                 });
             })
             .then(() => {
-                console.log("resolving products");
                 sellerProductMap.set(seller.seller_id, productList);
                 resolve();
 
@@ -967,6 +1138,15 @@ function getMonthNmae(index) {
     }
 
     return monthName;
+}
+
+function deleteTableRows() {
+    //e.firstElementChild can be used. 
+    var child = table.lastElementChild;
+    while (child) {
+        table.removeChild(child);
+        child = table.lastElementChild;
+    }
 }
 
 function formatDate(date) {

@@ -1394,6 +1394,11 @@ function saveProductDetails() {
         }
     }
 
+    var selling_offline = false;
+    if(mSeller.city_seller){
+        selling_offline = true;
+    }
+
     firebase.firestore().collection('products').doc(productId).set({
         Avg_Rating: parseFloat(txtProductRating.value),
         Active: true,
@@ -1429,7 +1434,7 @@ function saveProductDetails() {
         returning_window: parseInt(txtReturnWindow.value),
         seller_city: mSeller.city,
         seller_area_pin: mSeller.seller_area_pin,
-        selling_offline: false,
+        selling_offline: selling_offline,
         shop_price: 0,
         status: "approved", //status: "pending",
         variant_pricing: variant_pricing,
@@ -1615,11 +1620,7 @@ function isNumber(searchValue) {
 }
 
 function getSellerDetails() {
-
-
-
     var docRef = firebase.firestore().collection("seller").doc(sellerId);
-
     docRef.get().then(function (doc) {
         if (doc.exists) {
             mSeller = doc.data();
@@ -1633,9 +1634,6 @@ function getSellerDetails() {
         seller = null;
         console.log("Error getting document:", error);
     });
-
-
-
 }
 
 function deleteAllElementsFromVariantDropDown() {

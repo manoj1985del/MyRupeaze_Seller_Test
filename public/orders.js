@@ -62,7 +62,7 @@ var statusValues = ["Select Status",
     "Order received. Seller Confirmation pending.",
     "Ready For Dispatch",
     "Order Ready. Waiting for Customre's Pickup",
-    "Local Delivery Successful"];
+    "Delivered"];
 
 var table = document.getElementById("tblPendingOrders");
 
@@ -1562,6 +1562,7 @@ function createInvoice(order, user, address) {
             ship_to_landmark: address.Landmark,
             ship_to_pin: address.Pincode,
 
+            customer_id: user.customer_id,
             bill_to_name: user.Name,
             bill_to_address_line1: user.AddressLine1,
             bill_to_address_line2: user.AddressLine2,

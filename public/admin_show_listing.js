@@ -18,9 +18,14 @@ var pageIndex = 0;
 var lastVisibleDoc;
 var productAndSellerMap = new Map();
 var btnSearchProduct = document.getElementById("btnSearchProduct");
+var cmbSearchBy = document.getElementById('cmbSearchBy');
+var divSearchBy = document.getElementById('divSearchBy');
+var cmbProductCategory = document.getElementById('cmbProductCategory');
 
 var queryList = [];
 var productList = [];
+
+
 
 
 var nextQuery;
@@ -29,26 +34,90 @@ if (type == null || type == undefined) {
     type = "all";
 }
 
-btnSearchProduct.addEventListener("click", function(){
+cmbSearchBy.addEventListener("change", function () {
+    divSearchBy.style.display = "block";
+
+
+    if (this.value == "Product Id") {
+        txtProductId.style.display = "block";
+        cmbProductCategory.style.display = "none";
+
+    }
+    if (this.value == "Product Category") {
+        txtProductId.style.display = "none";
+        cmbProductCategory.style.display = "block";
+    }
+})
+
+btnSearchProduct.addEventListener("click", function () {
+    queryList = [];
+    pageIndex = 0;
     productList = [];
     deleteTableRows();
     productAndSellerMap = new Map();
-    var query = firebase.firestore()
-      .collection('products')
-      .where("Product_Id", '==', txtProductId.value);
-      showListing(query).then(function(){
-        var promiseList = [];
-        for (var i = 0; i < productList.length; i++) {
-            var product = productList[i];
-            promiseList.push(mapProductWithSeller(product));
+    var query;
+    if (cmbSearchBy.value == "Product Id") {
+        query = firebase.firestore()
+            .collection('products')
+            .where("Product_Id", '==', txtProductId.value);
+    }
+
+    if (cmbSearchBy.value == "Product Category") {
+        if (type == "pending") {
+            query = firebase.firestore()
+                .collection('products')
+                .where("Category", '==', cmbProductCategory.value)
+                .where("status", "==", "pending")
+                .orderBy('timestamp', 'desc')
+                .limit(docLimit);
+        }
+        else {
+            query = firebase.firestore()
+                .collection('products')
+                .where("Category", '==', cmbProductCategory.value)
+                .orderBy('timestamp', 'desc')
+                .limit(docLimit);
         }
 
-        Promise.all(promiseList).then(() => {
-            addRecordToTable();
-        });
-      })
-  
-  })
+
+        queryList.push(query);
+
+        showListing(query).then(function () {
+
+            var promiseList = [];
+            for (var i = 0; i < productList.length; i++) {
+                var product = productList[i];
+                promiseList.push(mapProductWithSeller(product));
+            }
+
+            Promise.all(promiseList).then(() => {
+
+                if (type == "pending") {
+                    nextQuery = firebase.firestore()
+                        .collection('products')
+                        .where("Category", '==', cmbProductCategory.value)
+                        .where("status", "==", "pending")
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+                else {
+
+                    nextQuery = firebase.firestore()
+                        .collection('products')
+                        .where("Category", '==', cmbProductCategory.value)
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+                queryList.push(nextQuery);
+                addRecordToTable();
+
+            })
+
+        })
+    }
+})
 
 btnNext.addEventListener("click", function () {
 
@@ -73,22 +142,43 @@ btnNext.addEventListener("click", function () {
         }
         Promise.all(promiseList).then(() => {
 
-            console.log(type);
-            if (type == "pending") {
-                console.log("in pending");
-                nextQuery = firebase.firestore()
-                    .collection('products')
-                    .where("status", "==", "pending")
-                    .orderBy('timestamp', 'desc')
-                    .startAfter(lastVisibleDoc)
-                    .limit(docLimit);
-            } else {
-                console.log("in all");
-                nextQuery = firebase.firestore()
-                    .collection('products')
-                    .orderBy('timestamp', 'desc')
-                    .startAfter(lastVisibleDoc)
-                    .limit(docLimit);
+            if (cmbSearchBy.value == "Product Category") {
+
+                if (type == "pending") {
+                    nextQuery = firebase.firestore()
+                        .collection('products')
+                        .where("status", "==", "pending")
+                        .where("Category", "==", cmbProductCategory.value)
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                } else {
+                    console.log("in all");
+                    nextQuery = firebase.firestore()
+                        .collection('products')
+                        .where("Category", "==", cmbProductCategory.value)
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+            }
+            else {
+                if (type == "pending") {
+                    console.log("in pending");
+                    nextQuery = firebase.firestore()
+                        .collection('products')
+                        .where("status", "==", "pending")
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                } else {
+                    console.log("in all");
+                    nextQuery = firebase.firestore()
+                        .collection('products')
+                        .orderBy('timestamp', 'desc')
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
             }
 
 
@@ -204,21 +294,21 @@ function showData() {
 
         Promise.all(promiseList).then(() => {
 
-            if(type == "pending"){
+            if (type == "pending") {
                 nextQuery = firebase.firestore()
-                .collection('products')
-                .where("status", "==", "pending")
-                .orderBy('timestamp', 'desc')
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+                    .collection('products')
+                    .where("status", "==", "pending")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
             }
-            else{
+            else {
 
                 nextQuery = firebase.firestore()
-                .collection('products')
-                .orderBy('timestamp', 'desc')
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+                    .collection('products')
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
             }
             queryList.push(nextQuery);
             addRecordToTable();
@@ -437,13 +527,13 @@ function addRecordToTable() {
         if (!product.Active) {
             var divSpan = document.createElement("span");
             var span = document.createElement("span");
-            if(product.status == "pending"){
-                span.innerHTML =  "<br />This product is not available for buyers. You need to approve this listing.";
+            if (product.status == "pending") {
+                span.innerHTML = "<br />This product is not available for buyers. You need to approve this listing.";
             }
-            else{
+            else {
                 span.innerHTML = "<br />This product is not available for buyers. You need to activate this listing.";
             }
-           
+
             span.style.color = "#ff0000";
             divSpan.appendChild(span);
             divProductTitle.appendChild(divSpan);
@@ -497,9 +587,9 @@ function addRecordToTable() {
         divAction.appendChild(divApprove);
         tdAction.appendChild(divAction);
 
-        if(product.status == "pending"){
+        if (product.status == "pending") {
             divApprove.style.display = "block";
-        }else{
+        } else {
             divApprove.style.display = "none";
         }
 
@@ -534,7 +624,7 @@ function addRecordToTable() {
             var index = parseInt(this.id);
             var product = productList[index];
 
-            approveListing(product).then(()=>{
+            approveListing(product).then(() => {
                 sendProductApprovalMail(product);
                 window.location.href = "admin_show_listing.html";
             })
@@ -559,8 +649,8 @@ function deleteListing(productId) {
 }
 
 function approveListing(product) {
-    
-    return new Promise((resolve, reject)=>{
+
+    return new Promise((resolve, reject) => {
 
         var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
 
@@ -607,7 +697,7 @@ function sendProductApprovalMail(product) {
     var body = "<h3>Hello " + seller.company_name + "</h3>"
         + "<p>Greetings from My Rupeaze!!</p>"
         + "<p> Congratulations!! Your listing with product id " + product.Product_Id + " has been approved."
-        + "<br/>Product Name: " + product.Title 
+        + "<br/>Product Name: " + product.Title
         + "</p><p>In case of any questions please feel free to revert us back. </p>"
         + "<p>Keep Selling!!</p>"
         + "<p>With Kind Regards,<br/>"

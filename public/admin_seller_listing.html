@@ -32,6 +32,7 @@
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link rel="stylesheet" href="myStyle.css">
   <link rel="stylesheet" href="table.css">
+  <link rel="stylesheet" href="auto_complete_text.css">
 
 </head>
 
@@ -137,7 +138,7 @@
 
   <div id="divContent" class="m-2" style="display: none;">
 
-    <div class="container">
+    <div>
 
       <div>
         <h1 class="d-flex justify-content-center" id="pageHeader"></h1>
@@ -145,10 +146,47 @@
       </div>
 
       <form>
-        <div class="form-group">
+        <div>
+          <div class="row">
+            
+            <div class = "col-md-4">
+              <div class="form-group">
+                <!-- <input type="text" class="form-control" id="txtState"> -->
+                <select name="cmbSearchBy" id="cmbSearchBy" class="form-control">
+                  <option selected disabled hidden value=null>Search By</option>
+                  <option value="None">No Filter</option>
+                  <option value="Seller Name">Seller Name</option>
+                  <option value="Seller City">Seller City</option>
+                  <option value="Seller Category">Seller Category</option>
+                  <option value="Merchant Id">Merchant Id</option>
+                  <option value="Area Pin">Area Pin (3 Chars Only)</option>
+                </select>
+              </div>
+      
+            </div>
+
+            <div class = "col-md-4">
+              <form autocomplete="off">
+              <div class="autocomplete">
+                <input type="search" class="form-group" autocomplete="off"  id="txtSearch" placeholder="Enter Value">
+              </div>
+            </form>
+            </div>
+
+            <div class = "col-md-4">
+              <div class="form-group">
+                <!-- <input type="text" class="form-control" id="txtState"> -->
+                <button type="button" class="btn btn-info" id="btnSearch">Search</button>
+              </div>
+      
+            </div>
+
+          </div>
+        </div>
+        <!-- <div class="form-group">
           <input type="text" class="form-control" id="txtSearch" placeholder="Enter Merchant Id">
           <button type="button" class="btn btn-info mt-2" id="btnSearch">Search</button>
-        </div>
+       </div> -->
     </div>
 
     </form>
@@ -194,6 +232,7 @@
   <script type="text/javascript" src="common.js"></script>
   <script type="text/javascript" src="email.js"></script>
   <script type="text/javascript" src="admin_seller_listing.js"></script>
+  <script src="auto_complete_text.js"></script>
 </body>
 
 </html>

@@ -3,6 +3,8 @@ var divVideos = document.getElementById("divVideos");
 var videoList = [];
 
 var productList = [];
+var offline_invoices = [];
+var sellerList = [];
 let qtyDiscountMap = new Map();
 let qtyDiscountObjectMap = new Map();
 var newInvoiceId;
@@ -14,7 +16,7 @@ var newInvoiceId;
 
 //loadProducts();
 
-//createInvoicesAgainstOrder();
+createInvoicesAgainstOrder();
 
 //uncomment this block to update merchant id of products
 
@@ -36,6 +38,29 @@ var newInvoiceId;
 //   })
 // })
 
+
+/*****************BEGIN: UNCOMMENT THIS SECTION FOR UPDATING MERCHANT ID AND COMPANY NAME IN OFFLINE INVOICE****** */
+// loadSellers().then(()=>{
+//   loadOfflineInvoices().then(()=>{
+//     for(var i = 0; i < offline_invoices.length; i++){
+//       var invoice = offline_invoices[i];
+//       var seller = null;
+//       for(var j = 0; j < sellerList.length; j++){
+//         var temp = sellerList[j];
+//         if(invoice.seller_id == temp.seller_id ){
+//           seller = temp;
+//           break;
+//         }
+//       }
+//       if(seller != null){
+//         updateSellerDetailsInOfflineInvoice(seller, invoice.invoice_id);
+//       }
+//     }
+//   })
+// })
+
+
+/****************END: UNCOMMENT THIS SECTION FOR UPDATING MERCHANT ID AND COMPANY NAME IN OFFLINE INVOICE* */
 
 
 
@@ -764,6 +789,82 @@ function updateOrderInvoiceId(order, invoiceId) {
 function appendNumber(number, digits) {
   return String(number).padStart(digits, '0');
 }
+
+
+function loadSellers() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("seller")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var seller = doc.data();
+          sellerList.push(seller);
+
+        });
+      })
+      .then(function () {
+        console.log("sellers retrieved. Total sellers  = " + sellerList.length);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function loadOfflineInvoices() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("offline_invoices")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var invoice = doc.data();
+          offline_invoices.push(invoice);
+
+        });
+      })
+      .then(function () {
+        console.log("sellers retrieved. Total sellers  = " + sellerList.length);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function updateSellerDetailsInOfflineInvoice(seller, invoiceId){
+
+  console.log("invoice id - " + invoiceId);
+  var washingtonRef = firebase.firestore().collection("offline_invoices").doc(invoiceId);
+  washingtonRef.update({
+    merchant_id: seller.merchant_id,
+    company_name: seller.company_name,
+    seller_mobile: seller.mobile,
+    seller_email: seller.email
+  })
+    .then(function () {
+      console.log("updated merchant id for product - " + product.Product_Id);
+    })
+    .catch(function (error) {
+      // The document probably doesn't exist.
+      console.log("doc does not exist");
+
+    });
+
+
+}
+
+
+
 
 
 

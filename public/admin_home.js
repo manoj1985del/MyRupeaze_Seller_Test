@@ -837,6 +837,11 @@ function calculatePayout() {
 
     var productList = [];
 
+    var totalCODValue = 0;
+    var totalPrepaidValue= 0;
+    var totalCODCommission = 0;
+    var totalPrepaidCommission = 0;
+
     for (var i = 0; i < unsettledOrders.length; i++) {
         var order = unsettledOrders[i];
         if(order.cancelled){
@@ -851,38 +856,59 @@ function calculatePayout() {
                 amtToReduce = product.return_amount;
             }
 
+            if(product.cancelled_by_seller){
+                product.Offer_Price = 0;
+            }
+
             var commission = commision_map.get(product.Category);
             var offer_price = product.Offer_Price * product.Qty;
             offer_price = offer_price - amtToReduce;
-            var seller_part = offer_price - (offer_price * commission / 100);
-            var admin_part = offer_price - seller_part;
-
+            var commission_value = (offer_price * commission) / 100;
+          
             if (order.COD == true) {
-                console.log("offer price  = " + product.Offer_Price);
-                console.log("commision %  = " + commission);
-                
-
-                cod_payout_seller += seller_part;
-                cod_commission_admin += admin_part;
-                // console.log("cod seller payout =" +  cod_payout_seller);
-                // console.log("cod commision = " + cod_commission_admin);
-                // console.log("admin_part = " + admin_part);
-                // console.log("seller_part = " + seller_part);
-                // console.log("-----------------------------------------");
+                totalCODValue += offer_price;
+                totalCODCommission += commission_value;
             }
             else {
                 //if order is prepaid and successful payment has been made
                 if (order.payment_id != null) {
-                    elec_payout_seller += seller_part;
-                    elec_commission_admin += admin_part;
+                   totalPrepaidValue += offer_price;
+                   totalPrepaidCommission += commission_value;
 
                 }
             }
         }
     }
 
-    hCODCommission.textContent = cod_commission_admin.toFixed(2);
-    hElecCommission.textContent = elec_commission_admin.toFixed(2);
+    var tradingChargesCOD = 28;
+    var tradingChargesPrepaid = 28;
+
+    if(totalCODValue == 0){
+        tradingChargesCOD = 0;
+    }
+
+    if(totalPrepaidValue == 0){
+        tradingChargesPrepaid = 0;
+    }
+
+    var deductionsCODTaxable = totalCODCommission + tradingChargesCOD;
+    var taxes = deductionsCODTaxable *18 / 100;
+    var deductionsCOD = deductionsCODTaxable + taxes;
+    var cod_payout_seller = totalCODValue - deductionsCOD;
+
+    var deductionsPrepaidTaxable = totalPrepaidCommission + tradingChargesPrepaid;
+    var taxes = deductionsPrepaidTaxable *18 / 100;
+    var deductionsPrepaid = deductionsPrepaidTaxable + taxes;
+    var elec_payout_seller = totalPrepaidValue - deductionsPrepaid;
+
+    // hCODCommission.textContent = cod_commission_admin.toFixed(2);
+    // hElecCommission.textContent = elec_commission_admin.toFixed(2);
+    hPendingCODPayouts.textContent = rupeeSymbol + cod_payout_seller.toFixed(2);
+    hPendingElecPayouts.textContent = rupeeSymbol + elec_payout_seller.toFixed(2);
+    
+
+    hCODCommission.textContent = deductionsCOD.toFixed(2);
+    hElecCommission.textContent = deductionsPrepaid.toFixed(2);
     hPendingCODPayouts.textContent = cod_payout_seller.toFixed(2);
     hPendingElecPayouts.textContent = elec_payout_seller.toFixed(2);
 

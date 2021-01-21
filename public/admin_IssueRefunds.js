@@ -516,7 +516,17 @@ function addPendingOrdersToTable() {
 
 
         var offerPrice = getOfferPrice(product);
-        var amtPayable = product.return_qty * offerPrice;
+        var amtPayable = 0;
+        if(order.cancelled){
+            amtPayable = product.Qty * offerPrice; 
+        }
+        else{
+            if(!product.return_requested){
+                continue;
+            }
+            amtPayable = product.return_qty * offerPrice;
+        }
+       
         var formattedAmtPayable = rupeeSymbol + numberWithCommas(amtPayable);
         var amountPayable = document.createElement("span");
         amountPayable.textContent = formattedAmtPayable;
@@ -582,7 +592,7 @@ function getPayableAmount() {
         var product = productList[i];
         var offerPrice = getOfferPrice(product);
         if (mOrder.cancelled) {
-            amtPayable += product.return_qty * offerPrice;
+            amtPayable += product.Qty * offerPrice;
             returnableProducts.push(product);
         }
         else {

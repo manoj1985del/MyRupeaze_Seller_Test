@@ -74,6 +74,8 @@ function loadInvoice() {
   var txtSellerPin = document.getElementById("sellerpin");
   var txtSellerGST = document.getElementById("sellerGST");
   var stateCode = document.getElementById("txtStateCode");
+  var sellerPhone = document.getElementById("sellerPhone");
+  var sellerEmail = document.getElementById("sellerEmail");
 
 
 
@@ -119,13 +121,15 @@ function loadInvoice() {
 
 
 
-  txtSellerName.textContent = invoice.seller_name;
+  txtSellerName.textContent = invoice.company_name;
   txtSelleraddressLine1.textContent = invoice.sellerAddressLine1;
   txtSelleraddressLine2.textContent = invoice.sellerAddressLine2;
   txtSelleraddressLine3.textContent = invoice.sellerAddressLine3;
   txtSellerCity.innerHTML = invoice.sellerCity;
   txtSellerState.textContent = invoice.sellerState + " INDIA";
   txtSellerPin.textContent = "Pincode: " + invoice.sellerPin;
+  sellerPhone.innerHTML = "<b>Contact No: </b>" + invoice.seller_mobile;
+  sellerEmail.innerHTML = "<b>Email: </b>" + invoice.seller_email;
   txtSellerPAN.innerHTML = "<b>PAN: </b>" + invoice.sellerPAN;
   txtSellerGST.innerHTML = "<b>GSTIN: </b>" + invoice.sellerGST;
   stateCode.textContent = "GST State Code: " +  gstMap.get(invoice.sellerState);

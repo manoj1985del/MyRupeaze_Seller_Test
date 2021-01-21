@@ -1,5 +1,5 @@
 
-
+var errMsg = "";
 var divContent = document.getElementById("divContent");
 var divProgress = document.getElementById("divProgress");
 
@@ -37,20 +37,6 @@ var gstlist = [];
 var qtyList = [];
 var statusList = [];
 
-//get seller details
-var sellerName; // = localStorage.getItem("sellerName");
-var sellerAddressLine1; // = localStorage.getItem("sellerAddressLine1");
-var sellerAddressLine2; // = localStorage.getItem("sellerAddressLine2");
-var sellerAddressLine3; // = localStorage.getItem("sellerAddressLine3");
-var sellerCity; // = localStorage.getItem("sellerCity");
-var sellerState; // = localStorage.getItem("sellerState");
-var sellerCountry; // = "INDIA";
-var sellerPin; // = localStorage.getItem("sellerpin");
-var sellerPAN; // = localStorage.getItem("sellerPAN");
-var sellerGST; // = localStorage.getItem("sellerGST");
-var sellerMerchantId; ;
-
-
 
 table.style.display = "none";
 divCustomerDetails.style.display = "none";
@@ -68,22 +54,7 @@ class Products {
     }
 }
 
-getSellerDetails().then(()=>{
-    sellerName = mSeller.seller_name;
-    sellerAddressLine1 = mSeller.address_line1;
-    sellerAddressLine2 = mSeller.address_line2;
-    sellerAddressLine3 = mSeller.address_line3;
-    sellerCity = mSeller.city;
-    sellerState = mSeller.state;
-    sellerCountry = "INDIA";
-    sellerPin = mSeller.pincode;
-    sellerPAN = mSeller.pan_no;
-    sellerGST = mSeller.gstin;
-    sellerMerchantId = mSeller.merchant_id;
-
-
-
-});
+getSellerDetails();
 
 
 btnMobile.addEventListener("click", function () {
@@ -95,7 +66,6 @@ btnMobile.addEventListener("click", function () {
     spEmail.textContent = "";
     spPoints.textContent = "";
     customerExist = false;
-
     customer = null;
     spCustomerName.textContent = "";
     spCustomerMobile.timestamp = "";
@@ -104,7 +74,6 @@ btnMobile.addEventListener("click", function () {
     customerExist = false;
     
     getCustomerDetails(txtMobile.value).then(() => {
-        alert(txtMobile.value);
         if (customer != null) {
             customerExist = true;
             divCustomerDetails.style.display = "block";
@@ -115,7 +84,6 @@ btnMobile.addEventListener("click", function () {
             spPoints.textContent = "Points Balance - " + customer.points;
             imgSaving.style.display = "none";
             divOtherDetails.style.display = "block";
-
             spCustomerMobile.style.display = "block";
             spEmail.style.display = "block";
             spCustomerMobile.style.color = "black";
@@ -134,13 +102,35 @@ btnMobile.addEventListener("click", function () {
             spPoints.style.display = "none";
         }
     })
-
-
 });
+
+
+function validateDetails(){
+    errMsg = "";
+    if(txtProductName.value == ""){
+        errMsg += "Please enter product name\n";
+    }
+
+    if(txtPrice.value == ""){
+        errMsg += "Please enter Price\n";
+    }
+
+    if(txtQty.value == ""){
+        errMsg += "Please enter quantity\n";
+    }
+
+    if(txtGST.value == ""){
+        errMsg += "Please enter GST\n";
+    }
+}
 
 btnAddProduct.addEventListener("click", function () {
 
-
+    validateDetails();
+    if(errMsg != ""){
+        alert(errMsg);
+        return;
+    }
     table.style.display = "block";
     var price = parseInt(txtPrice.value) * parseInt(txtQty.value);
     var priceTwoAndHalfPercent = (price * 2.5) / 100;
@@ -300,16 +290,20 @@ function createInvoice(invoiceId) {
             invoice_id: newInvoiceId,
             customer_id:customerId,
             seller_id: sellerId,
-            seller_name: sellerName,
-            sellerAddressLine1: sellerAddressLine1,
-            sellerAddressLine2: sellerAddressLine2,
-            sellerAddressLine3: sellerAddressLine3,
-            sellerCity: sellerCity,
-            sellerState: sellerState,
-            sellerCountry: sellerCountry,
-            sellerPin: sellerPin,
-            sellerPAN: sellerPAN,
-            sellerGST: sellerGST,
+            seller_name: mSeller.seller_name,
+            sellerAddressLine1: mSeller.address_line1,
+            sellerAddressLine2: mSeller.address_line2,
+            sellerAddressLine3: mSeller.address_line3,
+            sellerCity: mSeller.city,
+            sellerState: mSeller.state,
+            sellerCountry: "INDIA",
+            sellerPin: mSeller.pincode,
+            sellerPAN: mSeller.pan_no,
+            sellerGST: mSeller.gstin,
+            seller_mobile: mSeller.mobile,
+            seller_email: mSeller.email,
+            merchant_id: mSeller.merchant_id,
+            company_name: mSeller.company_name,
             bill_to_name: customer.Name,
             bill_to_phone: customer.Phone,
             bill_to_email: customer.Email,
@@ -328,19 +322,8 @@ function createInvoice(invoiceId) {
                 reject();
                 return false;
             });
-
-
-
-
     });
-
-
 }
-
-
-
-
-
 
 function getNewInvoiceId() {
 

@@ -237,6 +237,7 @@ function loadUI() {
             if(arrLabels[j].textContent == subCategory){
                var inputElement = checkBoxes[j];
                inputElement.checked = true;
+               arrSelectedSubCategories.push(arrLabels[j].textContent);
                break;
             }
          }

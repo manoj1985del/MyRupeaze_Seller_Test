@@ -141,21 +141,41 @@
 
 
   <div class="container"> 
-    <div class="form-group" id="divAddFromProduct">
-      <input type="text" class="form-control" id="txtProductId" placeholder="Enter Product Id">
-      <button type="button" class="btn btn-primary mt-2" id="btnSearchProduct">Search Product</button>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <select name="cmbSearchBy" id="cmbSearchBy" class="form-control">
+            <option selected disabled hidden value=null>Search By</option>
+            <option value="Product Id">Product Id</option>
+            <option value="Product Category">Product Category</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-group" id="divSearchBy" style="display: none;">
+          <input type="text" class="form-control" id="txtProductId" placeholder="Enter Product Id">
+          <select name="cmbProductCategory" id="cmbProductCategory" class="form-control">
+            <option selected disabled hidden value=null>Select Category</option>
+            <option value="Electronics and Appliances">Electronics and Appliances</option>
+            <option value="Fashion and apparels">Fashion and apparels</option>
+            <option value="Books, Toys, Games, Baby products">Books, Toys, Games, Baby products</option>
+            <option value="Footwears">Footwears</option>
+            <option value="Pandemic Needs">Pandemic Needs</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Home, Kitchen, pets, Furniture">Home, Kitchen, pets, Furniture</option>
+            <option value="Mobiles, Computers">Mobiles, Computers</option>
+            <option value="Sports, Fitness, Bags & Luggage">Sports, Fitness, Bags & Luggage</option>
+            <option value="Cakes, Sweets and Confectionaries">Cakes, Sweets and Confectionaries</option>
+          </select>
+          <button type="button" class="btn btn-primary mt-2" id="btnSearchProduct">Search Product</button>
+        </div>
+      </div>
     </div>
+   
   </div>
   
   <table id="tblshowlisting">
-    <!-- <tr>
-            <th>Image</th>
-            <th>Product Title</th>
-            <th>Stock Qty</th>
-            <th>Offer Price</th>
-            <th>MRP</th>
-          </tr> -->
-
   </table>
 
 </div>

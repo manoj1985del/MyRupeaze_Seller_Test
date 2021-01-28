@@ -305,53 +305,7 @@ function returnItem(status_list, points) {
 
 
 
-function createInvoice(invoiceId) {
 
-    return new Promise((resolve, reject) => {
-
-        for (var i = 0; i < productList.length; i++) {
-            var product = productList[i];
-            productNames.push(product.productName);
-            gstlist.push(parseInt(product.gst));
-            priceList.push(parseInt(product.price));
-            qtyList.push(parseInt(product.qty));
-            statusList.push("success");
-        }
-
-        firebase.firestore().collection('offline_invoices').doc(invoiceId).set({
-            invoice_id: newInvoiceId,
-            seller_id: sellerId,
-            seller_name: sellerName,
-            sellerAddressLine1: sellerAddressLine1,
-            sellerAddressLine2: sellerAddressLine2,
-            sellerAddressLine3: sellerAddressLine3,
-            sellerCity: sellerCity,
-            sellerState: sellerState,
-            sellerCountry: sellerCountry,
-            sellerPin: sellerPin,
-            sellerPAN: sellerPAN,
-            sellerGST: sellerGST,
-            bill_to_name: customer.Name,
-            bill_to_phone: customer.Phone,
-            bill_to_email: customer.Email,
-            product_names: productNames,
-            product_qty: qtyList,
-            gst_list: gstlist,
-            price_list: priceList,
-            status_list: statusList,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-            .then(function () {
-                resolve();
-            })
-            .catch(function (error) {
-                console.error('Error writing new message to database', error);
-                reject();
-                return false;
-            });
-    });
-
-}
 
 
 
@@ -391,3 +345,4 @@ function deleteTableRows() {
         child = table.lastElementChild;
     }
 }
+

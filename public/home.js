@@ -1,6 +1,7 @@
 localStorage.clear();
 
 var rupeeSymbol = "₹ ";
+var tradeCharges = 28;
 
 var cardCity = document.getElementById("cardCity");
 var btnUpdate = document.getElementById("btnUpdate");
@@ -850,6 +851,11 @@ function calculatePayout() {
 
     var productList = [];
 
+    var totalCODValue = 0;
+    var totalPrepaidValue= 0;
+    var totalCODCommission = 0;
+    var totalPrepaidCommission = 0;
+
     for (var i = 0; i < unsettledOrders.length; i++) {
         var order = unsettledOrders[i];
         if (order.cancelled) {
@@ -862,38 +868,52 @@ function calculatePayout() {
             var amtToReduce = 0;
             if (product.return_requested && product.return_processed) {
                 amtToReduce = product.return_amount;
+            }
 
+            if(product.cancelled_by_seller){
+                product.Offer_Price = 0;
             }
 
             var commission = commision_map.get(product.Category);
             var offer_price = product.Offer_Price * product.Qty;
             offer_price = offer_price - amtToReduce;
-            var seller_part = offer_price - (offer_price * commission / 100);
-            var admin_part = offer_price - seller_part;
-
+            var commission_value = (offer_price * commission) / 100;
+          
             if (order.COD == true) {
-             //   console.log("offer price  = " + product.Offer_Price);
-              //  console.log("commision %  = " + commission);
-
-
-                cod_payout_seller += seller_part;
-                cod_commission_admin += admin_part;
-                // console.log("cod seller payout =" +  cod_payout_seller);
-                // console.log("cod commision = " + cod_commission_admin);
-                // console.log("admin_part = " + admin_part);
-                // console.log("seller_part = " + seller_part);
-                // console.log("-----------------------------------------");
+                totalCODValue += offer_price;
+                totalCODCommission += commission_value;
             }
             else {
                 //if order is prepaid and successful payment has been made
                 if (order.payment_id != null) {
-                    elec_payout_seller += seller_part;
-                    elec_commission_admin += admin_part;
+                   totalPrepaidValue += offer_price;
+                   totalPrepaidCommission += commission_value;
 
                 }
             }
         }
     }
+
+    var tradingChargesCOD = 28;
+    var tradingChargesPrepaid = 28;
+
+    if(totalCODValue == 0){
+        tradingChargesCOD = 0;
+    }
+
+    if(totalPrepaidValue == 0){
+        tradingChargesPrepaid = 0;
+    }
+
+    var deductionsCODTaxable = totalCODCommission + tradingChargesCOD;
+    var taxes = deductionsCODTaxable *18 / 100;
+    var deductionsCOD = deductionsCODTaxable + taxes;
+    var cod_payout_seller = totalCODValue - deductionsCOD;
+
+    var deductionsPrepaidTaxable = totalPrepaidCommission + tradingChargesPrepaid;
+    var taxes = deductionsPrepaidTaxable *18 / 100;
+    var deductionsPrepaid = deductionsPrepaidTaxable + taxes;
+    var elec_payout_seller = totalPrepaidValue - deductionsPrepaid;
 
     // hCODCommission.textContent = cod_commission_admin.toFixed(2);
     // hElecCommission.textContent = elec_commission_admin.toFixed(2);
@@ -908,8 +928,6 @@ function calculatePayout() {
 function calculateDisbursableAmount() {
     var freezedAmount = 0;
     var disbursableAmount = 0;
-    var freezedCommission = 0;
-    var availableCommission = 0;
     var arrOrders = [];
 
 
@@ -923,23 +941,34 @@ function calculateDisbursableAmount() {
         var deliveryDate = order.delivery_date;
         var productList = unsettledOrdersProductMap.get(order.order_id);
 
+        var freezedAmountTemp = 0;
+        var freezedCommissionTemp = 0;
+        var disbursableAmountTemp = 0;
+        var availableCommissionTemp = 0;
+
         for (var productNumber = 0; productNumber < productList.length; productNumber++) {
+
+
             var product = productList[productNumber];
+           
             var amtToReduce = 0;
             if (product.return_requested && product.return_processed) {
                 amtToReduce = product.return_amount;
-
+            }
+            if(product.cancelled_by_seller){
+                product.Offer_Price= 0;
             }
             var commission = commision_map.get(product.Category);
             var offer_price = product.Offer_Price * product.Qty;
             offer_price = offer_price - amtToReduce;
-            var seller_part = offer_price - (offer_price * commission / 100);
-            var admin_part = offer_price - seller_part;
+            var commission_value = (offer_price * commission) / 100;
+            // var seller_part = offer_price - commission_value;
+            // var admin_part = offer_price - seller_part;
 
             //If product is not delivered yet.. it will fall in freezed category
             if (deliveryDate == null) {
-                freezedAmount += seller_part;
-                freezedCommission += admin_part;
+                freezedAmountTemp += offer_price;
+                freezedCommissionTemp += commission_value;
             }
             else {
                 var dtDelivery = deliveryDate.toDate();
@@ -978,14 +1007,14 @@ function calculateDisbursableAmount() {
                // console.log("Delivery date - " + dtDelivery);
                // console.log("Freezing window start date - " + dtFreezeWindowStart);
                 if (dtDelivery < dtFreezeWindowStart) {
-                    disbursableAmount += seller_part;
-                    availableCommission += admin_part;
+                    disbursableAmountTemp += offer_price;
+                    availableCommissionTemp += commission_value;
                     arrOrders.push(order);
 
                 }
                 else {
-                    freezedAmount += seller_part;
-                    freezedCommission += admin_part;
+                    freezedAmountTemp += offer_price;
+                    freezedCommissionTemp += commission_value;
                 }
 
 
@@ -993,9 +1022,27 @@ function calculateDisbursableAmount() {
 
         }
 
+        var tradeChargesFreezed = 28;
+        var tradeChargesAvailable = 28;
+
+        if(freezedAmountTemp == 0){
+            tradeChargesFreezed = 0;
+        }
+
+        if(disbursableAmountTemp == 0){
+            tradeChargesAvailable = 0;
+        }
+       
+        var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
+        var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
+        var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
+        freezedAmount += freezedAmountTemp - freezedDeductions;
+
+        var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
+        var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
+        var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
+        disbursableAmount += disbursableAmountTemp - disbursableDeductions;
     }
-
-
 
     hFreezed.textContent = rupeeSymbol + freezedAmount.toFixed(2);
     hDisbursable.textContent = rupeeSymbol + disbursableAmount.toFixed(2);

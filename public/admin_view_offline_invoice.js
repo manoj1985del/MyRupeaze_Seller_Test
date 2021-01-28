@@ -1,3 +1,5 @@
+
+
 var pageHeader = document.getElementById("pageHeader");
 var errorMsg = document.getElementById("errorMsg");
 var divProgress = document.getElementById("divProgress");
@@ -8,8 +10,12 @@ var btnNext = document.getElementById("next");
 var btnPrevious = document.getElementById("previous");
 var errMsg = document.getElementById("errorMsg");
 var table = document.getElementById("tblInvoices");
+var dtFrom = document.getElementById("dtFrom");
+var dtEnd = document.getElementById("dtEnd");
+var btnSearch = document.getElementById("btnSearch");
 var rupeeSymbol = "₹ ";
 var lastVisibleDoc;
+var searchByDate = false;
 
 var docLimit = 25 ;
 
@@ -35,6 +41,12 @@ function deleteTableRows() {
     }
 }
 
+
+btnSearch.addEventListener("click", ()=>{
+    searchByDate = true;
+    loadInvoices();
+})
+
 btnNext.addEventListener("click", function () {
     divProgress.style.display = "block";
     divContent.style.display = "none";
@@ -54,7 +66,31 @@ btnNext.addEventListener("click", function () {
             .orderBy("timestamp", "desc")
             .limit(docLimit)
             .startAfter(lastVisibleDoc);
-        }else{
+        }
+        else if(searchByDate){
+            if(sellerid == null){
+                nextQuery = firebase.firestore()
+                .collection('offline_invoices')
+                .where("timestamp", '>=', new Date(dtFrom.value))
+                .where("timestamp", '<=', new Date(dtEnd.value))
+                .orderBy("timestamp", "desc")
+                .limit(docLimit)
+                .startAfter(lastVisibleDoc);
+            }
+            else
+            {
+                nextQuery = firebase.firestore()
+                .collection('offline_invoices')
+                .where("seller_id", '==', sellerid)
+                .where("timestamp", '>=', new Date(dtFrom.value))
+                .where("timestamp", '<=', new Date(dtEnd.value))
+                .orderBy("timestamp", "desc")
+                .limit(docLimit)
+                .startAfter(lastVisibleDoc);
+
+            }
+        }
+        else{
             nextQuery = firebase.firestore()
             .collection('offline_invoices')
             .where("seller_id", "==", sellerid)
@@ -109,6 +145,10 @@ btnPrevious.addEventListener("click", function () {
 
 function loadInvoices() {
 
+    queryList = [];
+    invoiceList = [];
+    deleteTableRows();
+
     pageHeader.textContent = "Offline Invoices";
     var query;
     if(sellerid == null){
@@ -117,7 +157,48 @@ function loadInvoices() {
         .orderBy("timestamp", "desc")
         .limit(docLimit);
     }
+    else if(searchByDate){
+        var errMsg = "";
+        var errorFound = false;
+        if(dtFrom.value == ""){
+            errMsg += "Please select start date\n";
+            errorFound = true;
+        }
+    
+        if(dtEnd.value == ""){
+            errMsg += "Please select end date\n";
+            errorFound = true;
+        }
+    
+        if(errorFound){
+            alert(errMsg);
+            return;
+        }
+    
+        if(sellerid == null){
+            query = firebase.firestore()
+            .collection('offline_invoices')
+            .where("timestamp", '>=', new Date(dtFrom.value))
+            .where("timestamp", '<=', new Date(dtEnd.value))
+            .orderBy("timestamp", "desc")
+            .limit(docLimit);
+        }
+        else{
+
+            query = firebase.firestore()
+            .collection('offline_invoices')
+            .where("seller_id", '==', sellerid)
+            .where("timestamp", '>=', new Date(dtFrom.value))
+            .where("timestamp", '<=', new Date(dtEnd.value))
+            .orderBy("timestamp", "desc")
+            .limit(docLimit);
+
+        }
+       
+    }
     else{
+
+        
         query = firebase.firestore()
         .collection('offline_invoices')
         .where("seller_id", '==', sellerid)
@@ -136,6 +217,30 @@ function loadInvoices() {
             .orderBy("timestamp", "desc")
             .startAfter(lastVisibleDoc)
             .limit(docLimit);
+        }
+        else if(searchByDate){
+
+            if(sellerid == null){
+                nextQuery = firebase.firestore()
+                .collection('offline_invoices')
+                .where("timestamp", '>=', new Date(dtFrom.value))
+                .where("timestamp", '<=', new Date(dtEnd.value))
+                .orderBy("timestamp", "desc")
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);
+            }
+            else{
+                nextQuery = firebase.firestore()
+                .collection('offline_invoices')
+                .where("seller_id", '==', sellerid)
+                .where("timestamp", '>=', new Date(dtFrom.value))
+                .where("timestamp", '<=', new Date(dtEnd.value))
+                .orderBy("timestamp", "desc")
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);
+            }
+            
+
         }
         else{
             nextQuery = firebase.firestore()

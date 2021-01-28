@@ -197,7 +197,6 @@ function createTable() {
         var tdProductName = document.createElement("td");
         var tdProductId = document.createElement("td");
         var tdOnlinePrice = document.createElement("td");
-        var tdYourPrice = document.createElement("td");
         var tdAction = document.createElement("td");
 
 
@@ -205,7 +204,6 @@ function createTable() {
         var divProductName = document.createElement("div");
         var divProductId = document.createElement("div");
         var divOnlinePrice = document.createElement("div");
-        var divYourPrice = document.createElement("div");
         var divAction = document.createElement("div");
 
 
@@ -227,9 +225,6 @@ function createTable() {
         onlinePrice.textContent = product.Offer_Price;
         divOnlinePrice.appendChild(onlinePrice);
 
-        var yourPrice = document.createElement("span");
-        yourPrice.textContent = "-";
-        divYourPrice.appendChild(yourPrice);
 
         // console.log(alreadySellingProducts);
         // for(var i = 0 ; i < alreadySellingProducts.length; i++){
@@ -242,9 +237,6 @@ function createTable() {
         //     yourPrice.textContent = pr.Offer_Price;
         // }
 
-        if (product.selling_offline) {
-            yourPrice.textContent = product.shop_price;
-        }
 
         var divConfirm = document.createElement("div");
         divConfirm.setAttribute("id", "idConfrimDiv" + index);
@@ -257,23 +249,14 @@ function createTable() {
         btnStartSelling.style.width = "150px";
         divStartSelling.appendChild(btnStartSelling);
 
-        var divEdit = document.createElement("div");
-        divEdit.style.marginBottom = "10px";
-        var btnEdit = document.createElement("button");
-        btnEdit.setAttribute("id", index);
-        btnEdit.textContent = "Edit Details";
-        btnEdit.style.width = "150px";
-        divEdit.appendChild(btnEdit);
+     
 
         divConfirm.appendChild(divStartSelling);
-        divConfirm.appendChild(divEdit);
 
         if (product.selling_offline) {
             btnStartSelling.textContent = "Stop Selling Offline";
-            // btnStartSelling.disabled = true;
-            divEdit.style.display = "block";
         } else {
-            divEdit.style.display = "none";
+           // divEdit.style.display = "none";
         }
 
 
@@ -284,14 +267,12 @@ function createTable() {
         tdProductName.appendChild(divProductName);
         tdProductId.appendChild(divProductId);
         tdOnlinePrice.appendChild(divOnlinePrice);
-        tdYourPrice.appendChild(divYourPrice);
         tdAction.appendChild(divAction);
 
         tr.appendChild(tdImage);
         tr.appendChild(tdProductName);
         tr.appendChild(tdProductId)
         tr.appendChild(tdOnlinePrice);
-        tr.appendChild(tdYourPrice);
         tr.appendChild(tdAction);
 
         table.appendChild(tr);
@@ -301,27 +282,14 @@ function createTable() {
             var index = parseInt(this.id);
             var product = productList[index];
             if (this.textContent == "Stop Selling Offline") {
-                updateShopPrice(product.Product_Id);
+                updateOfflineFlag(product.Product_Id, false);
+               
             }
             else {
-                localStorage.setItem("coverImageUrl", product.ImageUrlCover);
-                //  console.log("going to set product");
-                //  localStorage.setItem("selectedProduct", product);
-
-                var queryString = "?productId=" + product.Product_Id;
-
-                window.location.href = "StartSelling.html" + queryString;
+                updateOfflineFlag(product.Product_Id, true);
             }
         })
 
-        btnEdit.addEventListener("click", function () {
-            var index = parseInt(this.id);
-            var product = productList[index];
-
-            var queryString = "?productId=" + product.Product_Id;
-
-            window.location.href = "StartSelling.html" + queryString;
-        })
 
     }
 
@@ -370,7 +338,6 @@ function createTableHeaders() {
     var productNameHeader = document.createElement('th');
     var productIdHeader = document.createElement('th');
     var onlinePriceHeder = document.createElement('th');
-    var yourPriceHeader = document.createElement('th');
     var actionHeader = document.createElement('th');
 
 
@@ -378,14 +345,12 @@ function createTableHeaders() {
     productNameHeader.innerHTML = "Product Name";
     productIdHeader.innerHTML = "Product Id";
     onlinePriceHeder.innerHTML = "Online Price";
-    yourPriceHeader.innerHTML = "Your Price"
     actionHeader.innerHTML = "Action";
 
     tr.appendChild(imageHeader);
     tr.appendChild(productNameHeader);
     tr.appendChild(productIdHeader);
     tr.appendChild(onlinePriceHeder);
-    tr.appendChild(yourPriceHeader);
     tr.appendChild(actionHeader);
 
 
@@ -414,4 +379,24 @@ function getAlreadySellingProducts() {
             })
 
     })
+}
+
+function updateOfflineFlag(productId, flag) {
+
+    var washingtonRef = firebase.firestore().collection("products").doc(productId);
+
+    // Set the "capital" field of the city 'DC'
+    return washingtonRef.update({
+        selling_offline: flag,
+    })
+        .then(function () {
+          //  console.log("Document successfully updated!");
+            alert("Details saved successfully");
+            window.location.href = "SellProductAsSeller.html";
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
+
 }

@@ -137,21 +137,59 @@
 
   <div id="divContent" class="m-2" style="display: none;">
 
-    <div class="container">
 
       <div>
         <h1 class="d-flex justify-content-center" id="pageHeader"></h1>
         <hr />
       </div>
 
-      <form>
-        <div class="form-group">
-          <input type="text" class="form-control" id="txtSearch" placeholder="Enter Order Id">
-          <button type="button" class="btn btn-info mt-2" id="btnSearch">Search</button>
-        </div>
-    </div>
+        <form>
+          <div>
+            <div class="row">
+              
+              <div class = "col-md-4">
+                <div class="form-group">
+                  <!-- <input type="text" class="form-control" id="txtState"> -->
+                  <select name="cmbSearchBy" id="cmbSearchBy" class="form-control">
+                    <option selected disabled hidden value=null>Search By</option>
+                    <option value="None">No Filter</option>
+                    <option value="Order Id">Order Id</option>
+                    <option value="Date Range">Date Range</option>
+                  </select>
+                </div>
+        
+              </div>
+  
+          <div class="col-md-4" id="divSearchBy" style="display: none;">
+            <div class="form-group">
+            
+              <input type="text" class="form-control" id="txtSearch">
 
-    </form>
+              <div id="divDateFilter">
+                <label for="dtFrom">Start Date:</label>
+                <input type="date" class="form-control" id="dtFrom">
+  
+                <label for="dtEnd">End Date:</label>
+                <input type="date" class="form-control" id="dtEnd">
+              </div>
+            </div>
+          
+         </div>
+  
+              <div class = "col-md-4">
+                <div class="form-group">
+                  <!-- <input type="text" class="form-control" id="txtState"> -->
+                  <button type="button" class="btn btn-info" id="btnSearch">Search</button>
+                </div>
+        
+              </div>
+  
+            </div>
+          </div>
+        
+      </div>
+  
+      </form>
 
     <table id="tblPendingOrders">
     </table>

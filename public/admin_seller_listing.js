@@ -713,6 +713,17 @@ function drawTable(sellerList) {
         divUnsettledOrders.appendChild(divOfflineOrders);
         divAction.appendChild(divUnsettledOrders);
 
+        var divOnlineOrders = document.createElement("div");
+        var btnOnlineOrders = document.createElement("button");
+        btnOnlineOrders.textContent = "Online Orders";
+        btnOnlineOrders.style.width = "150px";
+        btnOnlineOrders.setAttribute("id", i.toString());
+        btnOnlineOrders.style.marginBottom = "10px";
+        divOnlineOrders.appendChild(btnOnlineOrders);
+        divUnsettledOrders.appendChild(divOnlineOrders);
+        divAction.appendChild(divUnsettledOrders);
+
+
         if (seller.status == "pending" || seller.status == "suspended" || seller.status == "rejected") {
             divApprove.style.display = "block";
             divSuspendAccount.style.display = "none";
@@ -796,7 +807,16 @@ function drawTable(sellerList) {
             var index = parseInt(this.id);
             var seller = sellerList[index];
             var href = "admin_view_offline_invoice.html?sellerid=" + seller.seller_id;
-            window.location.href = href;
+            window.open(href, "_blank"); 
+            //window.location.href = href;
+        })
+
+        btnOnlineOrders.addEventListener("click", function(){
+            var index = parseInt(this.id);
+            var seller = sellerList[index];
+            var href = "admin_orders.html?type=all&sellerid=" + seller.seller_id;
+            window.open(href, "_blank"); 
+            //window.location.href = href;
         })
 
         btnSuspendAccount.addEventListener("click", function () {
@@ -970,7 +990,8 @@ function drawTable(sellerList) {
 
             var index = parseInt(this.id);
             var seller = sellerList[index];
-            window.location.href = "admin_orders.html?type=unsettled&sellerid=" + seller.seller_id;
+            var href = "admin_orders.html?type=unsettled&sellerid=" + seller.seller_id;
+            window.open(href, "_blank"); 
         })
 
         btnSettleAccount.addEventListener("click", function () {

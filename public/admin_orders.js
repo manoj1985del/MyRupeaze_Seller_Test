@@ -22,6 +22,10 @@ let productList = [];
 var commision_map = new Map();
 var orderSellerMap = new Map();
 
+var searchByDateRange = false;
+var dtFirstDate;
+var dtLastDate;
+
 
 
 var orderId;
@@ -48,7 +52,14 @@ var txtSearch = document.getElementById("txtSearch");
 var divProgress = document.getElementById("divProgress");
 var divContent = document.getElementById("divContent");
 
+var cmbSearchBy = document.getElementById("cmbSearchBy");
+var dtFrom = document.getElementById("dtFrom");
+var dtEnd = document.getElementById("dtEnd");
+var divDateFilter = document.getElementById("divDateFilter");
+var divSearchBy = document.getElementById("divSearchBy");
+
 var nextQuery;
+var sellerid = getQueryVariable("sellerid");
 
 
 errMsg.textContent = "";
@@ -84,7 +95,6 @@ var statusValues = [
 
 var table = document.getElementById("tblPendingOrders");
 
-var sellerId = localStorage.getItem("sellerid");
 var pageHeader = document.getElementById("pageHeader");
 
 var orderType = getQueryVariable("type");
@@ -93,6 +103,29 @@ var querySellerId = null;
 
 loadComissionMap().then(() => {
     loadOrders();
+})
+
+cmbSearchBy.addEventListener("change", function () {
+
+    if (this.value == "None") {
+        divSearchBy.style.display = "none";
+    }
+    else {
+        divSearchBy.style.display = "block";
+
+        if (this.value == "Order Id") {
+            txtSearch.style.display = "block";
+            divDateFilter.style.display = "none";
+        }
+
+        if (this.value == "Date Range") {
+            txtSearch.style.display = "none";
+            divDateFilter.style.display = "block";
+        }
+    }
+    // <option value="None">No Filter</option>
+    //                 <option value="Order Id">Order Id</option>
+    //                 <option value="Date Range">Date Range</option>
 })
 
 btnNext.addEventListener("click", function () {
@@ -111,12 +144,26 @@ btnNext.addEventListener("click", function () {
 
     if (orderType == "pending") {
         fetchOrders(query).then(() => {
-            nextQuery = firebase.firestore()
-                .collection('orders')
-                .where("Status", "==", "Order received. Seller Confirmation pending.")
-                .limit(docLimit)
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+            if (searchByDateRange) {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("Status", "==", "Order received. Seller Confirmation pending.")
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .limit(docLimit)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+            }
+            else {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("Status", "==", "Order received. Seller Confirmation pending.")
+                    .limit(docLimit)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
 
 
             pageIndex++;
@@ -137,12 +184,51 @@ btnNext.addEventListener("click", function () {
     }
 
     if (orderType == "all") {
+
         fetchOrders(query).then(() => {
-            nextQuery = firebase.firestore()
-                .collection('orders')
-                .orderBy("order_date", "desc")
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+            if (searchByDateRange) {
+
+                if (sellerid == null) {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("order_date", ">=", dtFirstDate)
+                        .where("order_date", "<=", dtLastDate)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+                else {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("order_date", ">=", dtFirstDate)
+                        .where("order_date", "<=", dtLastDate)
+                        .where("seller_id", "==", sellerid)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+
+            }
+            else {
+
+                if(sellerid == null){
+                    nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .orderBy("order_date", "desc")
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+                }
+                else{
+                    nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("seller_id", "==", sellerid)
+                    .orderBy("order_date", "desc")
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+                }
+               
+            }
+
 
             pageIndex++;
             queryList.push(nextQuery);
@@ -193,25 +279,51 @@ btnNext.addEventListener("click", function () {
 
     if (orderType == "unsettled") {
 
-        querySellerId = getQueryVariable("sellerid");
 
         fetchOrders(query).then(() => {
-            if (querySellerId == null) {
-                nextQuery = firebase.firestore()
-                    .collection('orders')
-                    .where("settlement_done", "==", false)
-                    .orderBy("order_date", "desc")
-                    .startAfter(lastVisibleDoc)
-                    .limit(docLimit);
+            if (sellerid == null) {
+                if (searchByDateRange) {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .where("order_date", ">=", dtFirstDate)
+                        .where("order_date", "<=", dtLastDate)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+
+                }
+                else {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
             }
             else {
-                nextQuery = firebase.firestore()
-                    .collection('orders')
-                    .where("settlement_done", "==", false)
-                    .where("seller_id", "==", querySellerId)
-                    .orderBy("order_date", "desc")
-                    .startAfter(lastVisibleDoc)
-                    .limit(docLimit);
+                if (searchByDateRange) {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .where("seller_id", "==", sellerid)
+                        .where("order_date", ">=", dtFirstDate)
+                        .where("order_date", "<=", dtLastDate)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+                else {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .where("seller_id", "==", sellerid)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+
 
             }
 
@@ -236,13 +348,25 @@ btnNext.addEventListener("click", function () {
 
     if (orderType == "settled") {
         fetchOrders(query).then(() => {
-            nextQuery = firebase.firestore()
-                .collection('orders')
-                .where("settlement_done", "==", true)
-                .orderBy("order_date", "desc")
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+            if (searchByDateRange) {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("settlement_done", "==", true)
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .orderBy("order_date", "desc")
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
 
+            }
+            else {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("settlement_done", "==", true)
+                    .orderBy("order_date", "desc")
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
 
             pageIndex++;
             queryList.push(nextQuery);
@@ -266,10 +390,9 @@ btnNext.addEventListener("click", function () {
 
     if (orderType == "waiting_for_pickup") {
 
-        querySellerId = getQueryVariable("sellerid");
 
         fetchOrders(query).then(() => {
-            if (querySellerId == null) {
+            if (sellerid == null) {
                 nextQuery = firebase.firestore()
                     .collection('orders')
                     .where("Status", "==", "Ready For Dispatch")
@@ -281,7 +404,7 @@ btnNext.addEventListener("click", function () {
                 nextQuery = firebase.firestore()
                     .collection('orders')
                     .where("Status", "==", "Ready For Dispatch")
-                    .where("seller_id", "==", querySellerId)
+                    .where("seller_id", "==", sellerid)
                     .orderBy("order_date", "desc")
                     .startAfter(lastVisibleDoc)
                     .limit(docLimit);
@@ -350,27 +473,72 @@ btnPrevious.addEventListener("click", function () {
 })
 
 btnSearch.addEventListener("click", function () {
-    if (txtSearch.value == "") {
-        alert("Please enter order id");
+
+
+    var query;
+
+
+    if (cmbSearchBy.value == "Order Id") {
+
+        searchByDateRange = false;
+        if (txtSearch.value == "") {
+            alert("Please enter order id");
+            return;
+        }
+
+        query = firebase.firestore()
+            .collection('orders')
+            .where("order_id", "==", txtSearch.value);
+
+
+        txtSearch.value = "";
+    }
+
+    else if (cmbSearchBy.value == "Date Range") {
+        if (dtFrom.value == "") {
+            alert("Please select start date");
+            return;
+        }
+
+        if (dtEnd.value == "") {
+            alert("Please select end date");
+            return;
+        }
+
+        dtFirstDate = new Date(dtFrom.value);
+        dtFirstDate.setHours(0);
+        dtFirstDate.setMinutes(0);
+        dtFirstDate.setMilliseconds(0);
+        dtFirstDate.setSeconds(0);
+
+
+        dtLastDate = new Date(dtEnd.value);
+        dtLastDate.setHours(23);
+        dtLastDate.setMinutes(59);
+        dtLastDate.setMilliseconds(999);
+        dtLastDate.setSeconds(59);
+
+        searchByDateRange = true;
+        loadOrders();
         return;
+
+
+    }
+
+    else {
+        console.log("inside else");
+        searchByDateRange = false;
+        query = firebase.firestore()
+            .collection('orders')
+            .orderBy("order_date", "desc");
     }
 
     pendingOrders = [];
-    // users = [];
-    // addresses = [];
-
     ordersAddressMap.clear();
     ordersUsersMap.clear();
     deleteTableRows();
     divProgress.style.display = "block";
     divContent.style.display = "none";
-
-
-    var query = firebase.firestore()
-        .collection('orders')
-        .where("order_id", "==", txtSearch.value);
-    txtSearch.value = "";
-
 
 
     fetchOrders(query).then(() => {
@@ -384,6 +552,8 @@ btnSearch.addEventListener("click", function () {
 
 
 })
+
+
 function deleteTableRows() {
     //e.firstElementChild can be used. 
     var child = table.lastElementChild;
@@ -395,24 +565,63 @@ function deleteTableRows() {
 
 function loadOrders() {
 
+
+    pendingOrders = [];
+    ordersAddressMap.clear();
+    ordersUsersMap.clear();
+    deleteTableRows();
+    divProgress.style.display = "block";
+    divContent.style.display = "none";
+
+
     if (orderType == "pending") {
         pageHeader.textContent = "Pending Orders";
-        var query = firebase.firestore()
-            .collection('orders')
-            .where("Status", "==", "Order received. Seller Confirmation pending.")
-            .limit(docLimit);
+        var query;
+        if (searchByDateRange) {
+
+            query = firebase.firestore()
+                .collection('orders')
+                .where("Status", "==", "Order received. Seller Confirmation pending.")
+                .where("order_date", ">=", dtFirstDate)
+                .where("order_date", "<=", dtLastDate)
+                .limit(docLimit);
+        }
+        else {
+            query = firebase.firestore()
+                .collection('orders')
+                .where("Status", "==", "Order received. Seller Confirmation pending.")
+                .limit(docLimit);
+
+        }
+
 
 
         queryList.push(query);
 
         fetchOrders(query).then(() => {
 
-            nextQuery = firebase.firestore()
-                .collection('orders')
-                .where("Status", "==", "Order received. Seller Confirmation pending.")
-                .limit(docLimit)
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+            if (searchByDateRange) {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("Status", "==", "Order received. Seller Confirmation pending.")
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .limit(docLimit)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+            }
+            else {
+
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("Status", "==", "Order received. Seller Confirmation pending.")
+                    .limit(docLimit)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+            }
+
 
 
             queryList.push(nextQuery);
@@ -427,19 +636,65 @@ function loadOrders() {
 
     if (orderType == "all") {
         pageHeader.textContent = "Order History";
-        var query = firebase.firestore()
-            .collection('orders')
-            .orderBy("order_date", "desc")
-            .limit(docLimit);
+        var query;
+
+
+        if (searchByDateRange) {
+
+            if (sellerid == null) {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+            else {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .where("seller_id", "==", sellerid)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+        }
+        else {
+            if (sellerid == null) {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+            else {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("seller_id", "==", sellerid)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+
+        }
 
         queryList.push(query);
 
         fetchOrders(query).then(() => {
-            nextQuery = firebase.firestore()
-                .collection('orders')
-                .orderBy("order_date", "desc")
-                .startAfter(lastVisibleDoc)
-                .limit(docLimit);
+            if (searchByDateRange) {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .orderBy("order_date", "desc")
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+            else {
+                nextQuery = firebase.firestore()
+                    .collection('orders')
+                    .orderBy("order_date", "desc")
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
 
             queryList.push(nextQuery);
 
@@ -487,43 +742,97 @@ function loadOrders() {
 
     if (orderType == "unsettled") {
         pageHeader.textContent = "Unsettled Orders";
-        querySellerId = getQueryVariable("sellerid");
         var query;
-        if (querySellerId == null) {
-            query = firebase.firestore()
-                .collection('orders')
-                .where("settlement_done", "==", false)
-                .orderBy("order_date", "desc")
-                .limit(docLimit);
+        if (sellerid == null) {
+            if (searchByDateRange) {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("settlement_done", "==", false)
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+            else {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("settlement_done", "==", false)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
         }
         else {
-            query = firebase.firestore()
-                .collection('orders')
-                .where("settlement_done", "==", false)
-                .where("seller_id", "==", querySellerId)
-                .orderBy("order_date", "desc")
-                .limit(docLimit);
+            if (searchByDateRange) {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("settlement_done", "==", false)
+                    .where("seller_id", "==", sellerid)
+                    .where("order_date", ">=", dtFirstDate)
+                    .where("order_date", "<=", dtLastDate)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+            else {
+                query = firebase.firestore()
+                    .collection('orders')
+                    .where("settlement_done", "==", false)
+                    .where("seller_id", "==", sellerid)
+                    .orderBy("order_date", "desc")
+                    .limit(docLimit);
+            }
+
         }
 
         queryList.push(query);
 
         fetchOrders(query).then(() => {
-            if (querySellerId == null) {
-                nextQuery = firebase.firestore()
-                    .collection('orders')
-                    .where("settlement_done", "==", false)
-                    .orderBy("order_date", "desc")
-                    .startAfter(lastVisibleDoc)
-                    .limit(docLimit);
+            if (sellerid == null) {
+                if (searchByDateRange) {
+
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .where("order_date", ">=", dtFirstDate)
+                        .where("order_date", "<=", dtLastDate)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+                else {
+                    nextQuery = firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+
+                }
             }
             else {
-                firebase.firestore()
-                    .collection('orders')
-                    .where("settlement_done", "==", false)
-                    .where("seller_id", "==", querySellerId)
-                    .orderBy("order_date", "desc")
-                    .startAfter(lastVisibleDoc)
-                    .limit(docLimit);
+
+                if (searchByDateRange) {
+                    firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .where("seller_id", "==", sellerid)
+                        .where("order_date", ">=", dtFirstDate)
+                        .where("order_date", "<=", dtLastDate)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+                else {
+
+                    firebase.firestore()
+                        .collection('orders')
+                        .where("settlement_done", "==", false)
+                        .where("seller_id", "==", sellerid)
+                        .orderBy("order_date", "desc")
+                        .startAfter(lastVisibleDoc)
+                        .limit(docLimit);
+                }
+
+
             }
 
             queryList.push(nextQuery);
@@ -566,9 +875,8 @@ function loadOrders() {
 
     if (orderType == "waiting_for_pickup") {
         pageHeader.textContent = "Orders: Waiting for Pickup";
-        querySellerId = getQueryVariable("sellerid");
         var query;
-        if (querySellerId == null) {
+        if (sellerid == null) {
             query = firebase.firestore()
                 .collection('orders')
                 .where("Status", "==", "Ready For Dispatch")
@@ -579,7 +887,7 @@ function loadOrders() {
             query = firebase.firestore()
                 .collection('orders')
                 .where("Status", "==", "Ready For Dispatch")
-                .where("seller_id", "==", querySellerId)
+                .where("seller_id", "==", sellerid)
                 .orderBy("order_date", "desc")
                 .limit(docLimit);
         }
@@ -587,7 +895,7 @@ function loadOrders() {
         queryList.push(query);
 
         fetchOrders(query).then(() => {
-            if (querySellerId == null) {
+            if (sellerid == null) {
                 nextQuery = firebase.firestore()
                     .collection('orders')
                     .where("Status", "==", "Ready For Dispatch")
@@ -599,7 +907,7 @@ function loadOrders() {
                 firebase.firestore()
                     .collection('orders')
                     .where("Status", "==", "Ready For Dispatch")
-                    .where("seller_id", "==", querySellerId)
+                    .where("seller_id", "==", sellerid)
                     .orderBy("order_date", "desc")
                     .startAfter(lastVisibleDoc)
                     .limit(docLimit);
@@ -1275,12 +1583,12 @@ function addPendingOrdersToTable() {
                     }
 
                     var spanIsReplaceOrder = document.createElement("span");
-                    if(order.replacement_order != null){
-                        if(order.replacement_order){
+                    if (order.replacement_order != null) {
+                        if (order.replacement_order) {
                             spanIsReplaceOrder.style.color = "#ff0000";
                             spanIsReplaceOrder.innerHTML = "<br/><b>Replacement Order (Original Order Id : " + order.original_order_id + ")</b>"
                         }
-        
+
                     }
 
 
@@ -1407,7 +1715,7 @@ function addPendingOrdersToTable() {
 
                 })
 
-                btnViewOrders.addEventListener("click", function(){
+                btnViewOrders.addEventListener("click", function () {
                     var orderId = this.id.toString();
                     window.location.href = "view_products_against_order.html?order_id=" + orderId + "&admin=true";
                 })
@@ -1451,7 +1759,7 @@ function addPendingOrdersToTable() {
                 btnCancelOrder.addEventListener("click", function () {
                     var index = parseInt(this.id);
                     var order = pendingOrders[index];
-                  //  var seller = orderSellerMap.get(order.order_id);
+                    //  var seller = orderSellerMap.get(order.order_id);
                     cancelOrder(order);
                 })
             }
@@ -1619,7 +1927,7 @@ function updateOrderStatus(order, status) {
             if (status == "Delivered") {
                 updateDeliveryTimestamp(order.order_id);
             }
-            if(status == "Cancelled"){
+            if (status == "Cancelled") {
                 cancelOrder(order);
             }
             resolve();

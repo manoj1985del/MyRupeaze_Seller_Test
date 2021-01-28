@@ -16,7 +16,7 @@ var newInvoiceId;
 
 //loadProducts();
 
-createInvoicesAgainstOrder();
+//createInvoicesAgainstOrder();
 
 //uncomment this block to update merchant id of products
 

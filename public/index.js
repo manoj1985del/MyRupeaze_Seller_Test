@@ -10,6 +10,15 @@ let qtyDiscountObjectMap = new Map();
 var newInvoiceId;
 
 
+// console.log("going to fetch products");
+// loadSportsCategoryProducts().then(()=>{
+//   for(var i = 0; i < productList.length; i++){
+    
+//     var product = productList[i];
+//     //console.log(product.Product_Id);
+//     updateCategory(product.Product_Id);
+//   }
+// })
 //loadAllProducts();
 //loadTags();
 //makeTagsLower();
@@ -195,6 +204,33 @@ function showVideos() {
 function loadProducts() {
   return new Promise((resolve, reject) => {
     firebase.firestore().collection("products")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var product = doc.data();
+          console.log(product.Product_Id);
+          productList.push(product);
+
+        });
+      })
+      .then(function () {
+        console.log("products retrieved. Total Products  = " + productList.length);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function loadSportsCategoryProducts() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("products")
+    .where("Category", "==", "Sports, Fitness, Bags & Luggage")
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
@@ -853,6 +889,26 @@ function updateSellerDetailsInOfflineInvoice(seller, invoiceId){
   })
     .then(function () {
       console.log("updated merchant id for product - " + product.Product_Id);
+    })
+    .catch(function (error) {
+      // The document probably doesn't exist.
+      console.log("doc does not exist");
+
+    });
+
+
+}
+
+
+function updateCategory(productId){
+
+  
+  var washingtonRef = firebase.firestore().collection("products").doc(productId);
+  washingtonRef.update({
+    Category: "Sports, Fitness, Bags And Luggage"
+  })
+    .then(function () {
+      console.log("updated product id for product - " + productId);
     })
     .catch(function (error) {
       // The document probably doesn't exist.

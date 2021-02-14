@@ -1955,11 +1955,7 @@ function updateOrderStatusFromInvoice(order, value) {
 
     return new Promise((resolve, reject) => {
 
-<<<<<<< HEAD
-        var docRef = firebase.firestore().collection("online_invoices").doc(invoice_id)
-=======
         var docRef = firebase.firestore().collection("online_invoices").doc(order.invoice_id)
->>>>>>> premaster
 
         // Set the "capital" field of the city 'DC'
         return docRef.update({

@@ -19,6 +19,7 @@ var newInvoiceId;
 //     updateCategory(product.Product_Id);
 //   }
 // })
+
 //loadAllProducts();
 //loadTags();
 //makeTagsLower();

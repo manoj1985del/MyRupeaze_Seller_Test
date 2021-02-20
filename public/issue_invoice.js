@@ -2,6 +2,7 @@
 var errMsg = "";
 var divContent = document.getElementById("divContent");
 var divProgress = document.getElementById("divProgress");
+var percentOfAmountCreditedIntoPoints = 1.25;
 
 var txtMobile = document.getElementById("txtMobile");
 var btnMobile = document.getElementById("btnMobile");
@@ -133,7 +134,7 @@ btnAddProduct.addEventListener("click", function () {
     }
     table.style.display = "block";
     var price = parseInt(txtPrice.value) * parseInt(txtQty.value);
-    var priceTwoAndHalfPercent = (price * 2.5) / 100;
+    var priceTwoAndHalfPercent = (price * percentOfAmountCreditedIntoPoints) / 100;
     //8 points make one rupee
     var points = Math.floor(priceTwoAndHalfPercent * 8);
     // var factor = price / 100;

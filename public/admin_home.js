@@ -60,6 +60,7 @@ var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
 
 var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsProduct");
 var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
+var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
 localStorage.setItem("adminLogin", "true");
 
@@ -85,6 +86,7 @@ loadTotalUsers();
 loadPendingSellers();
 loadPendingOrders();
 loadTodayOrders();
+getActiveEnquiries();
 loadLast7DaysOrder().then(() => {
     loadLast7DaysOrderMap().then(() => {
         // console.log("orders finally fetched");
@@ -556,7 +558,6 @@ function loadTodayOrders() {
 
 
                 }).then(() => {
-
                     txtTodayUnits.textContent = totalOrders.toString();
                     txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
                 })
@@ -1097,6 +1098,25 @@ function getPendingProducts(){
         .catch(function (error) {
             console.log("Error getting documents: ", error);
         });
+}
+
+var enquiryCount = 0;
+function getActiveEnquiries(){
+
+        var enquires = [];
+        firebase.firestore().collection("offline_requests")
+        .where("status_code", "==", 0)
+            .get()
+            .then(function (querySnapshot) {
+                var enquiryCount = querySnapshot.length;
+            }).then(() => {
+                linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
 }
 
 

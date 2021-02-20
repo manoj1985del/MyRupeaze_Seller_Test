@@ -1,49 +1,70 @@
 
 var divProgress = document.getElementById("divProgress");
 var divContent = document.getElementById("divContent");
-var table = document.getElementById("tbl");
-
+var table = document.getElementById("tblData");
+var rupeeSymbol = "₹ ";
 
 var sellerId = localStorage.getItem("sellerid");
 var mSeller;
 var enquiryList = [];
 
-alert(sellerId);
+var adm = getQueryVariable("adm");
+var admin = false;
+if(adm == "1"){
+    admin = true;
+}
 
-getEnquiries().then(()=>{
-    divProgress.style.display = "none";
-    divContent.style.display = "block";
-    console.log(enquiryList);
+getEnquiries();
 
-    createTable();
-})
+function getEnquiries() {
 
+    var query;
+    if(!admin){
 
-function getEnquiries(){
+        query = firebase.firestore().collection("offline_requests")
+            .where("seller_id", "==", sellerId);
 
-    return new Promise((resolve, reject)=>{
+    }
+    else{
 
-        firebase.firestore().collection("offline_requests")
-        .where("seller_id", "==", sellerId)
-        .get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
-                var enquery = doc.data();
-                enquiryList.push(enquery);
-            });
-        })
-        .then(()=>{
+        query = firebase.firestore().collection("offline_requests");
+    }
+
+    loadEnquiry(query).then(()=>{
+
+        divProgress.style.display = "none";
+        divContent.style.display = "block";
+        console.log(enquiryList);
     
-            resolve();
-        })
-        .catch((error) => {
-            console.log("Error getting documents: ", error);
-            reject();
-        });
+        createTable();
+      //createTableHeaders();
 
     })
-   
+}
+
+function loadEnquiry(query){
+
+    return new Promise((resolve, reject) => {
+
+            query
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    var enquery = doc.data();
+                    enquiryList.push(enquery);
+                });
+            })
+            .then(() => {
+
+                resolve();
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+    })
 
 }
 
@@ -66,6 +87,18 @@ function createTableHeaders() {
     var thProdcutDetails = document.createElement("th");
     thProdcutDetails.textContent = "Products";
 
+    var thPreferredPickupTime = document.createElement("th");
+    thPreferredPickupTime.textContent = "Desired Pickiup Time";
+
+    var thTotalPrice = document.createElement("th");
+    thTotalPrice.textContent = "Total Price";
+
+    var thPickupFromStore = document.createElement("th");
+    thPickupFromStore.textContent = "Pickup From Store";
+
+    var thStatus = document.createElement("th");
+    thStatus.textContent = "Status";
+
 
     var thAction = document.createElement("th");
     thAction.textContent = "Action";
@@ -74,17 +107,22 @@ function createTableHeaders() {
     tr.appendChild(thCustomer);
     tr.appendChild(thSeller);
     tr.appendChild(thProdcutDetails);
+    tr.appendChild(thPreferredPickupTime);
+    tr.appendChild(thTotalPrice);
+    tr.appendChild(thStatus);
+    tr.appendChild(thPickupFromStore);
     tr.appendChild(thAction);
 
     tHead.appendChild(tr);
     table.appendChild(tHead);
 
 }
+
 function createTable() {
 
     createTableHeaders();
 
-    table.style.display = "block";
+    // table.style.display = "block";
 
     // var product = new Products(txtProductName.value, txtGST.value, txtPrice.value, txtQty.value);
 
@@ -99,6 +137,10 @@ function createTable() {
         var tdCustomerDetails = document.createElement('td');
         var tdSellerDetails = document.createElement('td');
         var tdProductDetails = document.createElement('td');
+        var tdPreferredTime = document.createElement('td');
+        var tdStatus = document.createElement('td');
+        var tdTotalPrice = document.createElement('td');
+        var tdPickupFromStore = document.createElement('td');
         var tdAction = document.createElement('td');
 
 
@@ -121,9 +163,9 @@ function createTable() {
         var divCustomerDetails = document.createElement('div');
         var spanCustomerDetails = document.createElement('span');
         spanCustomerDetails.innerHTML = enquiry.customer_name + "<br />Phone No. " + enquiry.customer_phone
-                                        + "<br />" + enquiry.customer_address_line1 + "<br />" + enquiry.customer_address_line2 + "<br/>" + enquiry.customer_address_line3
-                                        + "<br />" + enquiry.customer_city + " - (" + enquiry.customer_state + ")" + "<br />"
-                                        + "Pincode: " + enquiry.customer_pin;
+            + "<br />" + enquiry.customer_address_line1 + "<br />" + enquiry.customer_address_line2 + "<br/>" + enquiry.customer_address_line3
+            + "<br />" + enquiry.customer_city + " - (" + enquiry.customer_state + ")" + "<br />"
+            + "Pincode: " + enquiry.customer_pin;
 
         divCustomerDetails.appendChild(spanCustomerDetails);
         tdCustomerDetails.appendChild(divCustomerDetails);
@@ -132,10 +174,10 @@ function createTable() {
         var divSellerDetails = document.createElement('div');
         var spanSellerDetails = document.createElement('span');
         spanSellerDetails.innerHTML = enquiry.company_name + "<br />Phone No. " + enquiry.seller_phone
-                                        + "<br />" + enquiry.seller_address_line1 + "<br />" + enquiry.seller_address_line2 + "<br/>" + enquiry.seller_address_line3
-                                        + "<br />" + enquiry.seller_city + " - (" + enquiry.seller_state + ")" + "<br />"
-                                        + "Pincode: " + enquiry.seller_pin;
-        
+            + "<br />" + enquiry.seller_address_line1 + "<br />" + enquiry.seller_address_line2 + "<br/>" + enquiry.seller_address_line3
+            + "<br />" + enquiry.seller_city + " - (" + enquiry.seller_state + ")" + "<br />"
+            + "Pincode: " + enquiry.seller_pin;
+
         divSellerDetails.appendChild(spanSellerDetails);
         tdSellerDetails.appendChild(divSellerDetails);
 
@@ -146,7 +188,7 @@ function createTable() {
         var arrProducts = enquiry.product_names;
         var arrQty = enquiry.product_qty;
 
-        for(var idx = 0; idx < arrProducts.length; idx++){
+        for (var idx = 0; idx < arrProducts.length; idx++) {
             var productName = arrProducts[idx];
             var qty = arrQty[idx];
 
@@ -156,33 +198,183 @@ function createTable() {
         divProductDetails.appendChild(spanProductDetails);
         tdProductDetails.appendChild(divProductDetails);
 
+
+        //Preferred pickup time
+        var divPreferredTime = document.createElement('div');
+
+        var spanPickupDate = document.createElement("span");
+
+        var pickupDate = enquiry.pickup_timestamp;
+      
+
+        spanPickupDate.textContent = pickupDate;
+        divPreferredTime.appendChild(spanPickupDate);
+        tdPreferredTime.appendChild(divPreferredTime);
+
+        var divTotalPrice = document.createElement('div');
+        var spanToalPrice = document.createElement('span');
+
+        var total  = 0;
+        for(var tp = 0; tp < enquiry.product_prices_total.length; tp++ ){
+          total += enquiry.product_prices_total[tp];
+        }
+        spanToalPrice.textContent = rupeeSymbol + total.toString();
+        divTotalPrice.appendChild(spanToalPrice);
+        tdTotalPrice.appendChild(divTotalPrice);
+
+
+        var divStatus = document.createElement('div');
+        var spanStatus = document.createElement("span");
+
+        //Status Code 0: Requested by customer
+        //Status Code 1: Accepted by Seller
+        //Status Code 2: Rejected by seller
+        //Status Code 3: Accepted by Buyer
+        //Status Code 4: Rejected by Buyer
+
+        if (enquiry.status_code == 0) {
+            spanStatus.textContent = "Pending For Seller Confirmation";
+        }
+
+        if (enquiry.status_code == 1) {
+            spanStatus.textContent = "Accepted by Seller and Pending for Customer Confirmation";
+        }
+
+        if (enquiry.status_code == 2) {
+            spanStatus.textContent = "Rejected by seller";
+        }
+
+        if (enquiry.status_code == 3) {
+            spanStatus.textContent = "Accepted by Buyer";
+        }
+
+        if (enquiry.status_code == 4) {
+            spanStatus.textContent = "Rejected by Buyer";
+        }
+
+        if (enquiry.status_code == 5) {
+            spanStatus.textContent = "Delivered to Buyer";
+        }
+
+        divStatus.appendChild(spanStatus);
+        tdStatus.appendChild(divStatus);
+
+        var divPickupFromStore = document.createElement('div');
+        var spanPickup = document.createElement('span');
+        spanPickup.textContent = enquiry.pickup_from_store;
+        divPickupFromStore.appendChild(spanPickup);
+        tdPickupFromStore.appendChild(divPickupFromStore);
+
+
+
+
         var divAction = document.createElement('div');
+
+        var divViewEnquiry = document.createElement('div');
         var btnAcceptEnquiry = document.createElement("button");
         btnAcceptEnquiry.style.width = "150px";
-        btnAcceptEnquiry.textContent = "Accept Enquiry";
+        btnAcceptEnquiry.textContent = "View Enquiry";
         btnAcceptEnquiry.setAttribute("id", enquiry.doc_id);
         btnAcceptEnquiry.setAttribute("type", "button");
-        divAction.appendChild(btnAcceptEnquiry);
+        divViewEnquiry.appendChild(btnAcceptEnquiry);
+        divAction.appendChild(divViewEnquiry);
+
+        var divRejectEnquiry = document.createElement('div');
+        var btnReject = document.createElement("button");
+        divRejectEnquiry.style.marginTop = "10px";
+        btnReject.style.width = "150px";
+        btnReject.textContent = "Reject";
+        btnReject.setAttribute("id", enquiry.doc_id);
+        btnReject.setAttribute("type", "button");
+        divRejectEnquiry.appendChild(btnReject);
+        divAction.appendChild(divRejectEnquiry);
         tdAction.appendChild(divAction);
+
+        var divMarkDelivry = document.createElement('div');
+        var btnMarkDelivery = document.createElement("button");
+        btnMarkDelivery.style.marginTop = "10px";
+        btnMarkDelivery.style.width = "150px";
+        btnMarkDelivery.textContent = "Mark Delivery";
+        btnMarkDelivery.setAttribute("id", enquiry.doc_id);
+        btnMarkDelivery.setAttribute("type", "button");
+        divMarkDelivry.appendChild(btnMarkDelivery);
+        divAction.appendChild(divMarkDelivry);
+
+        //2. Rejected by Seller
+        //4. Rejected by Buyer
+        //5. Delivery Complete
+        if(enquiry.status_code == 2 || enquiry.status_code == 4 || enquiry.status_code == 5){
+            divRejectEnquiry.style.display = "none";
+        }
+
+        //show mark delivery button only if it was accepted by buyer.
+        if(enquiry.status_code == 3){
+            divMarkDelivry.style.display = "block";
+        }else{
+            divMarkDelivry.style.display = "none";
+        }
+
+        //for admin disable mark delivery or reject enquery buttons
+        if(admin){
+            divMarkDelivry.style.display = "none";
+            divRejectEnquiry.style.display = "none";
+        }
 
         tr.appendChild(tdOrderDate);
         tr.appendChild(tdCustomerDetails);
         tr.appendChild(tdSellerDetails);
         tr.appendChild(tdProductDetails);
+        tr.appendChild(tdPreferredTime);
+        tr.appendChild(tdTotalPrice);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdPickupFromStore);
         tr.appendChild(tdAction);
 
         table.appendChild(tr);
 
+        btnAcceptEnquiry.addEventListener("click", function () {
+            
+            openInNewTab("order_accept_enquiries.html?docid=" + this.id + "&adm=" + adm);
+        })
 
+        
+        btnReject.addEventListener("click", function () {
+            rejectEnquiry(this.id);
 
+        })
 
-      
+        btnMarkDelivery.addEventListener("click", function () {
+            markDelivery(this.id);
 
-       
-
-    
+        })
     }
-    //productList.push(product);
+
+}
+
+function rejectEnquiry(docId) {
+    updateStatusCode(2, docId);
+}
+
+function markDelivery(docId){
+    updateStatusCode(5, docId);
+}
+
+function updateStatusCode(statusCode, docId){
+
+    var washingtonRef = firebase.firestore().collection("offline_requests").doc(docId);
+    washingtonRef.update({
+        status_code: statusCode
+
+    })
+        .then(function () {
+            alert("Update Successful!!");
+            window.location.href = "order_enquiries.html";
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.log("doc does not exist");
+
+        });
 }
 
 // function getSellerDetails() {
@@ -197,7 +389,7 @@ function createTable() {
 //                 // doc.data() will be undefined in this case
 //                 console.log("No such document!");
 //                 reject();
-    
+
 //             }
 //         }).catch(function (error) {
 //             seller = null;
@@ -206,6 +398,6 @@ function createTable() {
 //         });
 
 //     })
-   
+
 // }
 

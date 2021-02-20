@@ -59,6 +59,7 @@ var hFreezed = document.getElementById("hFreezed");
 
 var linkSubscription = document.getElementById("linkSubscription");
 var linkOfflineInvoices = document.getElementById("linkOfflineInvoices");
+var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
@@ -74,6 +75,7 @@ loadSellerDetails();
 loadPendingOrders();
 loadTodayOrders();
 generatePayouts();
+getActiveEnquiries();
 
 loadLast7DaysOrder().then(() => {
     loadLast7DaysOrderMap().then(() => {
@@ -558,7 +560,6 @@ function loadTodayOrders() {
 
 
                 }).then(() => {
-
                     txtTodayUnits.textContent = totalOrders.toString();
                     txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
 
@@ -1109,7 +1110,6 @@ function mapProductsAgainstOrder(order) {
 
 function mapCurrentMonthsProductAgainstOrder(order) {
 
-    console.log("mapping product against order");
     return new Promise((resolve, reject) => {
         var productList = [];
         firebase.firestore().collection("orders").doc(order.order_id).collection("products")
@@ -1218,5 +1218,25 @@ function getAmountForMonth() {
         }
     }
     hSalesThisMonth.textContent = rupeeSymbol + finalAmount.toFixed(2);
+}
+
+var enquiryCount = 0;
+function getActiveEnquiries(){
+
+        var enquires = [];
+        firebase.firestore().collection("offline_requests")
+        .where("seller_id", "==", sellerId)
+        .where("status_code", "==", 0)
+            .get()
+            .then(function (querySnapshot) {
+                var enquiryCount = querySnapshot.length;
+            }).then(() => {
+                linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
 }
 

@@ -62,22 +62,26 @@ btnSearchProduct.addEventListener("click", function () {
             .where("Product_Id", '==', txtProductId.value);
     }
 
-    if (cmbSearchBy.value == "Product Category") {
-        if (type == "pending") {
-            query = firebase.firestore()
-                .collection('products')
-                .where("Category", '==', cmbProductCategory.value)
-                .where("status", "==", "pending")
-                .orderBy('timestamp', 'desc')
-                .limit(docLimit);
+    else {
+
+        if (cmbSearchBy.value == "Product Category") {
+            if (type == "pending") {
+                query = firebase.firestore()
+                    .collection('products')
+                    .where("Category", '==', cmbProductCategory.value)
+                    .where("status", "==", "pending")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+            else {
+                query = firebase.firestore()
+                    .collection('products')
+                    .where("Category", '==', cmbProductCategory.value)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
         }
-        else {
-            query = firebase.firestore()
-                .collection('products')
-                .where("Category", '==', cmbProductCategory.value)
-                .orderBy('timestamp', 'desc')
-                .limit(docLimit);
-        }
+    }
 
 
         queryList.push(query);
@@ -111,12 +115,13 @@ btnSearchProduct.addEventListener("click", function () {
                         .limit(docLimit);
                 }
                 queryList.push(nextQuery);
+                console.log("going to add records");
                 addRecordToTable();
 
             })
 
         })
-    }
+    
 })
 
 btnNext.addEventListener("click", function () {
@@ -131,7 +136,7 @@ btnNext.addEventListener("click", function () {
     divLoadingGif.style.width = "500px";
     divLoadingGif.style.height = "500px";
 
-    console.log("pageindex -" + pageIndex);
+    //console.log("pageindex -" + pageIndex);
     var query = queryList[pageIndex + 1];
     showListing(query).then(() => {
 
@@ -153,7 +158,7 @@ btnNext.addEventListener("click", function () {
                         .startAfter(lastVisibleDoc)
                         .limit(docLimit);
                 } else {
-                    console.log("in all");
+                    //console.log("in all");
                     nextQuery = firebase.firestore()
                         .collection('products')
                         .where("Category", "==", cmbProductCategory.value)
@@ -164,7 +169,7 @@ btnNext.addEventListener("click", function () {
             }
             else {
                 if (type == "pending") {
-                    console.log("in pending");
+                    //  console.log("in pending");
                     nextQuery = firebase.firestore()
                         .collection('products')
                         .where("status", "==", "pending")
@@ -172,7 +177,7 @@ btnNext.addEventListener("click", function () {
                         .startAfter(lastVisibleDoc)
                         .limit(docLimit);
                 } else {
-                    console.log("in all");
+                    // console.log("in all");
                     nextQuery = firebase.firestore()
                         .collection('products')
                         .orderBy('timestamp', 'desc')
@@ -211,7 +216,7 @@ btnPrevious.addEventListener("click", function () {
     imgLoading.style.display = "block";
     divContent.style.display = "none";
 
-    console.log("pageindex :" + pageIndex);
+    // console.log("pageindex :" + pageIndex);
     var query = queryList[pageIndex - 1];
     showListing(query).then(() => {
 
@@ -311,6 +316,7 @@ function showData() {
                     .limit(docLimit);
             }
             queryList.push(nextQuery);
+          
             addRecordToTable();
 
         })
@@ -362,7 +368,7 @@ function showListing(query) {
                 //  createTableHeaders();
                 snapshot.forEach(function (doc) {
                     var product = doc.data();
-                    console.log("pushing product");
+                    //console.log("pushing product");
                     productList.push(product);
 
                     // console.log("going to add record to table");
@@ -467,6 +473,7 @@ function createTableHeaders() {
 function addRecordToTable() {
     if (productList.length > 0) {
         createTableHeaders();
+        divErrorMsg.style.display = "none";
     }
     for (var i = 0; i < productList.length; i++) {
         var product = productList[i];
@@ -480,7 +487,7 @@ function addRecordToTable() {
         var productId = product.Product_Id;
         var coverImageUrl = product.ImageUrlCover;
         var seller = productAndSellerMap.get(product.Product_Id);
-        console.log(seller);
+        //console.log(seller);
 
         var tr = document.createElement('tr');
 
@@ -716,7 +723,6 @@ function mapProductWithSeller(product) {
             if (doc.exists) {
                 var seller = doc.data();
                 productAndSellerMap.set(product.Product_Id, seller);
-                console.log("mapped seller");
                 resolve();
             } else {
                 // doc.data() will be undefined in this case

@@ -1229,13 +1229,14 @@ function getActiveEnquiries(){
         .where("status_code", "==", 0)
             .get()
             .then(function (querySnapshot) {
-                var enquiryCount = querySnapshot.length;
+                 console.log("doc length =" + querySnapshot.docs.length);
+                 enquiryCount = querySnapshot.docs.length;
             }).then(() => {
                 linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
             })
             .catch(function (error) {
                 console.log("Error getting documents: ", error);
-                reject();
+               // reject();
             });
 
 }

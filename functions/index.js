@@ -223,10 +223,89 @@ exports.createOrder = functions.firestore
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
         const order = snap.data();
-        var status = order.Status;
+        var status = "Your Order with order id - " + order.order_id + " has been recieved. Seller has to confirm this order."
+        
         console.log("sending status - " + status);
        
         const fcm = order.fcm;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("sent to fcm - " + fcm);
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err)=>{
+                console.log("Error occured", err)
+                return null;
+            });
+
+
+        return null;
+
+    });
+
+    exports.sendFcmWhenOrderStatusChanges = functions.firestore
+    .document('orders/{order_id}')
+    .onUpdate((change, context) => {
+        // Get an object representing the document
+        // e.g. {'name': 'Marie', 'age': 66}
+        const order = change.after.data();
+       // var status = order.Status;
+        var status = "Order-  " + order.order_id + " : " + order.Status;
+        console.log("sending status - " + status);
+       
+        const fcm = order.fcm;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err)=>{
+                console.log("Error occured", err)
+                return null;
+            });
+
+        return null;
+
+    });
+
+
+    exports.sendFcmForNewOfflineRequest = functions.firestore
+    .document('offline_requests/{doc_id}')
+    .onCreate((snap, context) => {
+        // Get an object representing the document
+        // e.g. {'name': 'Marie', 'age': 66}
+        const enquiry = snap.data();
+        var status = "Your Enquiry has been sent to seller : " + enquiry.company_name;
+        
+       
+        const fcm = enquiry.fcm;
 
         let payload = {
             notification: {
@@ -255,16 +334,51 @@ exports.createOrder = functions.firestore
 
     });
 
-    exports.sendFcmWhenOrderStatusChanges = functions.firestore
-    .document('orders/{order_id}')
+    exports.sendFcmWhenEnquirytatusChanges = functions.firestore
+    .document('offline_requests/{doc_id}')
     .onUpdate((change, context) => {
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
-        const order = change.after.data();
-        var status = order.Status;
-        console.log("sending status - " + status);
+        const enquiry = change.after.data();
+       var status_code = enquiry.status_code;
+        var totalAmount  = 0;
+       for(var i = 0; i < enquiry.product_prices_total.length; i++){
+            totalAmount += enquiry.product_prices_total[i];
+       }
+
+       var status;
        
-        const fcm = order.fcm;
+       if (status_code === 1) {
+        status = "Enquiry Status: Accepted by Seller (" + enquiry.company_name + ") and Pending for your Confirmation. Total Value: " + totalAmount.toString();
+       }
+
+    if (enquiry.status_code === 2) {
+        status = "Enquiry Status: Enquiry Rejected by Seller (" + enquiry.company_name + ")";
+       
+    }
+
+    if (enquiry.status_code === 3) {
+        
+        status = "Enquiry Accepted by you. Total Value: " + totalAmount.toString();
+     
+    }
+
+    if (enquiry.status_code === 4) {
+        status = "Enquiry Rejected by you";
+
+    }
+
+    if (enquiry.status_code === 5) {
+       status = "Offline Order Delivery Completed"
+
+    }
+
+    if (enquiry.status_code === 6) {
+        status = "Enquiry Status: Order ready to pickup from store";
+    }
+
+    
+        const fcm = enquiry.fcm;
 
         let payload = {
             notification: {

@@ -3,10 +3,12 @@ var divContent = document.getElementById('divContent');
 var table = document.getElementById('tblData');
 var btnSubmit = document.getElementById("btnSubmit");
 
+
+
 var docId = getQueryVariable("docid");
 var adm = getQueryVariable("adm");
 var admin = false;
-if(adm == '1'){
+if (adm == '1') {
     admin = true;
 }
 var enquiry = null;
@@ -17,11 +19,12 @@ var statusValues = ["Select Status",
     "Pending"];
 
 
-getEnquiryDetail().then(()=>{
+getEnquiryDetail().then(() => {
     divProgress.style.display = 'none';
     divContent.style.display = 'block';
 
-    if(enquiry.status_code == 2 || enquiry.status_code == 3 || enquiry.status_code == 4 || enquiry.status_code == 5){
+    //show submit only if it is pending for seller confirmation
+    if (enquiry.status_code != 0) {
         btnSubmit.style.display = "none";
     }
 
@@ -41,7 +44,7 @@ function createTableHeaders() {
     var thProductName = document.createElement("th");
     thProductName.textContent = "Product Name";
 
-    
+
     var thQty = document.createElement("th");
     thQty.textContent = "Quantity";
 
@@ -71,13 +74,13 @@ function createTableHeaders() {
 
 }
 
-function createTable(){
+function createTable() {
     createTableHeaders();
 
-    for(var i = 0; i < enquiry.product_names.length; i++){
-        
+    for (var i = 0; i < enquiry.product_names.length; i++) {
+
         var tr = document.createElement('tr');
-        tr.setAttribute("id", "tr" +  i.toString());
+        tr.setAttribute("id", "tr" + i.toString());
         var tdSNo = document.createElement('td');
         var tdProductName = document.createElement('td');
         var tdQty = document.createElement('td');
@@ -128,7 +131,7 @@ function createTable(){
         var divStatus = document.createElement('div');
         var select = document.createElement("select");
         select.setAttribute("id", "select" + i.toString());
-        
+
 
         for (const val of statusValues) {
             var option = document.createElement("option");
@@ -174,10 +177,10 @@ function createTable(){
         btnEdit.setAttribute("type", "button");
         divEdit.appendChild(btnEdit);
         divAction.appendChild(divEdit);
-       
+
         tdAction.appendChild(divAction);
 
-        if(admin){
+        if (admin) {
             divAction.style.display = "none";
         }
 
@@ -191,29 +194,38 @@ function createTable(){
 
         table.appendChild(tr);
 
-        btnAcceptEnquiry.addEventListener("click", function(){
+        btnAcceptEnquiry.addEventListener("click", function () {
             var index = parseInt(this.id);
             var unitPriceElement = document.getElementById("unitPrice" + this.id);
-            var totalPriceElement =  document.getElementById("totalPrice" + this.id);
-            var selectElement =  document.getElementById("select" + this.id);
-        
-            if(unitPriceElement.value == 0){
-                alert("Unit Price Cannot be Zero");
-                unitPriceElement.focus();
-                return;
-            }
+            var totalPriceElement = document.getElementById("totalPrice" + this.id);
+            var selectElement = document.getElementById("select" + this.id);
 
-            if(totalPriceElement.value == 0){
-                alert("Total Price Cannot be Zero");
-                totalPriceElement.focus();
-                return;
-            }
-
-            if(selectElement.value == "Pending"){
+            if (selectElement.value == "Pending") {
                 alert("Please Select Available or Not Available");
                 selectElement.focus();
                 return;
             }
+
+            if (selectElement.value == "Available") {
+                if (unitPriceElement.value == 0) {
+                    alert("Unit Price Cannot be Zero");
+                    unitPriceElement.focus();
+                    return;
+                }
+
+                if (totalPriceElement.value == 0) {
+                    alert("Total Price Cannot be Zero");
+                    totalPriceElement.focus();
+                    return;
+                }
+            }
+
+            if (selectElement.value == "Not Available") {
+                unitPriceElement.value = 0;
+                totalPriceElement.value = 0;
+            }
+
+
 
             unitPriceElement.disabled = true;
             totalPriceElement.disabled = true;
@@ -225,12 +237,12 @@ function createTable(){
 
         })
 
-        btnEdit.addEventListener("click", function(){
+        btnEdit.addEventListener("click", function () {
             var index = parseInt(this.id);
 
             var unitPriceElement = document.getElementById("unitPrice" + this.id);
-            var totalPriceElement =  document.getElementById("totalPrice" + this.id);
-            var selectElement =  document.getElementById("select" + this.id);
+            var totalPriceElement = document.getElementById("totalPrice" + this.id);
+            var selectElement = document.getElementById("select" + this.id);
 
             unitPriceElement.value = 0;
             totalPriceElement.value = 0;
@@ -252,7 +264,7 @@ function createTable(){
 
 
     }
-    if(admin){
+    if (admin) {
         btnSubmit.style.display = "none";
     }
 }
@@ -262,49 +274,57 @@ function submitResponse() {
 
     var washingtonRef = firebase.firestore().collection("offline_requests").doc(docId);
     washingtonRef.update({
-      available_status: enquiry.available_status,
-      product_prices: enquiry.product_prices,
-      product_prices_total: enquiry.product_prices_total,
-      status_code:1
+        available_status: enquiry.available_status,
+        product_prices: enquiry.product_prices,
+        product_prices_total: enquiry.product_prices_total,
+        status_code: 1
 
     })
-      .then(function () {
-        alert("details saved successfully");
-      })
-      .catch(function (error) {
-        // The document probably doesn't exist.
-        console.log("doc does not exist");
-  
-      });
-  
-  }
+        .then(function () {
+            alert("details saved successfully");
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.log("doc does not exist");
 
-btnSubmit.addEventListener("click", function(){
-    for(var i = 0; i < enquiry.product_names.length; i++){
+        });
+
+}
+
+btnSubmit.addEventListener("click", function () {
+    for (var i = 0; i < enquiry.product_names.length; i++) {
         var productPrice = enquiry.product_prices[i];
         var productPriceTotal = enquiry.product_prices_total[i];
         var status = enquiry.available_status[i];
 
         var rowNum = i + 1;
-        if(productPrice == 0){
-            alert("Unit Price Cannot be Zero at row - " + rowNum.toString());
-            return;
-        }
 
-        if(productPriceTotal == 0){
-            alert("Total Price Cannot be Zero at row - " + rowNum.toString());
-            totalPriceElement.focus();
-            return;
-        }
 
-      
-        if(status == "pending"){
+
+
+        if (status == "Pending") {
             alert("Status Value Cannot be Pending at row - " + rowNum.toString());
             totalPriceElement.focus();
             return;
         }
 
+        if(status == "Available")
+        {
+            if (productPrice == 0) {
+                alert("Unit Price Cannot be Zero at row - " + rowNum.toString());
+                return;
+            }
+    
+            if (productPriceTotal == 0) {
+                alert("Total Price Cannot be Zero at row - " + rowNum.toString());
+                totalPriceElement.focus();
+                return;
+            }
+
+        }
       
+
+
 
     }
 
@@ -314,11 +334,11 @@ btnSubmit.addEventListener("click", function(){
 
 
 function getEnquiryDetail() {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
         var docRef = firebase.firestore().collection("offline_requests").doc(docId);
-        docRef.get().then(function (doc) {  
+        docRef.get().then(function (doc) {
             if (doc.exists) {
-                enquiry = doc.data();   
+                enquiry = doc.data();
                 resolve();
             } else {
                 mSeller = null;

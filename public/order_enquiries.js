@@ -22,12 +22,14 @@ function getEnquiries() {
     if(!admin){
 
         query = firebase.firestore().collection("offline_requests")
-            .where("seller_id", "==", sellerId);
+            .where("seller_id", "==", sellerId)
+            .orderBy('timestamp', 'desc');
 
     }
     else{
 
-        query = firebase.firestore().collection("offline_requests");
+        query = firebase.firestore().collection("offline_requests")
+                    .orderBy('timestamp', 'desc');;
     }
 
     loadEnquiry(query).then(()=>{
@@ -78,6 +80,9 @@ function createTableHeaders() {
     var thDate = document.createElement("th");
     thDate.textContent = "Date";
 
+    var thEnquiryId = document.createElement("th");
+    thEnquiryId.textContent = "Enquiry Id";
+
     var thCustomer = document.createElement("th");
     thCustomer.textContent = "Customer Details";
 
@@ -96,6 +101,9 @@ function createTableHeaders() {
     var thPickupFromStore = document.createElement("th");
     thPickupFromStore.textContent = "Pickup From Store";
 
+    var thPayByCash = document.createElement("th");
+    thPayByCash.textContent = "Pay By Cash";
+
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
 
@@ -104,6 +112,7 @@ function createTableHeaders() {
     thAction.textContent = "Action";
 
     tr.appendChild(thDate);
+    tr.appendChild(thEnquiryId);
     tr.appendChild(thCustomer);
     tr.appendChild(thSeller);
     tr.appendChild(thProdcutDetails);
@@ -111,6 +120,7 @@ function createTableHeaders() {
     tr.appendChild(thTotalPrice);
     tr.appendChild(thStatus);
     tr.appendChild(thPickupFromStore);
+    tr.appendChild(thPayByCash);
     tr.appendChild(thAction);
 
     tHead.appendChild(tr);
@@ -134,6 +144,7 @@ function createTable() {
 
         var tr = document.createElement("tr");
         var tdOrderDate = document.createElement('td');
+        var tdEnquiryId = document.createElement('td');
         var tdCustomerDetails = document.createElement('td');
         var tdSellerDetails = document.createElement('td');
         var tdProductDetails = document.createElement('td');
@@ -141,6 +152,7 @@ function createTable() {
         var tdStatus = document.createElement('td');
         var tdTotalPrice = document.createElement('td');
         var tdPickupFromStore = document.createElement('td');
+        var tdPayByCash = document.createElement('td');
         var tdAction = document.createElement('td');
 
 
@@ -158,6 +170,13 @@ function createTable() {
         orderDate.textContent = formattedDay;
         divOrderDate.appendChild(orderDate);
         tdOrderDate.appendChild(divOrderDate);
+
+        //EnquiryId
+        var divEnquiryId = document.createElement('div');
+        var spanEnqiry = document.createElement('span');
+        spanEnqiry.textContent = enquiry.doc_id;
+        divEnquiryId.appendChild(spanEnqiry);
+        tdEnquiryId.appendChild(divEnquiryId);
 
         //Customer Details
         var divCustomerDetails = document.createElement('div');
@@ -231,6 +250,8 @@ function createTable() {
         //Status Code 2: Rejected by seller
         //Status Code 3: Accepted by Buyer
         //Status Code 4: Rejected by Buyer
+        //Status Code 5: Delivered to Buyer
+         //Status Code 6: Order Ready for Pickup
 
         if (enquiry.status_code == 0) {
             spanStatus.textContent = "Pending For Seller Confirmation";
@@ -256,14 +277,33 @@ function createTable() {
             spanStatus.textContent = "Delivered to Buyer";
         }
 
+        if (enquiry.status_code == 6) {
+            spanStatus.textContent = "Order Ready for Pickup";
+        }
+
         divStatus.appendChild(spanStatus);
         tdStatus.appendChild(divStatus);
 
         var divPickupFromStore = document.createElement('div');
         var spanPickup = document.createElement('span');
-        spanPickup.textContent = enquiry.pickup_from_store;
+        var pickupFromStroe = "No";
+        if(enquiry.pickup_from_store){
+            pickupFromStroe = "Yes";
+        }
+        spanPickup.textContent = pickupFromStroe;
         divPickupFromStore.appendChild(spanPickup);
         tdPickupFromStore.appendChild(divPickupFromStore);
+
+
+        var divPayByCash = document.createElement('div');
+        var spanPayByCash = document.createElement('span');
+        var payByCash = "No";
+        if(enquiry.pay_by_cash){
+            payByCash = "Yes";
+        }
+        spanPayByCash.textContent = payByCash;
+        divPayByCash.appendChild(spanPayByCash);
+        tdPayByCash.appendChild(divPayByCash);
 
 
 
@@ -290,6 +330,17 @@ function createTable() {
         divAction.appendChild(divRejectEnquiry);
         tdAction.appendChild(divAction);
 
+        var divReadyForPickup = document.createElement('div');
+        var btnReadyForPickup = document.createElement("button");
+        btnReadyForPickup.style.marginTop = "10px";
+        btnReadyForPickup.style.width = "150px";
+        btnReadyForPickup.textContent = "Ready For Pickup";
+        btnReadyForPickup.setAttribute("id", enquiry.doc_id);
+        btnReadyForPickup.setAttribute("type", "button");
+        divReadyForPickup.appendChild(btnReadyForPickup);
+        divReadyForPickup.style.display = "none";
+        divAction.appendChild(divReadyForPickup);
+
         var divMarkDelivry = document.createElement('div');
         var btnMarkDelivery = document.createElement("button");
         btnMarkDelivery.style.marginTop = "10px";
@@ -300,27 +351,39 @@ function createTable() {
         divMarkDelivry.appendChild(btnMarkDelivery);
         divAction.appendChild(divMarkDelivry);
 
+
         //2. Rejected by Seller
         //4. Rejected by Buyer
         //5. Delivery Complete
-        if(enquiry.status_code == 2 || enquiry.status_code == 4 || enquiry.status_code == 5){
+        if(enquiry.status_code == 2 || enquiry.status_code == 4 || enquiry.status_code == 5 || enquiry.status_code == 6){
             divRejectEnquiry.style.display = "none";
         }
 
-        //show mark delivery button only if it was accepted by buyer.
-        if(enquiry.status_code == 3){
-            divMarkDelivry.style.display = "block";
-        }else{
-            divMarkDelivry.style.display = "none";
+        if(enquiry.status_code == 3 && enquiry.pickup_from_store){
+            divReadyForPickup.style.display = "block";
         }
+
+        else
+        {
+            //show mark delivery button only if it was accepted by buyer or ready for pickup.
+            if(enquiry.status_code == 3 || enquiry.status_code == 6){
+                divMarkDelivry.style.display = "block";
+                
+            }else{
+                divMarkDelivry.style.display = "none";
+            }
+        }
+       
 
         //for admin disable mark delivery or reject enquery buttons
         if(admin){
             divMarkDelivry.style.display = "none";
             divRejectEnquiry.style.display = "none";
+            divReadyForPickup.style.display = "none";
         }
 
         tr.appendChild(tdOrderDate);
+        tr.appendChild(tdEnquiryId);
         tr.appendChild(tdCustomerDetails);
         tr.appendChild(tdSellerDetails);
         tr.appendChild(tdProductDetails);
@@ -328,7 +391,12 @@ function createTable() {
         tr.appendChild(tdTotalPrice);
         tr.appendChild(tdStatus);
         tr.appendChild(tdPickupFromStore);
+        tr.appendChild(tdPayByCash);
         tr.appendChild(tdAction);
+
+        if(enquiry.status_code == 0){
+            tr.style.background = "#FFC133";
+        }
 
         table.appendChild(tr);
 
@@ -346,6 +414,10 @@ function createTable() {
         btnMarkDelivery.addEventListener("click", function () {
             markDelivery(this.id);
 
+        })
+
+        btnReadyForPickup.addEventListener("click", function(){
+            updateStatusCode(6, this.id);
         })
     }
 

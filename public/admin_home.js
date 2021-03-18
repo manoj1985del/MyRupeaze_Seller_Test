@@ -647,11 +647,8 @@ function loadPendingOrders() {
 }
 
 function loadMyAccountsInfo(seller) {
-    spanPan.textContent = "PAN Card No. " + seller.pan_no;
-    spanGst.textContent = "GST No. " + seller.gstin;
-    spanMerchantid.textContent = "Merchant Id: " + seller.merchant_id;
-    spanSellingCategory.textContent = "Selling Category: " + seller.seller_category;
-    spanBankAccountNumber.textContent = "Bank Account Number : " + seller.account_no;
+
+   // spanMerchantid.textContent = "Merchant Id: " + seller.merchant_id;
     h6CompanyName.textContent = seller.company_name;
 
 }
@@ -1108,7 +1105,7 @@ function getActiveEnquiries(){
         .where("status_code", "==", 0)
             .get()
             .then(function (querySnapshot) {
-                var enquiryCount = querySnapshot.length;
+                enquiryCount = querySnapshot.docs.length;
             }).then(() => {
                 linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
             })

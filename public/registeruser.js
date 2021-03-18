@@ -41,6 +41,7 @@ var gstStatus = document.getElementById("gstStatus");
 var chequeStatus = document.getElementById("chequeStatus");
 var btnViewGST = document.getElementById("btnViewGST");
 var btnViewCancelledCheque = document.getElementById("btnViewCancelledCheque");
+var txtAboutShop = document.getElementById("txtAboutShop");
 
 var fileGST;
 var fileCancelledCheque;
@@ -74,6 +75,17 @@ var txtOffer = document.getElementById("txtOffer");
 var txtEmail = document.getElementById("txtEmail");
 var email = localStorage.getItem("sellerEmail");
 
+var inpFile_CarouselImage1 = document.getElementById("inpFile_CarouselImage1");
+var imagePreview_CarouselImage1Container = document.getElementById("imagePreview_CarouselImage1");
+var previewImage_CarouselImage1 = imagePreview_CarouselImage1Container.querySelector(".image-preview_image");
+var previewText_CarouselImage1 = imagePreview_CarouselImage1Container.querySelector(".image-preview_default-text");
+var btnUploadCarouselImage1 = document.getElementById("btnUploadCarouselImage1");
+var imgProgressCarouselImage1 = document.getElementById("imgProgressCarouselImage1");
+var uploadMsgCarouselImage1 = document.getElementById("uploadMsgCarouselImage1");
+
+var fileCarousel_Img1;
+var url_Carousel_Img1 = null;
+
 
 var shop_opening_time = null;
 var shop_closing_time = null;
@@ -90,6 +102,90 @@ var uploadFileUrl = null;
 var gstURL = null;
 var chequeURL = null;
 
+setImage(inpFile_CarouselImage1, previewImage_CarouselImage1, previewText_CarouselImage1, "fileCarousel_Img1");
+
+btnUploadCarouselImage1.addEventListener("click", function () {
+   uploadFile(fileCarousel_Img1, imgProgressCarouselImage1, uploadMsgCarouselImage1, url_Carousel_Img1, sellerId, "img");
+});
+
+function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
+
+   inpFile.addEventListener("change", function () {
+       var file = this.files[0];
+       if (file) {
+           var reader = new FileReader();
+           previewImage.style.display = "block";
+           previewImageDeraultText.style.display = "none";
+
+           reader.addEventListener("load", function () {
+               previewImage.setAttribute("src", this.result);
+
+           });
+           reader.readAsDataURL(file);
+           switch (imgNmae) {
+
+               case "fileCarousel_Img1":
+                   fileCarousel_Img1 = file;
+                   break;
+           }
+
+       }
+       else {
+           previewImage.style.display = null;
+           previewImageDeraultText.style.display = null;
+
+       }
+   });
+
+
+}
+
+function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
+
+   if (file == null) {
+       alert("Please select file to upload");
+       return;
+   }
+
+   console.log(file.size);
+
+   if (file.size > 102400) {
+       alert("File cannot be more than 100 KB");
+       return;
+   }
+
+   if (!(file.type == "image/png" || file.type == "image/jpeg" || file.type == "image/jpg")) {
+       alert("Only png or jpeg files are allowed to upload");
+       return;
+   }
+
+
+   console.log("going to show progress bar");
+   imgProgress.style.display = "block";
+
+   saveImageAtFirebase(file, groupName).then(() => {
+       imgProgress.style.display = "none";
+       msgUpload.style.display = "block";
+       url_Carousel_Img1 = imgUrl;
+       
+   })
+}
+
+function saveImageAtFirebase(file, groupname) {
+   imgUrl = null;
+   var imagePath = "seller_images" + '/' + groupname + '/' + file.name;
+   console.log(imagePath);
+   return new Promise((resolve, reject) => {
+       firebase.storage().ref(imagePath).put(file).then(function () {
+           firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
+               imgUrl = url;
+               
+               console.log("resolving");
+               resolve();
+           });
+       });
+   });
+}
 
 loadSubCategories().then(() => {
 
@@ -229,6 +325,11 @@ function loadUI() {
    txtMerchantId.value = mSeller.merchant_id;
    txtAccountNumber.value = mSeller.account_no;
    cmbSellerCategory.value = mSeller.seller_category;
+   txtAboutShop.value = mSeller.about_shop;
+   url_Carousel_Img1 = mSeller.img_url;
+   previewImage_CarouselImage1.src = url_Carousel_Img1;
+   previewImage_CarouselImage1.style.display = "block";
+   previewText_CarouselImage1.style.display = "none";
    createSubCategoryCheckBoxes(cmbSellerCategory.value);
    if (mSeller.seller_subcategories != null) {
       for (var i = 0; i < mSeller.seller_subcategories.length; i++) {
@@ -740,6 +841,8 @@ function updateSellerDetails() {
       shop_closing_time: shop_closing_time,
       shop_offers: shop_offers,
       status: status,
+      img_url: url_Carousel_Img1,
+      about_shop: txtAboutShop.value,
       suspension_reason: null,
    })
       .then(function () {
@@ -841,6 +944,8 @@ function saveSellerDetails() {
          shop_opening_time: shop_opening_time,
          shop_closing_time: shop_closing_time,
          shop_offers: shop_offers,
+         img_url: url_Carousel_Img1,
+         about_shop: txtAboutShop.value,
          timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(function () {
          divProgress.style.display = "none";

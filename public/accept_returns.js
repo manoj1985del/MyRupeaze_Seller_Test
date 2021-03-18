@@ -1,4 +1,5 @@
 var invoice = null;
+var percentOfAmountCreditedIntoPoints = 1.25;
 var txtInvoice = document.getElementById("txtInvoice");
 var btnMobile = document.getElementById("btnMobile");
 var spCustomerName = document.getElementById("spanCustomerName");
@@ -151,8 +152,8 @@ function createTable() {
 
         var price = qty * price;
 
-        //amout credited would have been 2.5 percent of price..
-        var priceTwoAndHalfPercent = (price * 2.5) / 100;
+        //amout credited would have been 1.25 percent of price.
+        var priceTwoAndHalfPercent = (price * percentOfAmountCreditedIntoPoints) / 100;
         var points = Math.floor(priceTwoAndHalfPercent * 8);
         // //for every 100 rs spent 20 points will be earned
         // var points = factor * 20;

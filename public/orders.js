@@ -1156,7 +1156,7 @@ function addPendingOrdersToTable() {
             if (order.pickup_from_store) {
                 var divPikcupFromStore = document.createElement('div');
                 var spanPickupFromStore = document.createElement('span');
-                spanPickupFromStore.textContent = "Pickup from the store order";
+                spanPickupFromStore.innerHTML = "Pickup from the store order <br/>" + "Preferred Pickup Time: " + order.pickup_timestamp;
                 spanPickupFromStore.style.color = "#ff0000";
                 spanPickupFromStore.style.marginTop = "10px";
                 spanPickupFromStore.style.fontWeight = "bold";

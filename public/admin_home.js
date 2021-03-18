@@ -60,6 +60,7 @@ var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
 
 var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsProduct");
 var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
+var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
 localStorage.setItem("adminLogin", "true");
 
@@ -85,6 +86,7 @@ loadTotalUsers();
 loadPendingSellers();
 loadPendingOrders();
 loadTodayOrders();
+getActiveEnquiries();
 loadLast7DaysOrder().then(() => {
     loadLast7DaysOrderMap().then(() => {
         // console.log("orders finally fetched");
@@ -556,7 +558,6 @@ function loadTodayOrders() {
 
 
                 }).then(() => {
-
                     txtTodayUnits.textContent = totalOrders.toString();
                     txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
                 })
@@ -646,11 +647,8 @@ function loadPendingOrders() {
 }
 
 function loadMyAccountsInfo(seller) {
-    spanPan.textContent = "PAN Card No. " + seller.pan_no;
-    spanGst.textContent = "GST No. " + seller.gstin;
-    spanMerchantid.textContent = "Merchant Id: " + seller.merchant_id;
-    spanSellingCategory.textContent = "Selling Category: " + seller.seller_category;
-    spanBankAccountNumber.textContent = "Bank Account Number : " + seller.account_no;
+
+   // spanMerchantid.textContent = "Merchant Id: " + seller.merchant_id;
     h6CompanyName.textContent = seller.company_name;
 
 }
@@ -1097,6 +1095,25 @@ function getPendingProducts(){
         .catch(function (error) {
             console.log("Error getting documents: ", error);
         });
+}
+
+var enquiryCount = 0;
+function getActiveEnquiries(){
+
+        var enquires = [];
+        firebase.firestore().collection("offline_requests")
+        .where("status_code", "==", 0)
+            .get()
+            .then(function (querySnapshot) {
+                enquiryCount = querySnapshot.docs.length;
+            }).then(() => {
+                linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
 }
 
 

@@ -293,6 +293,30 @@
             <input type="text" class="form-control" id="txtOffer">
           </div>
 
+          <div class="form-group">
+            <label for="txtAboutShop">About Your Shop (500 words max)</label>
+            <textarea style="height: 200px;" class="form-control" id="txtAboutShop"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_CarouselImage1">
+                <br />
+
+                <div class="image-preview" id="imagePreview_CarouselImage1">
+                    <img src="" alt="Image Preview" class="image-preview_image" />
+                    <span class="image-preview_default-text">Shop Image</span>
+                </div>
+                <button type="button" class="mt-2"
+                    id="btnUploadCarouselImage1">Upload</button>
+                <img id="imgProgressCarouselImage1"
+                    style="width: 75px; height: auto; display: none"
+                    src="img_progress.gif" />
+                <span id="uploadMsgCarouselImage1" style="display: none;">Upload
+                    Successful</span>
+            </div>
+        </div>
+
         </div>
 
         <button type="button" class="btn btn-success" id="btnSubmit">Submit</button>

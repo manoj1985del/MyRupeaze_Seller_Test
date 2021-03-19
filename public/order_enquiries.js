@@ -10,7 +10,7 @@ var enquiryList = [];
 
 var adm = getQueryVariable("adm");
 var admin = false;
-if(adm == "1"){
+if (adm == "1") {
     admin = true;
 }
 
@@ -19,36 +19,36 @@ getEnquiries();
 function getEnquiries() {
 
     var query;
-    if(!admin){
+    if (!admin) {
 
         query = firebase.firestore().collection("offline_requests")
             .where("seller_id", "==", sellerId)
             .orderBy('timestamp', 'desc');
 
     }
-    else{
+    else {
 
         query = firebase.firestore().collection("offline_requests")
-                    .orderBy('timestamp', 'desc');;
+            .orderBy('timestamp', 'desc');;
     }
 
-    loadEnquiry(query).then(()=>{
+    loadEnquiry(query).then(() => {
 
         divProgress.style.display = "none";
         divContent.style.display = "block";
         console.log(enquiryList);
-    
+
         createTable();
-      //createTableHeaders();
+        //createTableHeaders();
 
     })
 }
 
-function loadEnquiry(query){
+function loadEnquiry(query) {
 
     return new Promise((resolve, reject) => {
 
-            query
+        query
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
@@ -107,6 +107,9 @@ function createTableHeaders() {
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
 
+    var thNoteToSeller = document.createElement('th');
+    thNoteToSeller.textContent = "Buyer's Note";
+
 
     var thAction = document.createElement("th");
     thAction.textContent = "Action";
@@ -121,6 +124,7 @@ function createTableHeaders() {
     tr.appendChild(thStatus);
     tr.appendChild(thPickupFromStore);
     tr.appendChild(thPayByCash);
+    tr.appendChild(thNoteToSeller);
     tr.appendChild(thAction);
 
     tHead.appendChild(tr);
@@ -153,6 +157,7 @@ function createTable() {
         var tdTotalPrice = document.createElement('td');
         var tdPickupFromStore = document.createElement('td');
         var tdPayByCash = document.createElement('td');
+        var tdNoteToSeller = document.createElement('td');
         var tdAction = document.createElement('td');
 
 
@@ -224,7 +229,7 @@ function createTable() {
         var spanPickupDate = document.createElement("span");
 
         var pickupDate = enquiry.pickup_timestamp;
-      
+
 
         spanPickupDate.textContent = pickupDate;
         divPreferredTime.appendChild(spanPickupDate);
@@ -233,9 +238,9 @@ function createTable() {
         var divTotalPrice = document.createElement('div');
         var spanToalPrice = document.createElement('span');
 
-        var total  = 0;
-        for(var tp = 0; tp < enquiry.product_prices_total.length; tp++ ){
-          total += enquiry.product_prices_total[tp];
+        var total = 0;
+        for (var tp = 0; tp < enquiry.product_prices_total.length; tp++) {
+            total += enquiry.product_prices_total[tp];
         }
         spanToalPrice.textContent = rupeeSymbol + total.toString();
         divTotalPrice.appendChild(spanToalPrice);
@@ -251,7 +256,7 @@ function createTable() {
         //Status Code 3: Accepted by Buyer
         //Status Code 4: Rejected by Buyer
         //Status Code 5: Delivered to Buyer
-         //Status Code 6: Order Ready for Pickup
+        //Status Code 6: Order Ready for Pickup
 
         if (enquiry.status_code == 0) {
             spanStatus.textContent = "Pending For Seller Confirmation";
@@ -262,7 +267,15 @@ function createTable() {
         }
 
         if (enquiry.status_code == 2) {
-            spanStatus.textContent = "Rejected by seller";
+            spanStatus.style.color = "#ff0000";
+            var content = "Rejected by seller";
+
+            if(enquiry.seller_rejection_reason != null){
+                content += " (Reason: " + enquiry.seller_rejection_reason + ")";
+            }
+
+            spanStatus.textContent = content;
+
         }
 
         if (enquiry.status_code == 3) {
@@ -270,7 +283,12 @@ function createTable() {
         }
 
         if (enquiry.status_code == 4) {
-            spanStatus.textContent = "Rejected by Buyer";
+            var content = "Rejected by Buyer";
+            if(enquiry.buyer_rejection_reason != null){
+                content += " (Reason: " + enquiry.buyer_rejection_reason + ")";
+            }
+            spanStatus.style.color = "#ff0000";
+            spanStatus.textContent = content;
         }
 
         if (enquiry.status_code == 5) {
@@ -287,7 +305,7 @@ function createTable() {
         var divPickupFromStore = document.createElement('div');
         var spanPickup = document.createElement('span');
         var pickupFromStroe = "No";
-        if(enquiry.pickup_from_store){
+        if (enquiry.pickup_from_store) {
             pickupFromStroe = "Yes";
         }
         spanPickup.textContent = pickupFromStroe;
@@ -298,12 +316,23 @@ function createTable() {
         var divPayByCash = document.createElement('div');
         var spanPayByCash = document.createElement('span');
         var payByCash = "No";
-        if(enquiry.pay_by_cash){
+        if (enquiry.pay_by_cash) {
             payByCash = "Yes";
         }
         spanPayByCash.textContent = payByCash;
         divPayByCash.appendChild(spanPayByCash);
         tdPayByCash.appendChild(divPayByCash);
+
+        var divNoteToSeller = document.createElement('div');
+        var spanNoteToSeller = document.createElement('span');
+        if(enquiry.note_to_seller == null){
+            spanNoteToSeller.textContent = "-";
+        }
+        else{
+            spanNoteToSeller.textContent = enquiry.note_to_seller;
+        }
+        divNoteToSeller.appendChild(spanNoteToSeller);
+        tdNoteToSeller.appendChild(divNoteToSeller);
 
 
 
@@ -355,28 +384,27 @@ function createTable() {
         //2. Rejected by Seller
         //4. Rejected by Buyer
         //5. Delivery Complete
-        if(enquiry.status_code == 2 || enquiry.status_code == 4 || enquiry.status_code == 5 || enquiry.status_code == 6){
+        if (enquiry.status_code == 2 || enquiry.status_code == 4 || enquiry.status_code == 5 || enquiry.status_code == 6) {
             divRejectEnquiry.style.display = "none";
         }
 
-        if(enquiry.status_code == 3 && enquiry.pickup_from_store){
+        if (enquiry.status_code == 3 && enquiry.pickup_from_store) {
             divReadyForPickup.style.display = "block";
         }
 
-        else
-        {
+        else {
             //show mark delivery button only if it was accepted by buyer or ready for pickup.
-            if(enquiry.status_code == 3 || enquiry.status_code == 6){
+            if (enquiry.status_code == 3 || enquiry.status_code == 6) {
                 divMarkDelivry.style.display = "block";
-                
-            }else{
+
+            } else {
                 divMarkDelivry.style.display = "none";
             }
         }
-       
+
 
         //for admin disable mark delivery or reject enquery buttons
-        if(admin){
+        if (admin) {
             divMarkDelivry.style.display = "none";
             divRejectEnquiry.style.display = "none";
             divReadyForPickup.style.display = "none";
@@ -392,22 +420,31 @@ function createTable() {
         tr.appendChild(tdStatus);
         tr.appendChild(tdPickupFromStore);
         tr.appendChild(tdPayByCash);
+        tr.appendChild(tdNoteToSeller);
         tr.appendChild(tdAction);
 
-        if(enquiry.status_code == 0){
+        if (enquiry.status_code == 0) {
             tr.style.background = "#FFC133";
         }
 
         table.appendChild(tr);
 
         btnAcceptEnquiry.addEventListener("click", function () {
-            
+
             openInNewTab("order_accept_enquiries.html?docid=" + this.id + "&adm=" + adm);
         })
 
-        
+
         btnReject.addEventListener("click", function () {
-            rejectEnquiry(this.id);
+            var reason = prompt("Please enter rejection reason");
+            if(reason.trim() == ""){
+                return;
+            }
+
+            rejectEnquiry(this.id, reason);
+
+            
+           
 
         })
 
@@ -416,22 +453,38 @@ function createTable() {
 
         })
 
-        btnReadyForPickup.addEventListener("click", function(){
+        btnReadyForPickup.addEventListener("click", function () {
             updateStatusCode(6, this.id);
         })
     }
 
 }
 
-function rejectEnquiry(docId) {
-    updateStatusCode(2, docId);
+function rejectEnquiry(docId, reason) {
+
+    var washingtonRef = firebase.firestore().collection("offline_requests").doc(docId);
+    washingtonRef.update({
+        status_code: 2,
+        seller_rejection_reason: reason
+
+    })
+        .then(function () {
+            alert("Enquiry has ben rejected by you!!");
+            window.location.href = "order_enquiries.html";
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.log("doc does not exist");
+
+        });
+
 }
 
-function markDelivery(docId){
+function markDelivery(docId) {
     updateStatusCode(5, docId);
 }
 
-function updateStatusCode(statusCode, docId){
+function updateStatusCode(statusCode, docId) {
 
     var washingtonRef = firebase.firestore().collection("offline_requests").doc(docId);
     washingtonRef.update({

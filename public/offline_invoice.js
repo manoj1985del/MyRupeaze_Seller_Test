@@ -5,6 +5,7 @@ var invoice;
 var productList = [];
 var sellerId = localStorage.getItem("sellerid");
 var gstMap = new Map();
+var mRedeemAmount = 0;
 
 window.onload = function () {
 
@@ -13,13 +14,13 @@ window.onload = function () {
   var invId = getQueryVariable("invoiceid");
   console.log("invoice id = " + invId);
   fetchInvoice(invId).then(() => {
-   // console.log(invoice);
+    // console.log(invoice);
     loadInvoice();
   })
 
 }
 
-function setGSTMap(){
+function setGSTMap() {
   gstMap.set("Andhra Pradesh", "37");
   gstMap.set("Andaman and Nicobar Island", "35");
   gstMap.set("Arunachal Pradesh", "12");
@@ -81,13 +82,13 @@ function loadInvoice() {
 
   //ship to details
   var txtshiptoName = document.getElementById("shiptoName");
-//   var txtshiptoAddressLine1 = document.getElementById("shiptoAddressLine1");
-//   var txtshiptoAddressLine2 = document.getElementById("shiptoAddressLine2");
-//   var txtshiptoAddressLine3 = document.getElementById("shiptoAddressLine3");
-//   var txtshiptoLandmark = document.getElementById("shiptoLandmark");
-//   var txtshiptoCity = document.getElementById("shiptoCity");
-//   var txtshiptoState = document.getElementById("shiptoState");
-//   var txtshiptoPincode = document.getElementById("shiptoPincode");
+  //   var txtshiptoAddressLine1 = document.getElementById("shiptoAddressLine1");
+  //   var txtshiptoAddressLine2 = document.getElementById("shiptoAddressLine2");
+  //   var txtshiptoAddressLine3 = document.getElementById("shiptoAddressLine3");
+  //   var txtshiptoLandmark = document.getElementById("shiptoLandmark");
+  //   var txtshiptoCity = document.getElementById("shiptoCity");
+  //   var txtshiptoState = document.getElementById("shiptoState");
+  //   var txtshiptoPincode = document.getElementById("shiptoPincode");
   var txtshiptoPhone = document.getElementById("shiptoPhone");
   var txtshiptoEmail = document.getElementById("shiptoEmail");
 
@@ -132,30 +133,30 @@ function loadInvoice() {
   sellerEmail.innerHTML = "<b>Email: </b>" + invoice.seller_email;
   txtSellerPAN.innerHTML = "<b>PAN: </b>" + invoice.sellerPAN;
   txtSellerGST.innerHTML = "<b>GSTIN: </b>" + invoice.sellerGST;
-  stateCode.textContent = "GST State Code: " +  gstMap.get(invoice.sellerState);
+  stateCode.textContent = "GST State Code: " + gstMap.get(invoice.sellerState);
 
   //setting ship to details
   txtshiptoName.textContent = invoice.bill_to_name;
- 
+
   txtshiptoPhone.innerHTML = "<b>Contact No. </b>" + invoice.bill_to_phone;
   txtshiptoEmail.innerHTML = "<b>Email: </b>" + invoice.bill_to_email;
 
   var d = new Date();
   d.setDate(d.getDate());
 
- // console.log(d.getDate());
+  // console.log(d.getDate());
   var dd = d.getDate();
   var mm = d.getMonth() + 1;
   var yyyy = d.getFullYear();
   if (dd < 10) {
-      dd = '0' + dd;
+    dd = '0' + dd;
   }
 
   console.log(dd.toString());
 
   var day = dd + "-" + getMonthNmae(mm) + "-" + yyyy;
   txtDate.textContent = day;
- 
+
 
 
   var txtInvoice = document.getElementById("invNum");
@@ -182,7 +183,7 @@ function loadInvoice() {
 
 
   var txtSubTotal, txtIGST, txtCGST, txtSGST, txtTotalAmount;
-  
+
   var summaryBody = document.getElementById("summaryBody");
   var trSubTotal = document.createElement("tr");
   var thSubTotal = document.createElement("th");
@@ -200,7 +201,7 @@ function loadInvoice() {
   summaryBody.appendChild(trSubTotal);
 
 
-  if(IGST){
+  if (IGST) {
     var tr = document.createElement("tr");
     var th = document.createElement("th");
     th.classList.add("text-left");
@@ -216,7 +217,7 @@ function loadInvoice() {
     tr.appendChild(td);
     summaryBody.appendChild(tr);
   }
-  else{
+  else {
 
     //cgst
     var trcgst = document.createElement("tr");
@@ -235,23 +236,50 @@ function loadInvoice() {
     summaryBody.appendChild(trcgst);
 
 
-      //sgst
-      var trsgst = document.createElement("tr");
-      var thsgst = document.createElement("th");
-      thsgst.classList.add("text-left");
-      thsgst.textContent = "SGST: ";
-  
-      var tdsgst = document.createElement("td");
-      tdsgst.classList.add("text-right");
-      txtSGST = document.createElement("span");
-      txtSGST.textContent = "SSSS";
-      tdsgst.appendChild(txtSGST);
-  
-      trsgst.appendChild(thsgst);
-      trsgst.appendChild(tdsgst);
-      summaryBody.appendChild(trsgst);
-  
+    //sgst
+    var trsgst = document.createElement("tr");
+    var thsgst = document.createElement("th");
+    thsgst.classList.add("text-left");
+    thsgst.textContent = "SGST: ";
+
+    var tdsgst = document.createElement("td");
+    tdsgst.classList.add("text-right");
+    txtSGST = document.createElement("span");
+    txtSGST.textContent = "SSSS";
+    tdsgst.appendChild(txtSGST);
+
+    trsgst.appendChild(thsgst);
+    trsgst.appendChild(tdsgst);
+    summaryBody.appendChild(trsgst);
+
   }
+
+  if (invoice.amount_against_points != null) {
+
+    var trRedeemAmount = document.createElement("tr");
+    var thRedeemAmount = document.createElement("th");
+    thRedeemAmount.classList.add("text-left");
+    thRedeemAmount.textContent = "Redeem Amount:"
+    trRedeemAmount.appendChild(thRedeemAmount);
+
+    var tdRedeemAmount = document.createElement("td");
+    tdRedeemAmount.classList.add("text-right");
+    //tdRedeemAmount.classList.add("text-primary");
+    var txtRedeemAmount = document.createElement("span");
+    mRedeemAmount = invoice.amount_against_points;
+    txtRedeemAmount.textContent = rupeeSymbol + invoice.amount_against_points;
+    //txtRedeemAmount.classList.add("font-weight-semibold");
+    tdRedeemAmount.appendChild(txtRedeemAmount);
+    trRedeemAmount.appendChild(tdRedeemAmount);
+    summaryBody.appendChild(trRedeemAmount);
+
+  }
+  else{
+    mRedeemAmount = 0;
+  }
+
+
+
 
   var trTotalAmount = document.createElement("tr");
   var thTotalAmount = document.createElement("th");
@@ -261,13 +289,31 @@ function loadInvoice() {
 
   var tdTotalAmount = document.createElement("td");
   tdTotalAmount.classList.add("text-right");
-  tdTotalAmount.classList.add("text-primary");
-  txtTotalAmount = document.createElement("h5");
+  //tdTotalAmount.classList.add("text-primary");
+  txtTotalAmount = document.createElement("span");
   txtTotalAmount.textContent = "5555";
-  txtTotalAmount.classList.add("font-weight-semibold");
+  //txtTotalAmount.classList.add("font-weight-semibold");
   tdTotalAmount.appendChild(txtTotalAmount);
   trTotalAmount.appendChild(tdTotalAmount);
   summaryBody.appendChild(trTotalAmount);
+
+  //Amount Payable
+  var trAmtPayable = document.createElement("tr");
+  var thAmtPayable = document.createElement("th");
+  thAmtPayable.classList.add("text-left");
+  thAmtPayable.textContent = "Amount Payable:"
+  trAmtPayable.appendChild(thAmtPayable);
+
+  var tdAmountPayable = document.createElement("td");
+  tdAmountPayable.classList.add("text-right");
+  tdAmountPayable.classList.add("text-primary");
+  var txtAmtPayable = document.createElement("h5");
+  txtAmtPayable.textContent = "5555";
+  txtAmtPayable.classList.add("font-weight-semibold");
+  tdAmountPayable.appendChild(txtAmtPayable);
+  trAmtPayable.appendChild(tdAmountPayable);
+  summaryBody.appendChild(trAmtPayable);
+
 
 
   if (IGST) {
@@ -306,6 +352,7 @@ function loadInvoice() {
   var totalIGST = 0;
   var totalSGST = 0;
   var totalCGST = 0;
+  var finalAmount = 0;
   var netPayable = 0;
   var productList = invoice.product_names;
   var qtyList = invoice.product_qty;
@@ -328,7 +375,7 @@ function loadInvoice() {
 
     var gstAmount = unitPrice - priceWithoutGST;
     gstAmount = gstAmount * qty;
-    netPayable += price * qty;
+    finalAmount += price * qty;
 
     var tr = document.createElement("tr");
 
@@ -394,6 +441,8 @@ function loadInvoice() {
     tdQty.appendChild(qtySpan);
     tr.appendChild(tdQty);
 
+
+
     //total price
     var tdTotalPrice = document.createElement("td");
     var priceSpan = document.createElement("span");
@@ -406,20 +455,21 @@ function loadInvoice() {
 
   }
 
-  txtTotalAmount.textContent = rupeeSymbol + numberWithCommas(netPayable);
+  txtTotalAmount.textContent = rupeeSymbol + numberWithCommas(finalAmount);
+  netPayable = finalAmount - mRedeemAmount;
+  txtAmtPayable.textContent = rupeeSymbol + numberWithCommas(netPayable);
   txtSubTotal.textContent = rupeeSymbol + numberWithCommas(totalBasePrice);
-  if(IGST){
+  if (IGST) {
     txtIGST.textContent = rupeeSymbol + numberWithCommas(totalIGST);
   }
-  else
-  {
+  else {
     txtCGST.textContent = rupeeSymbol + numberWithCommas(totalCGST);
     txtSGST.textContent = rupeeSymbol + numberWithCommas(totalSGST);
   }
 
   var priceInWords = price_in_words(netPayable);
   txtAmountInWords.innerHTML = "<em>" + priceInWords + " rupees" + "</em>";
- 
+
 
 
   // var txtProductTitle = document.getElementById("productTitle");
@@ -485,31 +535,31 @@ function fetchInvoice(invoiceId) {
       .then(function (doc) {
         if (doc.exists) {
           invoice = doc.data();
-           resolve();
+          resolve();
         }
         else {
           invoice = null;
           reject();
         }
       })
-      // .then(function () {
+    // .then(function () {
 
-      //   var query = firebase.firestore()
-      //     .collection('invoices').doc(invoiceId).collection("products");
+    //   var query = firebase.firestore()
+    //     .collection('invoices').doc(invoiceId).collection("products");
 
-      //   query.get()
-      //     .then(function (snapshot) {
-      //       snapshot.forEach(function (doc) {
-      //         var product = doc.data();
-      //         console.log("got product - " + product.Title);
-      //         productList.push(product);
-      //       })
+    //   query.get()
+    //     .then(function (snapshot) {
+    //       snapshot.forEach(function (doc) {
+    //         var product = doc.data();
+    //         console.log("got product - " + product.Title);
+    //         productList.push(product);
+    //       })
 
-      //       console.log("products retreived. Finally resolving");
-      //       resolve();
-      //     })
+    //       console.log("products retreived. Finally resolving");
+    //       resolve();
+    //     })
 
-      // })
+    // })
   })
 }
 
@@ -522,59 +572,62 @@ function numberWithCommas(x) {
 function getMonthNmae(index) {
   var monthName;
   switch (index) {
-      case 1:
-          monthName = "Jan";
-          break;
+    case 1:
+      monthName = "Jan";
+      break;
 
-      case 2:
-          monthName = "Feb";
-          break;
+    case 2:
+      monthName = "Feb";
+      break;
 
-      case 3:
-          monthName = "Mar";
-          break;
+    case 3:
+      monthName = "Mar";
+      break;
 
-      case 4:
-          monthName = "Apr";
-          break;
+    case 4:
+      monthName = "Apr";
+      break;
 
-      case 5:
-          monthName = "May";
-          break;
+    case 5:
+      monthName = "May";
+      break;
 
-      case 6:
-          monthName = "Jun";
-          break;
+    case 6:
+      monthName = "Jun";
+      break;
 
-      case 7:
-          monthName = "July";
-          break;
+    case 7:
+      monthName = "July";
+      break;
 
-      case 8:
-          monthName = "Aug";
-          break;
+    case 8:
+      monthName = "Aug";
+      break;
 
-      case 9:
-          monthName = "Sep";
-          break;
+    case 9:
+      monthName = "Sep";
+      break;
 
-      case 10:
-          monthName = "Oct";
-          break;
+    case 10:
+      monthName = "Oct";
+      break;
 
-      case 11:
-          monthName = "Nov";
-          break;
+    case 11:
+      monthName = "Nov";
+      break;
 
-      case 12:
-          monthName = "Dec";
-          break;
+    case 12:
+      monthName = "Dec";
+      break;
   }
 
   return monthName;
 }
 
 function price_in_words(price) {
+  if(price == 0){
+    return "Zero";
+  }
   var sglDigit = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"],
     dblDigit = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"],
     tensPlace = ["", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"],

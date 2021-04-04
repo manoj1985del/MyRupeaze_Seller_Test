@@ -23,6 +23,8 @@ getEnquiryDetail().then(() => {
     divProgress.style.display = 'none';
     divContent.style.display = 'block';
 
+
+
     //show submit only if it is pending for seller confirmation
     if (enquiry.status_code != 0) {
         btnSubmit.style.display = "none";
@@ -77,7 +79,10 @@ function createTableHeaders() {
 function createTable() {
     createTableHeaders();
 
+    console.log(enquiry);
     for (var i = 0; i < enquiry.product_names.length; i++) {
+
+        alert(enquiry.product_names[i]);
 
         var tr = document.createElement('tr');
         tr.setAttribute("id", "tr" + i.toString());

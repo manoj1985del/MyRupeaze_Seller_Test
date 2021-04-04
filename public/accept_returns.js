@@ -12,11 +12,14 @@ var txtQty = document.getElementById("txtQty");
 var btnAddProduct = document.getElementById("btnAddProduct");
 var divCustomerDetails = document.getElementById("divCustomerDetails");
 var table = document.getElementById("tblProducts");
+var divAllReturn = document.getElementById("divAllReturn");
+var btnReturnAll = document.getElementById('btnReturnAll');
 var invoiceExist = false;
 var sellerId = localStorage.getItem("sellerid");
 var earnedPoints;
 var customerId;
 var pointList = [];
+var mPointsUsedForPurchase = false;
 
 var status_list;
 var invoiceId = getQueryVariable("invoiceid");
@@ -152,14 +155,21 @@ function createTable() {
 
         var price = qty * price;
 
-        //amout credited would have been 1.25 percent of price.
-        var priceTwoAndHalfPercent = (price * percentOfAmountCreditedIntoPoints) / 100;
-        var points = Math.floor(priceTwoAndHalfPercent * 8);
-        // //for every 100 rs spent 20 points will be earned
-        // var points = factor * 20;
-        // points = Math.floor(points);
+        var points = 0;
+        mPointsUsedForPurchase = invoice.points_redeemed;
 
+        if (mPointsUsedForPurchase == false) {
+            //amout credited would have been 1.25 percent of price.
+            var priceTwoAndHalfPercent = (price * percentOfAmountCreditedIntoPoints) / 100;
+            points = Math.floor(priceTwoAndHalfPercent * 8);
+            // //for every 100 rs spent 20 points will be earned
+            // var points = factor * 20;
+            // points = Math.floor(points);
+
+        }
         pointList.push(points);
+
+
 
 
         var tr = document.createElement("tr");
@@ -213,6 +223,11 @@ function createTable() {
         btnAcceptReturn.setAttribute("type", "button");
         divAction.appendChild(btnAcceptReturn);
 
+        if (mPointsUsedForPurchase) {
+            btnAcceptReturn.style.display = "none";
+            divAllReturn.style.display = "block";
+        }
+
         tdProductName.appendChild(divProductName);
         tdPrice.appendChild(divPrice);
         tdGST.appendChild(divGST);
@@ -236,8 +251,10 @@ function createTable() {
             var index = parseInt(this.id);
             var pointsToReduce = pointList[index];
             status_list[index] = "Returned";
-            returnItem(status_list, pointsToReduce);
-            return false;
+            creditAndDebitPoints(pointsToReduce).then(() => {
+                returnItem(status_list);
+            })
+
 
             // getPoints().then(() => {
 
@@ -254,10 +271,28 @@ function createTable() {
     //productList.push(product);
 }
 
-function debitPoints(points) {
+btnReturnAll.addEventListener("click", function(){
 
-    return new Promise((resolve, reject) =>{
-        points = -points;
+    for (var i = 0; i < invoice.product_names.length; i++) {
+        status_list[i] = "Returned";
+    }
+
+    creditAndDebitPoints(invoice.points_used_for_purchase).then(()=>{
+        returnItem(status_list);
+    })
+    
+    
+})
+
+
+function creditAndDebitPoints(points, debit) {
+
+    return new Promise((resolve, reject) => {
+        if(debit)
+        {
+            points = -points;
+        }
+       
 
         var washingtonRef = firebase.firestore().collection("users").doc(customerId);
 
@@ -274,30 +309,26 @@ function debitPoints(points) {
             });
 
     })
-   
+
 
 }
 
-function returnItem(status_list, points) {
 
-    debitPoints(points).then(()=>{
+function returnItem(status_list) {
 
+    var invoiceRef = firebase.firestore().collection("offline_invoices").doc(txtInvoice.value);
 
-        var invoiceRef = firebase.firestore().collection("offline_invoices").doc(txtInvoice.value);
-
-        // Set the "capital" field of the city 'DC'
-        return invoiceRef.update({
-            status_list: status_list
-        })
-            .then(function () {
-                window.location.href = "accept_returns.html?invoiceid=" + txtInvoice.value;
-            })
-            .catch(function (error) {
-                // The document probably doesn't exist.
-                console.error("Error updating document: ", error);
-            });
+    // Set the "capital" field of the city 'DC'
+    return invoiceRef.update({
+        status_list: status_list
     })
-
+        .then(function () {
+            window.location.href = "accept_returns.html?invoiceid=" + txtInvoice.value;
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
 
 }
 

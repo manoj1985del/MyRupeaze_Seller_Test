@@ -107,6 +107,9 @@ function createTableHeaders() {
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
 
+    var thRedeemPoints = document.createElement('th');
+    thRedeemPoints.textContent = "Redeem Points";
+
     var thNoteToSeller = document.createElement('th');
     thNoteToSeller.textContent = "Buyer's Note";
 
@@ -124,6 +127,7 @@ function createTableHeaders() {
     tr.appendChild(thStatus);
     tr.appendChild(thPickupFromStore);
     tr.appendChild(thPayByCash);
+    tr.appendChild(thRedeemPoints);
     tr.appendChild(thNoteToSeller);
     tr.appendChild(thAction);
 
@@ -157,6 +161,7 @@ function createTable() {
         var tdTotalPrice = document.createElement('td');
         var tdPickupFromStore = document.createElement('td');
         var tdPayByCash = document.createElement('td');
+        var tdRedeemPoints = document.createElement('td');
         var tdNoteToSeller = document.createElement('td');
         var tdAction = document.createElement('td');
 
@@ -323,6 +328,15 @@ function createTable() {
         divPayByCash.appendChild(spanPayByCash);
         tdPayByCash.appendChild(divPayByCash);
 
+        var divRedeemPoints = document.createElement('div');
+        var spanRedeemPoints = document.createElement('span');
+        spanRedeemPoints.textContent = "No";
+        if(enquiry.redeem_points){
+            spanRedeemPoints.textContent = "Yes";
+        }
+        divRedeemPoints.appendChild(spanRedeemPoints);
+        tdRedeemPoints.appendChild(divRedeemPoints);
+
         var divNoteToSeller = document.createElement('div');
         var spanNoteToSeller = document.createElement('span');
         if(enquiry.note_to_seller == null){
@@ -420,6 +434,7 @@ function createTable() {
         tr.appendChild(tdStatus);
         tr.appendChild(tdPickupFromStore);
         tr.appendChild(tdPayByCash);
+        tr.appendChild(tdRedeemPoints);
         tr.appendChild(tdNoteToSeller);
         tr.appendChild(tdAction);
 

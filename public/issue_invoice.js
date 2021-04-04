@@ -3,6 +3,7 @@ var errMsg = "";
 var divContent = document.getElementById("divContent");
 var divProgress = document.getElementById("divProgress");
 var percentOfAmountCreditedIntoPoints = 1.25;
+var mPointsInONeRupee = 8;
 
 var txtMobile = document.getElementById("txtMobile");
 var btnMobile = document.getElementById("btnMobile");
@@ -19,7 +20,10 @@ var divCustomerDetails = document.getElementById("divCustomerDetails");
 var table = document.getElementById("tblProducts");
 var imgSaving = document.getElementById("divSaving");
 var divOtherDetails = document.getElementById("divOtherDetails");
+var chkRedeemPoints = document.getElementById("chkRedeemPoints");
+var lblRedeemPoints = document.getElementById("lblRedeemPoints");
 var spPoints = document.getElementById("spPoints");
+var lblNetPayable = document.getElementById("lblNetPayable");
 var customerExist = false;
 var sellerId = localStorage.getItem("sellerid");
 var newInvoiceId;
@@ -28,6 +32,12 @@ var earnedPoints = 0;
 console.log("sellerid -" + sellerId);
 var customerId;
 var mSeller;
+var mAmountAgainstPoints = 0;
+var mNetPayable = 0;
+var mRedeemPoints = false;
+var mPointsUsedForPurchase = 0;
+var mTotalValueOfProducts = 0;
+
 
 
 
@@ -57,6 +67,17 @@ class Products {
 
 getSellerDetails();
 
+
+chkRedeemPoints.addEventListener("change", function(){
+    if(chkRedeemPoints.checked){
+        mRedeemPoints = true;
+    }
+    else{
+        mRedeemPoints = false;
+    }
+
+    createTable();
+});
 
 btnMobile.addEventListener("click", function () {
     console.log("goint to set display as block");
@@ -90,6 +111,8 @@ btnMobile.addEventListener("click", function () {
             spCustomerMobile.style.color = "black";
             spPoints.style.display = "block";
             earnedPoints = customer.points;
+            mAmountAgainstPoints = Math.floor(earnedPoints / mPointsInONeRupee);
+            lblRedeemPoints.textContent += " ( " + rupeeSymbol + mAmountAgainstPoints.toString() + ")";
         }
         else {
             customerExist = false;
@@ -145,105 +168,213 @@ btnAddProduct.addEventListener("click", function () {
     var product = new Products(txtProductName.value, txtGST.value, txtPrice.value, txtQty.value, points);
     productList.push(product);
 
-    var tr = document.createElement("tr");
-    var trId = "tr" + (productList.length - 1).toString();
-    tr.setAttribute("id", trId);
-    var tdProductName = document.createElement("td");
-    var tdPrice = document.createElement("td");
-    var tdGST = document.createElement("td");
-    var tdQty = document.createElement("td");
-    var tdTotalPrice = document.createElement("td");
-    var tdPoints = document.createElement("td");
-    var tdAction = document.createElement("td");
-
-    var divProductName = document.createElement("div");
-    var productNameSpan = document.createElement("span");
-    productNameSpan.textContent = product.productName;
-    divProductName.appendChild(productNameSpan);
-
-    var divGST = document.createElement("div");
-    var gstSapn = document.createElement("span");
-    gstSapn.textContent = product.gst;
-    divGST.appendChild(gstSapn);
-
-    var divPrice = document.createElement("div");
-    var productPriceSpan = document.createElement("span");
-    productPriceSpan.textContent = product.price;
-    divPrice.appendChild(productPriceSpan);
-
-    var divQty = document.createElement("div");
-    var qtySpan = document.createElement("span");
-    qtySpan.textContent = product.qty.toString();
-    divQty.appendChild(qtySpan);
-
-
-    var divFinalPrice = document.createElement("div");
-    var finalPriceSpan = document.createElement("span");
-    finalPriceSpan.textContent = product.qty * product.price;
-    divFinalPrice.appendChild(finalPriceSpan);
-
-    var divPoints = document.createElement("div");
-    var pontsSpan = document.createElement("span");
-    pontsSpan.textContent = product.points;
-    divPoints.appendChild(pontsSpan);
-
-
-
-    var divAction = document.createElement("div");
-    var btnDelete = document.createElement("button");
-    btnDelete.style.width = "150px";
-    btnDelete.textContent = "Delete Product";
-    var id = (productList.length - 1).toString();
-    btnDelete.setAttribute("id", id);
-    divAction.appendChild(btnDelete);
-
-    tdProductName.appendChild(divProductName);
-    tdPrice.appendChild(divPrice);
-    tdGST.appendChild(divGST);
-    tdQty.appendChild(divQty);
-    tdTotalPrice.appendChild(divFinalPrice);
-    tdPoints.appendChild(divPoints);
-    tdAction.appendChild(divAction);
-
-    tr.appendChild(tdProductName);
-    tr.appendChild(tdPrice);
-    tr.appendChild(tdGST);
-
-    tr.appendChild(tdQty);
-    tr.appendChild(tdTotalPrice);
-    tr.appendChild(tdPoints);
-    tr.appendChild(tdAction);
-
-
-    table.appendChild(tr);
-
-
-    console.log(productList);
-
-    txtProductName.value = "";
-    txtPrice.value = "";
-    txtGST.value = "";
-    txtQty.value = "";
-    txtProductName.focus();
-
-    btnDelete.addEventListener("click", function () {
-        var index = parseInt(this.id);
-        var rowid = "tr" + this.id.toString();
-        var tr = document.getElementById(rowid);
-        table.removeChild(tr);
-
-        productList.splice(index, 1);
-        console.log(productList);
-
-        if (productList.length == 0) {
-            table.style.display = "none";
-        }
-    })
+    createTable();
+    
 
 
 })
 
+function deleteTableRows() {
+    //e.firstElementChild can be used. 
+    var child = table.lastElementChild;
+    while (child) {
+        table.removeChild(child);
+        child = table.lastElementChild;
+    }
+}
+
+function createTable(){
+
+    deleteTableRows();
+    createTableHeaders();
+    mNetPayable = 0;
+
+    for(var i = 0; i < productList.length; i++){
+        var product = productList[i];
+
+        if(!mRedeemPoints){
+            var price = parseInt(product.price) * parseInt(product.qty);
+            var priceTwoAndHalfPercent = (price * percentOfAmountCreditedIntoPoints) / 100;
+            //8 points make one rupee
+            var points = Math.floor(priceTwoAndHalfPercent * 8);
+            product.points = points;
+        }
+        else{
+            product.points = 0;
+        }
+
+        var tr = document.createElement("tr");
+        var trId = "tr" + (productList.length - 1).toString();
+        tr.setAttribute("id", trId);
+        var tdProductName = document.createElement("td");
+        var tdPrice = document.createElement("td");
+        var tdGST = document.createElement("td");
+        var tdQty = document.createElement("td");
+        var tdTotalPrice = document.createElement("td");
+        var tdPoints = document.createElement("td");
+        var tdAction = document.createElement("td");
+    
+        var divProductName = document.createElement("div");
+        var productNameSpan = document.createElement("span");
+        productNameSpan.textContent = product.productName;
+        divProductName.appendChild(productNameSpan);
+    
+        var divGST = document.createElement("div");
+        var gstSapn = document.createElement("span");
+        gstSapn.textContent = product.gst;
+        divGST.appendChild(gstSapn);
+    
+        var divPrice = document.createElement("div");
+        var productPriceSpan = document.createElement("span");
+        productPriceSpan.textContent = product.price;
+        divPrice.appendChild(productPriceSpan);
+    
+        var divQty = document.createElement("div");
+        var qtySpan = document.createElement("span");
+        qtySpan.textContent = product.qty.toString();
+        divQty.appendChild(qtySpan);
+    
+    
+        var divFinalPrice = document.createElement("div");
+        var finalPriceSpan = document.createElement("span");
+        var finalPrice = product.qty * product.price;
+        mNetPayable += finalPrice;
+        calculateNetPayable();
+        finalPriceSpan.textContent = finalPrice;
+        divFinalPrice.appendChild(finalPriceSpan);
+    
+        var divPoints = document.createElement("div");
+        var pontsSpan = document.createElement("span");
+        pontsSpan.textContent = product.points;
+        divPoints.appendChild(pontsSpan);
+    
+    
+    
+        var divAction = document.createElement("div");
+        var btnDelete = document.createElement("button");
+        btnDelete.style.width = "150px";
+        btnDelete.textContent = "Delete Product";
+        var id = (productList.length - 1).toString();
+        btnDelete.setAttribute("id", id);
+        divAction.appendChild(btnDelete);
+    
+        tdProductName.appendChild(divProductName);
+        tdPrice.appendChild(divPrice);
+        tdGST.appendChild(divGST);
+        tdQty.appendChild(divQty);
+        tdTotalPrice.appendChild(divFinalPrice);
+        tdPoints.appendChild(divPoints);
+        tdAction.appendChild(divAction);
+    
+        tr.appendChild(tdProductName);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdGST);
+    
+        tr.appendChild(tdQty);
+        tr.appendChild(tdTotalPrice);
+        tr.appendChild(tdPoints);
+        tr.appendChild(tdAction);
+    
+    
+        table.appendChild(tr);
+    
+    
+        console.log(productList);
+    
+        txtProductName.value = "";
+        txtPrice.value = "";
+        txtGST.value = "";
+        txtQty.value = "";
+        txtProductName.focus();
+    
+        btnDelete.addEventListener("click", function () {
+            var index = parseInt(this.id);
+            var rowid = "tr" + this.id.toString();
+            var tr = document.getElementById(rowid);
+            table.removeChild(tr);
+    
+            productList.splice(index, 1);
+            console.log(productList);
+    
+            if (productList.length == 0) {
+                table.style.display = "none";
+            }
+
+            calculateNetPayable();
+        })
+    }
+}
+
+function calculateNetPayable(){
+    mNetPayable = 0;
+    mTotalValueOfProducts = 0;
+    for(var i = 0; i < productList.length; i++){
+        var product = productList[i];
+        mNetPayable += product.price * product.qty;
+        mTotalValueOfProducts = mNetPayable;
+    }
+
+    if(mRedeemPoints){
+        if(mNetPayable <= mAmountAgainstPoints){
+            mNetPayable = 0;
+        }
+        else{
+            mNetPayable = mNetPayable - mAmountAgainstPoints;
+        }
+      
+    }
+
+    lblNetPayable.innerHTML = "<b>Net Payable: </b>" + rupeeSymbol +  mNetPayable; 
+}
+
+
+
+
+function createTableHeaders() {
+
+
+    var tHead = document.createElement("thead");
+    var tr = document.createElement("tr");
+    var thProductName = document.createElement("th");
+    thProductName.textContent = "Product Name";
+
+    var thPrice = document.createElement("th");
+    thPrice.textContent = "Price";
+
+    var thGST = document.createElement("th");
+    thGST.textContent = "GST";
+
+    var thQty = document.createElement("th");
+    thQty.textContent = "Quantity";
+
+    var thTotalPrice = document.createElement("th");
+    thTotalPrice.textContent = "Total Price";
+
+    var thPointsEarned = document.createElement("th");
+    thPointsEarned.textContent = "Points Earned";
+
+
+    var thAction = document.createElement("th");
+    thAction.textContent = "Action";
+
+    tr.appendChild(thProductName);
+    tr.appendChild(thPrice);
+    tr.appendChild(thGST);
+    tr.appendChild(thQty);
+    tr.appendChild(thTotalPrice);
+    tr.appendChild(thPointsEarned);
+    tr.appendChild(thAction);
+
+    tHead.appendChild(tr);
+    table.appendChild(tHead);
+
+}
+
+
 btnSubmit.addEventListener("click", function () {
+
+   
+
     if (!customerExist) {
         alert("Customer not selected");
         txtMobile.focus();
@@ -259,11 +390,35 @@ btnSubmit.addEventListener("click", function () {
     divProgress.style.display = "block";
     divContent.style.display = "none";
 
-    updatePoints().then(()=>{
-        addProductsToDb();
-    })
-   
+    
 
+    if(!mRedeemPoints)
+    {
+        mAmountAgainstPoints = 0;
+        creditPoints().then(()=>{
+            addProductsToDb();
+        })
+    }
+    else{
+
+       
+        var pointsBalance = 0;
+        if(mAmountAgainstPoints <= mTotalValueOfProducts){
+            pointsBalance = 0;
+            mPointsUsedForPurchase = customer.points;
+        }
+        else{
+            mAmountAgainstPoints = mTotalValueOfProducts;
+            var pointsUsedForPuchase = mTotalValueOfProducts * mPointsInONeRupee;
+            mPointsUsedForPurchase = pointsUsedForPuchase;
+            pointsBalance = customer.points - pointsUsedForPuchase;
+        }
+
+        adjustPoints(pointsBalance).then(()=>{
+           addProductsToDb(); 
+        })
+       
+    }
 })
 
 function addProductsToDb() {
@@ -291,6 +446,7 @@ function createInvoice(invoiceId) {
             invoice_id: newInvoiceId,
             customer_id:customerId,
             seller_id: sellerId,
+            points_redeemed: mRedeemPoints,
             seller_name: mSeller.seller_name,
             sellerAddressLine1: mSeller.address_line1,
             sellerAddressLine2: mSeller.address_line2,
@@ -313,6 +469,8 @@ function createInvoice(invoiceId) {
             gst_list: gstlist,
             price_list: priceList,
             status_list: statusList,
+            amount_against_points: mAmountAgainstPoints,
+            points_used_for_purchase: mPointsUsedForPurchase,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })
             .then(function () {
@@ -369,20 +527,42 @@ function getNewInvoiceId() {
 
 }
 
-function updatePoints() {
+function creditPoints() {
 
     return new Promise((resolve, reject)=>{
 
+        var pointsToAdd = 0;
         for (var i = 0; i < productList.length; i++) {
-            points += productList[i].points;
+            pointsToAdd += productList[i].points;
         }
-        points += earnedPoints;
+      //  points += earnedPoints;
     
         var docRef = firebase.firestore().collection("users").doc(customerId);
     
         // Set the "capital" field of the city 'DC'
         return docRef.update({
-            points: points
+            points: firebase.firestore.FieldValue.increment(pointsToAdd)
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                resolve();
+            });
+
+    })
+}
+
+
+function adjustPoints(newPoints) {
+
+    return new Promise((resolve, reject)=>{
+        var docRef = firebase.firestore().collection("users").doc(customerId);
+    
+        // Set the "capital" field of the city 'DC'
+        return docRef.update({
+            points: newPoints
         })
             .then(function () {
                 resolve();

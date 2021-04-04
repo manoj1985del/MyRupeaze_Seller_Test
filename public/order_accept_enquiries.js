@@ -82,7 +82,6 @@ function createTable() {
     console.log(enquiry);
     for (var i = 0; i < enquiry.product_names.length; i++) {
 
-        alert(enquiry.product_names[i]);
 
         var tr = document.createElement('tr');
         tr.setAttribute("id", "tr" + i.toString());

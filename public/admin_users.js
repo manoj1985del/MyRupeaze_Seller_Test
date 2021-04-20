@@ -62,7 +62,9 @@ function createTable(){
     createTableHeaders();
 
     for(var i = 0; i < mUserList.length; i++){
+        
         var user = mUserList[i];
+        console.log(user.Name);
 
         var userName = user.Name;
         var customerID = user.customer_id;

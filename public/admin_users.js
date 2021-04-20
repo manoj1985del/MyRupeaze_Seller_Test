@@ -94,16 +94,62 @@ function createTable(){
         spanName.innerHTML = userName;
         divName.appendChild(spanName);
         tdName.appendChild(divName);
+
+        var divCustomerId = document.createElement('div');
+        var spanCustomerId = document.createElement('span');
+        spanCustomerId.innerHTML = customerID;
+        divCustomerId.appendChild(spanCustomerId);
+        tdCustomerId.appendChild(divCustomerId);
+
+        var divPhone = document.createElement('div');
+        var spanPhone = document.createElement('span');
+        spanPhone.innerHTML = userPhone;
+        divPhone.appendChild(spanPhone);
+        tdPhone.appendChild(divPhone);
         
-        tdCustomerId.innerHTML = customerID;
-        tdPhone.innerHTML = userPhone;
-        tdEmail.innerHTML = userEmail;
-        tdFcm.innerHTML = userFcm;
-        tdAddress.innerHTML = userAddress;
-        tdGender.innerHTML = userGender;
-        tdDob.innerHTML = userDob;
-        tdChildBirthday.innerHTML = userChildBirthday;
-        tdAnniversary.innerHTML = userAnniversary;
+        var divEmail = document.createElement('div');
+        var spanEmail = document.createElement('span');
+        spanEmail.innerHTML = userEmail;
+        divEmail.appendChild(spanEmail);
+        tdEmail.appendChild(divEmail);
+
+        var divFcm = document.createElement('div');
+        var spanFcm = document.createElement('span');
+        spanFcm.innerHTML = userFcm;
+        divFcm.appendChild(spanFcm);
+        tdFcm.appendChild(divFcm);
+
+        var divAddress = document.createElement('div');
+        var spanAddress = document.createElement('span');
+        spanAddress.innerHTML = userAddress;
+        divAddress.appendChild(spanAddress);
+        tdAddress.appendChild(divAddress);
+
+        var divGender = document.createElement('div');
+        var spanGender = document.createElement('span');
+        spanGender.innerHTML = userGender;
+        divGender.appendChild(spanGender);
+        tdGender.appendChild(divGender);
+
+        var divDob = document.createElement('div');
+        var spanDob = document.createElement('span');
+        spanDob.innerHTML = userDob;
+        divDob.appendChild(spanDob);
+        tdDob.appendChild(divDob);
+
+        var divChildBirthday = document.createElement('div');
+        var spanChildBirthday = document.createElement('span');
+        spanChildBirthday.innerHTML = userChildBirthday;
+        divChildBirthday.appendChild(spanChildBirthday);
+        tdChildBirthday.appendChild(divChildBirthday);
+
+        var divAnniversary = document.createElement('div');
+        var spanAnniversary = document.createElement('span');
+        spanAnniversary.innerHTML = userAnniversary;
+        divAnniversary.appendChild(spanAnniversary);
+        tdAnniversary.appendChild(divAnniversary);
+
+        
 
         tr.appendChild(tdName);
         tr.appendChild(tdCustomerId);

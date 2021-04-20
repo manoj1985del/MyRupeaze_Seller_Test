@@ -190,7 +190,7 @@ cardTotalUsers.addEventListener("mouseleave", function () {
 });
 
 cardTotalUsers.addEventListener("click", function () {
-    //window.location.href = "orders.html?type=today";
+    window.location.href = "admin_users.html";
 });
 
 btnUpdate.addEventListener("click", function(){

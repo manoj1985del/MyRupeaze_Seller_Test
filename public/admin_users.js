@@ -67,8 +67,8 @@ function createTable(){
         var userName = user.Name;
         var customerID = user.customer_id;
         var userPhone = user.Phone;
-        var userEmail = product.Email;
-        var userFcm = product.fcm;
+        var userEmail = user.Email;
+        var userFcm = user.fcm;
         var userGender = user.Gender;
         var userDob = user.dob;
         var userChildBirthday = user.child_birthday;
@@ -89,7 +89,12 @@ function createTable(){
         var tdChildBirthday = document.createElement('td');
         var tdAnniversary = document.createElement('td');
 
-        tdName.innerHTML = userName;
+        var divName = document.createElement('div');
+        var spanName = document.createElement('span');
+        spanName.innerHTML = userName;
+        divName.appendChild(spanName);
+        tdName.appendChild(divName);
+        
         tdCustomerId.innerHTML = customerID;
         tdPhone.innerHTML = userPhone;
         tdEmail.innerHTML = userEmail;
@@ -116,6 +121,7 @@ function createTable(){
 
 function getUserData() {
 
+    console.log("control here");
     return new Promise((resolve, reject)=>{
         firebase.firestore().collection('users').get()
         .then((querySnapshot) => {
@@ -126,6 +132,8 @@ function getUserData() {
         });
     })
     .then(()=>{
+        console.log("users fetched");
+        console.log(mUserList);
         divProgress.style.display = "none";
         divContent.style.display = "block";
         resolve();

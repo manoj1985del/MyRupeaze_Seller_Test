@@ -13,6 +13,12 @@ var localTagList = [];
 var globalTagList = [];
 var activeTagDocId = null;
 
+var newBrandsAdded = false;
+var localBrandList = [];
+var globalBrandList = [];
+var activeBrandDocId = null;
+
+
 var imgUrl = null;
 var coverImageUrl = null;
 var Img1Url = null;
@@ -188,6 +194,7 @@ var subCategoryMap = new Map();
 
 loadSubCategories();
 loadTags();
+loadBrands();
 getSellerDetails();
 
 var bUpdate = false;
@@ -1020,9 +1027,17 @@ btnSubmit.addEventListener("click", function () {
 
     }
 
+    var brand = txtBrand.value.toLowerCase();
+    if(!globalBrandList.includes(brand)){
+        localBrandList.push(brand);
+    }
+
     addTags().then(() => {
-        var code = saveProductDetails();
-        return code;
+        addBrands().then(()=>{
+            var code = saveProductDetails();
+            return code;
+        })
+       
     })
 
 
@@ -1053,9 +1068,17 @@ btnUpdate.addEventListener("click", function () {
 
     }
 
+    var brand = txtBrand.value.toLowerCase();
+    if(!globalBrandList.includes(brand)){
+        localBrandList.push(brand);
+    }
+
     addTags().then(() => {
-        var code = saveProductDetails();
-        return code;
+        addBrands().then(()=>{
+            var code = saveProductDetails();
+            return code;
+        })
+      
     })
 
 });
@@ -1402,7 +1425,7 @@ function saveProductDetails() {
     firebase.firestore().collection('products').doc(productId).set({
         Avg_Rating: parseFloat(txtProductRating.value),
         Active: true,
-        Brand: txtBrand.value,
+        Brand: txtBrand.value.toLowerCase(),
         COD: rbYes.checked,
         Description: txtProductDescription.value,
         Features: productFeatures,
@@ -1523,7 +1546,7 @@ function updateProductDetails() {
     // Set the "capital" field of the city 'DC'
     return washingtonRef.update({
         Avg_Rating: parseFloat(txtProductRating.value),
-        Brand: txtBrand.value,
+        Brand: txtBrand.value.toLowerCase(),
         COD: rbYes.checked,
         Description: txtProductDescription.value,
         Features: productFeatures,
@@ -1803,6 +1826,8 @@ function loadTags() {
     })
 }
 
+
+
 function addTags() {
 
     return new Promise((resolve, reject) => {
@@ -1886,6 +1911,75 @@ function addSubCategoryInDropDown() {
     }
 
     //  var tdProductName = document.createElement("td");
+
+
+}
+
+function loadBrands() {
+    return new Promise((resolve, reject) => {
+        firebase.firestore().collection("brands")
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    var brandDoc = doc.data();
+                    if (brandDoc.active == true) {
+                        activeBrandDocId = brandDoc.brand_id;
+                    }
+
+                    var brands = brandDoc.brands;
+                    for (var i = 0; i < brands.length; i++) {
+                        var brand = brands[i].toLowerCase();
+                        if (brandDoc.active == true) {
+                            localBrandList.push(tag);
+                        }
+                        globalBrandList.push(tag);
+
+                    }
+                });
+            })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+
+    })
+}
+
+function addBrands() {
+
+    return new Promise((resolve, reject) => {
+
+        var brandId = null;
+        if (activeBrandDocId == null) {
+            brandId = generateUUID();
+        }
+        else {
+            brandId = activeBrandDocId;
+        }
+        var active = true;
+        if (localBrandList.length >= 2000) {
+            active = false;
+        }
+
+        // Add a new document in collection "cities"
+        firebase.firestore().collection("brands").doc(brandId).set({
+            brand_id: brandId,
+            active: active,
+            brands: localBrandList
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                reject();
+            });
+
+    })
 
 
 }

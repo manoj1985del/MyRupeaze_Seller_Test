@@ -1,6 +1,9 @@
+
+
 var slideIndex = 0;
 var divVideos = document.getElementById("divVideos");
 var videoList = [];
+var mUserList = [];
 
 var productList = [];
 var offline_invoices = [];
@@ -9,6 +12,27 @@ let qtyDiscountMap = new Map();
 let qtyDiscountObjectMap = new Map();
 var newInvoiceId;
 
+
+/************************************************************ */
+//Using this section to create brands collection
+/**************************************************************/
+
+//makeBrandsLower();
+//loadBrands();
+
+
+
+/***************************************************************** */
+//use this section for updating anything about user details
+/*************************************************************** */
+
+// loadAllUsers().then(()=>{
+//   for(var i = 0; i < mUserList.length; i++){
+//     var user = mUserList[i];
+//     updateUserDetails(user);
+//   }
+ 
+// })
 
 // console.log("going to fetch products");
 // loadSportsCategoryProducts().then(()=>{
@@ -916,6 +940,178 @@ function updateCategory(productId){
       console.log("doc does not exist");
 
     });
+
+}
+
+var mUserList = [];
+function loadAllUsers() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("users")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var user = doc.data();
+          console.log("pushing user - " + user.Name);
+          mUserList.push(user);
+
+        });
+      })
+      .then(function () {
+        console.log("sellers retrieved. Total sellers  = " + sellerList.length);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function updateUserDetails(user){
+
+  
+  var washingtonRef = firebase.firestore().collection("users").doc(user.customer_id);
+  washingtonRef.update({
+    last_order_date: null,
+    last_payment_status: null
+  })
+    .then(function () {
+      console.log("updated for user - " + user.Name);
+    })
+    .catch(function (error) {
+      // The document probably doesn't exist.
+      console.log("doc does not exist");
+
+    });
+
+}
+
+
+var brandList = [];
+var globalBrandList = [];
+function loadBrands() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("products")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var product = doc.data();
+            var brand = product.Brand;
+            if (!globalBrandList.includes(brand)) {
+              brandList.push(brand);
+              globalBrandList.push(brand);
+              console.log("pushing brand - " + brand);
+              if (brandList.length >= 2000) {
+                addBrands(brandList.length, 2000);
+                brandList = [];
+              }
+            }
+          
+
+        });
+      })
+      .then(function () {
+        addBrands(brandList.length, 2000);
+        console.log("Total Brands = " + globalBrandList.length);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function addBrands(size, limit) {
+
+  var brandId = generateUUID();
+  var active = true;
+  if (size >= limit) {
+    active = false;
+  }
+  // Add a new document in collection "cities"
+  firebase.firestore().collection("brands").doc(brandId).set({
+    brand_id: brandId,
+    active: active,
+    brands: brandList
+  })
+    .then(function () {
+      console.log("brands added successfully!");
+    })
+    .catch(function (error) {
+      console.error("Error writing document: ", error);
+    });
+}
+
+
+function makeBrandsLower() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("products")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var product = doc.data();
+          var brand = product.Brand;
+          brand = brand.toLowerCase();
+          product.Brand = brand;
+          productList.push(product);
+          console.log(product.Brand);
+
+        });
+      })
+      .then(function () {
+      
+        console.log("Total Products - " + productList.length);
+        var promiseList = [];
+        for(var i = 0; i < productList.length; i++){
+           promiseList.push(updateBrandToLowerCase(productList[i]));
+        }
+
+        Promise.all(promiseList).then(()=>{
+
+          resolve();
+          console.log("updated all tags in lower case");
+
+        })
+       
+      
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
+function updateBrandToLowerCase(product) {
+
+  return new Promise((resolve, reject) =>{
+
+    var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
+    //console.log("qty discount = " + qtyDiscounts);
+    washingtonRef.update({
+      Brand: product.Brand
+    })
+      .then(function () {
+        console.log("updated Brand for product - " + product.Product_Id);
+         resolve();
+      })
+      .catch(function (error) {
+        // The document probably doesn't exist.
+        reject();
+  
+      });
+
+  })
 
 
 }

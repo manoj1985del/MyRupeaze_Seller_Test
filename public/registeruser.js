@@ -82,6 +82,7 @@ var previewText_CarouselImage1 = imagePreview_CarouselImage1Container.querySelec
 var btnUploadCarouselImage1 = document.getElementById("btnUploadCarouselImage1");
 var imgProgressCarouselImage1 = document.getElementById("imgProgressCarouselImage1");
 var uploadMsgCarouselImage1 = document.getElementById("uploadMsgCarouselImage1");
+var btnLogout = document.getElementById("btnLogout");
 
 var fileCarousel_Img1;
 var url_Carousel_Img1 = null;
@@ -102,11 +103,17 @@ var uploadFileUrl = null;
 var gstURL = null;
 var chequeURL = null;
 
+
+
 setImage(inpFile_CarouselImage1, previewImage_CarouselImage1, previewText_CarouselImage1, "fileCarousel_Img1");
 
 btnUploadCarouselImage1.addEventListener("click", function () {
    uploadFile(fileCarousel_Img1, imgProgressCarouselImage1, uploadMsgCarouselImage1, url_Carousel_Img1, sellerId, "img");
 });
+
+btnLogout.addEventListener("click", function(){
+   logOut();
+})
 
 function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
 
@@ -1124,6 +1131,16 @@ function loadSubCategories() {
 
 
    })
+}
+
+function logOut() {
+   firebase.auth().signOut().then(function () {
+       window.location.href = "seller_login.html";
+   }).catch(function (error) {
+       // An error happened.
+   });
+
+
 }
 
 

@@ -127,7 +127,7 @@ function createTable(){
 
         var divSNo = document.createElement('div');
         var spanSNo = document.createElement('span');
-        spanSNo.innerHTML = i.toString();
+        spanSNo.innerHTML = (i+1).toString();
         divSNo.appendChild(spanSNo);
         tdSNo.appendChild(divSNo);
 

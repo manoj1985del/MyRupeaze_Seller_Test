@@ -233,3 +233,16 @@ function autocomplete(inp, arr) {
     var win = window.open(url, '_blank');
     win.focus();
   }
+
+  function formatFirebaseDate(firebaseDate){
+    console.log(firebaseDate);
+    var ord = firebaseDate.toDate();
+    var dd = ord.getDate();
+    var mm = ord.getMonth() + 1;
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    var yyyy = ord.getFullYear();
+    var formattedDay = dd + "-" + getMonthNmae(mm) + "-" + yyyy;
+    return formattedDay;
+}

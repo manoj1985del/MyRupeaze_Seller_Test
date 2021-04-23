@@ -8,6 +8,8 @@ var mUserList = [];
 divProgress.style.display = "block";
 divContent.style.display = "none";
 
+//table.style.width = "200px";
+
 getUserData().then(()=>{
     createTable();
 })
@@ -20,6 +22,7 @@ btnExportToExcel.addEventListener("click", function () {
 function createTableHeaders() {
     var tr = document.createElement('tr');
 
+    var sNo = document.createElement('th');
     var name = document.createElement("th");
     var customerId = document.createElement('th');
     var phone = document.createElement('th');
@@ -30,7 +33,10 @@ function createTableHeaders() {
     var dob = document.createElement('th');
     var childBirthday = document.createElement('th');
     var anniversary = document.createElement('th');
+    var lastOrderDate = document.createElement('th');
+    var lastPayStatus = document.createElement('th');
 
+    sNo.innerHTML = "S.No.";
     name.innerHTML = "Name";
     customerId.innerHTML = "Customer ID";
     phone.innerHTML = "Phone"
@@ -41,7 +47,11 @@ function createTableHeaders() {
     dob.innerHTML = "Date Of Birth";
     childBirthday.innerHTML = "Child Birthday";
     anniversary.innerHTML = "Anniversary";
+    lastOrderDate.innerHTML = "Last Order Date";
+    lastPayStatus.innerHTML = "Last Payment Status";
 
+
+    tr.appendChild(sNo);
     tr.appendChild(name);
     tr.appendChild(customerId);
     tr.appendChild(phone);
@@ -52,6 +62,8 @@ function createTableHeaders() {
     tr.appendChild(dob);
     tr.appendChild(childBirthday);
     tr.appendChild(anniversary);
+    tr.appendChild(lastOrderDate);
+    tr.appendChild(lastPayStatus);
 
     table.appendChild(tr);
 
@@ -63,23 +75,9 @@ function createTable(){
 
     for(var i = 0; i < mUserList.length; i++){
         
-        var user = mUserList[i];
-        console.log(user.Name);
-
-        var userName = user.Name;
-        var customerID = user.customer_id;
-        var userPhone = user.Phone;
-        var userEmail = user.Email;
-        var userFcm = user.fcm;
-        var userGender = user.Gender;
-        var userDob = user.dob;
-        var userChildBirthday = user.child_birthday;
-        var userAnniversary = user.anniversary;
-        var userAddress = "Address Line 1: " + user.AddressLine1 + "\n Address Line 2: " + user.AddressLine2 + 
-        "\nAdress Line 3: " + user.AddressLine3 + "\nCity: " + user.City + "\nState: " + user.State;
-
         var tr = document.createElement('tr');
 
+        var tdSNo = document.createElement('td');
         var tdName = document.createElement("td");
         var tdCustomerId = document.createElement('td');
         var tdPhone = document.createElement("td");
@@ -90,6 +88,48 @@ function createTable(){
         var tdDob = document.createElement('td');
         var tdChildBirthday = document.createElement('td');
         var tdAnniversary = document.createElement('td');
+        var tdLastOrderDate = document.createElement('td');
+        var tdLastPayStatus = document.createElement('td');
+
+        var user = mUserList[i];
+        console.log(user.Name);
+
+        var userName = user.Name;
+        var customerID = user.customer_id;
+        var userPhone = user.Phone;
+        var userEmail = user.Email;
+        var userFcm = user.fcm;
+        var userGender = user.Gender;
+        var userDob = 'Not Specified';
+        if(user.dob != undefined || user.dob != null){
+            userDob = user.dob;
+        }
+
+        var childBirthday = 'Not Specified';
+        if(user.child_birthday != undefined || user.child_birthday != null){
+            childBirthday = user.child_birthday;
+        }
+
+        var userAnniversary = 'Not Specified';
+        if(user.anniversary != undefined || user.anniversary != null){
+            userAnniversary = user.anniversary;
+        }
+
+        var lastOrderDate = "No Records Yet";
+        if(user.last_order_date != undefined || user.last_order_date != null){
+            lastOrderDate = formatFirebaseDate(user.last_order_date);
+        }
+       
+        var userAddress = "Address Line 1: " + user.AddressLine1 + "\n Address Line 2: " + user.AddressLine2 + 
+        "\nAdress Line 3: " + user.AddressLine3 + "\nCity: " + user.City + "\nState: " + user.State;
+
+     
+
+        var divSNo = document.createElement('div');
+        var spanSNo = document.createElement('span');
+        spanSNo.innerHTML = i.toString();
+        divSNo.appendChild(spanSNo);
+        tdSNo.appendChild(divSNo);
 
         var divName = document.createElement('div');
         var spanName = document.createElement('span');
@@ -141,7 +181,7 @@ function createTable(){
 
         var divChildBirthday = document.createElement('div');
         var spanChildBirthday = document.createElement('span');
-        spanChildBirthday.innerHTML = userChildBirthday;
+        spanChildBirthday.innerHTML = childBirthday;
         divChildBirthday.appendChild(spanChildBirthday);
         tdChildBirthday.appendChild(divChildBirthday);
 
@@ -151,8 +191,27 @@ function createTable(){
         divAnniversary.appendChild(spanAnniversary);
         tdAnniversary.appendChild(divAnniversary);
 
+        var divLastOrderDate = document.createElement('div');
+        var spanLastOrderDate = document.createElement('span');
+        spanLastOrderDate.innerHTML = lastOrderDate;
+        divLastOrderDate.appendChild(spanLastOrderDate);
+        tdLastOrderDate.appendChild(divLastOrderDate);
+
+        var divLastPayStatus = document.createElement('div');
+        var spanLastPayStatus = document.createElement('span');
+        var lastPayStatus = "";
+        if(user.last_payment_status == null || user.last_payment_status == undefined){
+            lastPayStatus = "No Records Yet";
+        }
+        spanLastPayStatus.innerHTML = lastPayStatus;
+        divLastPayStatus.appendChild(spanLastPayStatus);
+        tdLastPayStatus.appendChild(divLastPayStatus);
+
         
 
+        
+
+        tr.appendChild(tdSNo);
         tr.appendChild(tdName);
         tr.appendChild(tdCustomerId);
         tr.appendChild(tdPhone);
@@ -163,6 +222,8 @@ function createTable(){
         tr.appendChild(tdDob);
         tr.appendChild(tdChildBirthday);
         tr.appendChild(tdAnniversary);
+        tr.appendChild(tdLastOrderDate);
+        tr.appendChild(tdLastPayStatus);
         table.appendChild(tr);
     }
 }
@@ -205,12 +266,12 @@ function exportToExcel(){
         column2 = row.cells[1].innerText;
         column3 = row.cells[2].innerText;
         column4 = row.cells[3].innerText;
-        column5 = row.cells[3].innerText;
-        column6 = row.cells[3].innerText;
-        column7 = row.cells[3].innerText;
-        column8 = row.cells[3].innerText;
-        column9 = row.cells[3].innerText;
-        column10 = row.cells[3].innerText;
+        column5 = row.cells[4].innerText;
+        column6 = row.cells[5].innerText;
+        column7 = row.cells[6].innerText;
+        column8 = row.cells[7].innerText;
+        column9 = row.cells[8].innerText;
+        column10 = row.cells[9].innerText;
 
         //adding record to rows array
         rows.push(
@@ -243,3 +304,5 @@ function exportToExcel(){
     document.body.appendChild(link);
     link.click();
 }
+
+

@@ -120,8 +120,8 @@ function createTable(){
             lastOrderDate = formatFirebaseDate(user.last_order_date);
         }
        
-        var userAddress = "Address Line 1: " + user.AddressLine1 + "\n Address Line 2: " + user.AddressLine2 + 
-        "\nAdress Line 3: " + user.AddressLine3 + "\nCity: " + user.City + "\nState: " + user.State;
+        var userAddress = user.AddressLine1 + "," + user.AddressLine2 + 
+        "," + user.AddressLine3 + ",City: " + user.City + ",State: " + user.State;
 
      
 
@@ -262,16 +262,18 @@ function exportToExcel(){
 
     //iterating through rows of table
     for (var i = 0, row; row = table.rows[i]; i++) {
-        column1 = row.cells[0].innerText;
-        column2 = row.cells[1].innerText;
-        column3 = row.cells[2].innerText;
-        column4 = row.cells[3].innerText;
-        column5 = row.cells[4].innerText;
-        column6 = row.cells[5].innerText;
-        column7 = row.cells[6].innerText;
-        column8 = row.cells[7].innerText;
-        column9 = row.cells[8].innerText;
-        column10 = row.cells[9].innerText;
+        column1 = row.cells[1].innerText;
+        column2 = row.cells[2].innerText;
+        column3 = row.cells[3].innerText;
+        column4 = row.cells[4].innerText;
+        column5 = row.cells[5].innerText;
+       // column6 = row.cells[6].innerText;
+        column7 = row.cells[7].innerText;
+        column8 = row.cells[8].innerText;
+        column9 = row.cells[9].innerText;
+        column10 = row.cells[10].innerText;
+        column11 = row.cells[11].innerText;
+        column12 = row.cells[12].innerText;
 
         //adding record to rows array
         rows.push(
@@ -281,11 +283,13 @@ function exportToExcel(){
                 column3,
                 column4,
                 column5,
-                column6,
+                //column6,
                 column7,
                 column8,
                 column9,
-                column10
+                column10,
+                column11,
+                column12
             ]
         );
 

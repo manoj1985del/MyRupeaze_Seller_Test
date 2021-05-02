@@ -126,9 +126,9 @@
                 <div class="row">
                     <div class="col-sm-4">
                         <label for="txtCouponCode">Enter Coupon Code (6 Characters Only)</label>
-                        <input type="text" class="form-control" id="txtCouponCode" aria-describedby="protuctTitleHelp"
+                        <input type="text" class="form-control" placeholder="Coupon Code" id="txtCouponCode" st aria-describedby="protuctTitleHelp"
                         required>
-                        <button type="button" class="btn btn-primary mt-2" id="btnAddCoupon" style="width: 200px;">Add Coupon Code</button>
+
                     </div>
 
                     <div class="col-sm-4" id="divValidThrough">
@@ -139,11 +139,30 @@
                     </div>
 
                     <div class="col-sm-4" id="divOff">
-                     
-                        <label for="txtPercentOff">Percentage Off</label>
-                        <input type="number" class="form-control" id="txtPercentOff">
+                        
+                        <label>Discount Type: &nbsp</label>
+                        <input type="radio" id="DiscountTypePercentage" name="DiscountType" value="Percentage">
+                        <label for="DiscountTypePercentage">Percentage</label> &nbsp
+                        <input type="radio" id="DiscountTypePrice" name="DiscountType" value="Price">
+                        <label for="DiscountTypePrice">Price</label>
 
+                        <input type="number" class="form-control" id="txtOff" placeholder="Discount">
+
+                      
                     </div>
+
+
+
+                    <div class="col-sm-4" id="divCouponType" style="padding: 12px;">
+                      <label>Coupon Type: &nbsp</label>
+                      <input type="radio" id="CouponTypeGlobal" name="CouponType" value="Global">
+                      <label for="CouponTypeGlobal">Global</label> &nbsp
+                      <input type="radio" id="CouponTypeLocal" name="CouponType" value="Local">
+                      <label for="CouponTypeLocal">Local</label>
+                  
+
+                      <button type="button" class="btn btn-primary mt-2" id="btnAddCoupon" style="width: 200px;">Add Coupon Code</button>
+                  </div>
 
                 </div>
 

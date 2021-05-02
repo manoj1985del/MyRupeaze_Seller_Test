@@ -1,17 +1,24 @@
 
 var txtCouponCode = document.getElementById('txtCouponCode');
 var dtValidThru = document.getElementById('dtValidThru');
-var txtPercentOff = document.getElementById('txtPercentOff');
+var txtOff = document.getElementById('txtOff');
+var radioDiscountType = document.getElementsByName('DiscountType');
+var radioCouponType = document.getElementsByName('CouponType');
 var btnAddCoupon = document.getElementById('btnAddCoupon');
 var table = document.getElementById('tblCoupons');
 var mErrMsg = "";
 var couponList = [];
+var discount_type;
+var coupon_type;
+
+
 
 loadCoupons().then(() => {
     createTable();
 })
 
 btnAddCoupon.addEventListener("click", function () {
+    
     bValidateFormDetails();
     if (mErrMsg != "") {
         alert(mErrMsg);
@@ -30,7 +37,9 @@ function saveCouponDetails(couponCode, formattedDate) {
     firebase.firestore().collection("coupons").doc(couponCode).set({
         coupon_code: couponCode,
         valid_through: formattedDate,
-        percent_off: txtPercentOff.value,
+        off: txtOff.value,
+        discountType: discount_type,
+        couponType: coupon_type,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         status: 'Active'
     })
@@ -66,7 +75,7 @@ function bValidateFormDetails() {
     }
 
 
-    if (txtPercentOff.value == "") {
+    if (txtOff.value == "") {
         mErrMsg += "Please Enter Percentage Off\n";
     }
 
@@ -81,6 +90,27 @@ function bValidateFormDetails() {
     if (couponExists) {
         mErrMsg += "This Coupon Code has already been created.\n";
     }
+
+    for(var i = 0; i < radioDiscountType.length; i++){
+        if(radioDiscountType[i].checked){
+            discount_type = radioDiscountType[i].value;
+        }
+    }
+           
+    for(var i = 0; i < radioCouponType.length; i++){
+        if(radioCouponType[i].checked){
+            coupon_type = radioCouponType[i].value;
+        }
+    }
+
+    if(discount_type == null){
+        mErrMsg += "Please select a discount type.\n";
+    }
+
+    if(coupon_type == null){
+        mErrMsg += "Please select a coupon type.\n";
+    }
+          
 
 }
 
@@ -192,7 +222,11 @@ function createTableHeaders() {
     thValidThru.textContent = "Valid Through";
 
     var thPercentOff = document.createElement("th");
-    thPercentOff.textContent = "Percent Off";
+    thPercentOff.textContent = "Off";
+
+    var thCouponType = document.createElement("th");
+    thCouponType.textContent = "Coupon Type";
+
 
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
@@ -203,6 +237,7 @@ function createTableHeaders() {
     tr.appendChild(thCouponCode);
     tr.appendChild(thValidThru);
     tr.appendChild(thPercentOff);
+    tr.appendChild(thCouponType);
     tr.appendChild(thStatus);
     tr.appendChild(thAction);
 
@@ -225,11 +260,13 @@ function createTable() {
     createTableHeaders();
 
     for (var i = 0; i < couponList.length; i++) {
+        console.log(couponList.length);
         var coupon = couponList[i];
         var tr = document.createElement('tr');
         var tdCouponCode = document.createElement('td');
         var tdValidThru = document.createElement('td');
         var tdPercentOff = document.createElement('td');
+        var tdCouponType = document.createElement('td');
         var tdStatus = document.createElement('td');
         var tdAction = document.createElement('td');
 
@@ -246,8 +283,23 @@ function createTable() {
 
         var divPercentOff = document.createElement('div');
         var spanPercentoff = document.createElement('span');
-        spanPercentoff.innerHTML = coupon.percent_off;
+
+        if(coupon.discountType == "Percentage"){
+            spanPercentoff.innerHTML = coupon.off + " %";
+        }
+        else if(coupon.discountType == "Price"){
+            spanPercentoff.innerHTML = "₹ " + coupon.off;
+        }
+        else{
+            spanPercentoff.innerHTML = coupon.off;
+        }
+      
         divPercentOff.appendChild(spanPercentoff);
+
+        var divCouponType = document.createElement('div');
+        var spanCouponType = document.createElement('span');
+        spanCouponType.innerHTML = coupon.couponType;
+        divCouponType.appendChild(spanCouponType);
 
         var divStatus = document.createElement('div');
         var spanStatus = document.createElement('span');
@@ -265,25 +317,46 @@ function createTable() {
         spanStatus.innerHTML = status;
         divStatus.appendChild(spanStatus);
 
+
+        
+
+
         var divAction = document.createElement("div");
+
+        var divDeactivateCoupon = document.createElement("div");
         var btnDeactivateCoupon = document.createElement("button");
         btnDeactivateCoupon.style.width = "150px";
+        btnDeactivateCoupon.style.margin = "10px";
         btnDeactivateCoupon.textContent = "Deactivate Coupon";
         var id = coupon.coupon_code;
         btnDeactivateCoupon.setAttribute("id", id);
-        btnDeactivateCoupon.setAttribute("type", "button");
-        divAction.appendChild(btnDeactivateCoupon);
+        // btnDeactivateCoupon.setAttribute("type", "button");
+        divDeactivateCoupon.appendChild(btnDeactivateCoupon);
+        divAction.appendChild(divDeactivateCoupon);
 
+        if(coupon.couponType == "Local"){
+            var divSelectUsers = document.createElement("div");
+            var btnSelectUsers = document.createElement("button");
+            btnSelectUsers.style.width = "150px";
+            btnSelectUsers.textContent = "Select Users";
+            btnSelectUsers.style.margin = "10px";
+            var id = coupon.coupon_code;
+            btnSelectUsers.setAttribute("id", id);
+            divSelectUsers.appendChild(btnSelectUsers);
+            divAction.appendChild(btnSelectUsers);
+        }
 
         tdCouponCode.appendChild(divCouponCode);
         tdValidThru.appendChild(divValidThru);
         tdPercentOff.appendChild(divPercentOff);
+        tdCouponType.appendChild(divCouponType);
         tdStatus.appendChild(divStatus);
         tdAction.appendChild(divAction);
 
         tr.appendChild(tdCouponCode);
         tr.appendChild(tdValidThru);
         tr.appendChild(tdPercentOff);
+        tr.appendChild(tdCouponType);
         tr.appendChild(tdStatus);
         tr.appendChild(tdAction);
 
@@ -293,6 +366,14 @@ function createTable() {
             var coupon_code = this.id;
             deActivateCoupon(coupon_code);
         })
+
+        if(coupon.couponType == "Local"){
+            btnSelectUsers.addEventListener("click", function(){
+                localStorage.setItem('coupon_code', this.id)
+                location.href = "select_users.html";
+            })
+        }
+        
 
 
     }

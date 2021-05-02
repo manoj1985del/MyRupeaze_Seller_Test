@@ -230,7 +230,6 @@ function createTable(){
 
 function getUserData() {
 
-    console.log("control here");
     return new Promise((resolve, reject)=>{
         firebase.firestore().collection('users').get()
         .then((querySnapshot) => {

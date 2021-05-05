@@ -62,6 +62,13 @@ var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsP
 var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
+var cardPendingDocRequest = document.getElementById("cardPendingDocRequest");
+var txtPendingDocRequest = document.getElementById("txtPendingDocRequest")
+
+var cardPendingPharmaRequest = document.getElementById("cardPendingPharmaRequest");
+var txtPendingPharmaRequest = document.getElementById("txtPendingPharmaRequest");
+
+
 localStorage.setItem("adminLogin", "true");
 
 var todayOrdersMap = new Map();
@@ -84,6 +91,10 @@ loadSellerDetails(sellerId);
 loadTotalSellers();
 loadTotalUsers();
 loadPendingSellers();
+
+loadPendingDoctors();
+loadPendingPharmacists();
+
 loadPendingOrders();
 loadTodayOrders();
 getActiveEnquiries();
@@ -179,6 +190,36 @@ cardPendingSellerRequest.addEventListener("mouseleave", function () {
 cardPendingSellerRequest.addEventListener("click", function () {
     window.location.href = "admin_seller_listing.html?type=pending";
 });
+
+//pending doctor requests
+
+cardPendingDocRequest.addEventListener("mouseenter", function () {
+    cardPendingDocRequest.classList.add("cardHover");
+});
+
+cardPendingDocRequest.addEventListener("mouseleave", function () {
+    cardPendingDocRequest.classList.remove("cardHover");
+});
+
+cardPendingDocRequest.addEventListener("click", function () {
+    window.location.href = "admin_doctor_listing.html?type=pending";
+});
+
+//pending pharmacists requests
+
+cardPendingPharmaRequest.addEventListener("mouseenter", function () {
+    cardPendingPharmaRequest.classList.add("cardHover");
+});
+
+cardPendingPharmaRequest.addEventListener("mouseleave", function () {
+    cardPendingPharmaRequest.classList.remove("cardHover");
+});
+
+cardPendingPharmaRequest.addEventListener("click", function () {
+    window.location.href = "admin_pharmacist_listing.html?type=pending";
+});
+
+
 
 //total users
 cardTotalUsers.addEventListener("mouseenter", function () {
@@ -767,6 +808,30 @@ function loadPendingSellers() {
         .catch(function (error) {
             console.log("Error getting documents: ", error);
         });
+}
+
+function loadPendingDoctors(){
+    firebase.firestore().collection("doctor")
+    .where("status", "==", "pending")
+    .get()
+    .then(function (querySnapshot) {
+        txtPendingDocRequest.textContent = querySnapshot.docs.length;
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+function loadPendingPharmacists(){
+    firebase.firestore().collection("pharmacist")
+    .where("status", "==", "pending")
+    .get()
+    .then(function (querySnapshot) {
+        txtPendingPharmaRequest.textContent = querySnapshot.docs.length;
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
 }
 
 function loadTotalUsers() {

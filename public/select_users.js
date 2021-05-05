@@ -100,18 +100,6 @@ function createTable(){
         divAddress.appendChild(spanAddress);
         tdAddress.appendChild(divAddress);
 
-
-        // var divAction = document.createElement('div');
-
-        // var btnAddUser = document.createElement('button');
-        // btnAddUser.style.width = "150px";
-        // btnAddUser.style.margin = "10px";
-        // btnAddUser.textContent = "Add User";
-        // //btnAddUser.setAttribute("id", customerID);
-        // divAction.appendChild(btnAddUser);
-
-        // tdAction.appendChild(divAction);
-
         var divAction = document.createElement("div");
         var btnAddUser = document.createElement("button");
         btnAddUser.style.width = "150px";
@@ -160,7 +148,7 @@ function addUserToDiscountList(id){
 function getUserData() {
 
     return new Promise((resolve, reject)=>{
-        firebase.firestore().collection('users').get()
+        firebase.firestore().collection('users').orderBy("Name").get()
         .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             var user = doc.data();

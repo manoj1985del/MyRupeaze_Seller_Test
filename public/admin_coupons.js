@@ -33,6 +33,9 @@ btnAddCoupon.addEventListener("click", function () {
 
 function saveCouponDetails(couponCode, formattedDate) {
 
+    var couponStatus = checkCouponValidity(formattedDate);
+    console.log(couponStatus);
+
     // Add a new document in collection "cities"
     firebase.firestore().collection("coupons").doc(couponCode).set({
         coupon_code: couponCode,
@@ -41,7 +44,7 @@ function saveCouponDetails(couponCode, formattedDate) {
         discountType: discount_type,
         couponType: coupon_type,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        status: 'Active'
+        status: couponStatus
     })
         .then(function () {
             loadCoupons().then(()=>{
@@ -311,9 +314,13 @@ function createTable() {
         today.setSeconds(0);
 
         var status = coupon.status;
-        if (today > coupon.valid_through.toDate()) {
-            status = "Expired";
+        if(status != "Disabled"){
+            if (today > coupon.valid_through.toDate()) {
+                status = "Expired";
+                updateCouponStatus(status, coupon.coupon_code);
+            }
         }
+       
         spanStatus.innerHTML = status;
         divStatus.appendChild(spanStatus);
 
@@ -334,16 +341,18 @@ function createTable() {
         divDeactivateCoupon.appendChild(btnDeactivateCoupon);
         divAction.appendChild(divDeactivateCoupon);
 
-        if(coupon.couponType == "Local"){
-            var divSelectUsers = document.createElement("div");
-            var btnSelectUsers = document.createElement("button");
-            btnSelectUsers.style.width = "150px";
-            btnSelectUsers.textContent = "Select Users";
-            btnSelectUsers.style.margin = "10px";
-            var id = coupon.coupon_code;
-            btnSelectUsers.setAttribute("id", id);
-            divSelectUsers.appendChild(btnSelectUsers);
-            divAction.appendChild(btnSelectUsers);
+        if(coupon.couponType == "Local" && coupon.status == "Active"){
+            
+                var divSelectUsers = document.createElement("div");
+                var btnSelectUsers = document.createElement("button");
+                btnSelectUsers.style.width = "150px";
+                btnSelectUsers.textContent = "Select Users";
+                btnSelectUsers.style.margin = "10px";
+                var id = coupon.coupon_code;
+                btnSelectUsers.setAttribute("id", id);
+                divSelectUsers.appendChild(btnSelectUsers);
+                divAction.appendChild(btnSelectUsers);
+            
         }
 
         tdCouponCode.appendChild(divCouponCode);
@@ -363,11 +372,11 @@ function createTable() {
         table.appendChild(tr);
 
         btnDeactivateCoupon.addEventListener("click", function () {
-            var coupon_code = this.id;
-            deActivateCoupon(coupon_code);
+            deActivateCoupon(this.id);
+            console.log(this.id);
         })
 
-        if(coupon.couponType == "Local"){
+        if(coupon.couponType == "Local" && coupon.status == "Active"){
             btnSelectUsers.addEventListener("click", function(){
                 localStorage.setItem('coupon_code', this.id)
                 location.href = "select_users.html";
@@ -379,20 +388,33 @@ function createTable() {
     }
 }
 
-function deActivateCoupon(couponCode) {
-    var washingtonRef = firebase.firestore().collection("coupons").doc(couponCode);
+function checkCouponValidity(dateValid){
+    var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setMilliseconds(0);
+    today.setSeconds(0);
 
-    // Set the "capital" field of the city 'DC'
-    return washingtonRef.update({
-        status: "Disabled"
-    })
-        .then(function () {
-            loadCoupons().then(()=>{
-                createTable();
-            })
-        })
-        .catch(function (error) {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-        });
+    var status;
+
+    if (today > dateValid.toDate()) {
+        status = "Expired";
+    }
+    else{
+        status = "Active"
+    }
+    return status;
+}
+
+function updateCouponStatus(status, couponCode){
+    var couponRef = firebase.firestore().collection("coupons").doc(couponCode);
+    couponRef.update("status", status);
+}
+
+function deActivateCoupon(couponCode) {
+    console.log(couponCode);
+    var status = "Disabled";
+    var couponRef = firebase.firestore().collection("coupons").doc(couponCode);
+     couponRef.update("status", status);
+     location.href = "admin_coupons.html";
 }

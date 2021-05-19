@@ -97,6 +97,25 @@ var newInvoiceId;
 /****************END: UNCOMMENT THIS SECTION FOR UPDATING MERCHANT ID AND COMPANY NAME IN OFFLINE INVOICE* */
 
 
+// loadUsers().then(()=>{
+//   loadOfflineInvoices().then(()=>{
+//     for(var i = 0; i < offline_invoices.length; i++){
+//       var invoice = offline_invoices[i];
+//       var user = null;
+//       for(var j = 0; j < userList.length; j++){
+//         var temp = userList[j];
+//         if(invoice.customer_id == temp.customer_id){
+//           user = temp;
+//           break;
+//         }
+//       }
+//       if(user != null){
+//         updateUserDetailsInOfflineInvoice(user, invoice.invoice_id);
+//       }
+//     }
+//   })
+// })
+
 
 function addQtyDiscount(productid, discountInPercentMap) {
   qtyDiscountMap.set(productid, discountInPercentMap);
@@ -877,6 +896,32 @@ function loadSellers() {
   })
 }
 
+var userList = [];
+function loadUsers() {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection("users")
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          var user = doc.data();
+          userList.push(user);
+
+        });
+      })
+      .then(function () {
+        console.log("users retrieved. Total users  = " + userList.length);
+        resolve();
+      })
+      .catch(function (error) {
+        console.log("Error getting documents: ", error);
+        reject();
+      });
+
+
+  })
+}
+
 function loadOfflineInvoices() {
   return new Promise((resolve, reject) => {
     firebase.firestore().collection("offline_invoices")
@@ -914,6 +959,29 @@ function updateSellerDetailsInOfflineInvoice(seller, invoiceId){
   })
     .then(function () {
       console.log("updated merchant id for product - " + product.Product_Id);
+    })
+    .catch(function (error) {
+      // The document probably doesn't exist.
+      console.log("doc does not exist");
+
+    });
+
+
+}
+
+function updateUserDetailsInOfflineInvoice(user, invoiceId){
+
+  console.log("invoice id - " + invoiceId);
+  var washingtonRef = firebase.firestore().collection("offline_invoices").doc(invoiceId);
+  washingtonRef.update({
+    bill_to_address_line1: user.AddressLine1,
+    bill_to_address_line2: user.AddressLine2,
+    bill_to_address_line3: user.AddressLine3,
+    bill_to_city: user.City,
+    bill_to_pincode: user.Pincode
+  })
+    .then(function () {
+      console.log("updated user details id for invoice - " + invoiceId);
     })
     .catch(function (error) {
       // The document probably doesn't exist.

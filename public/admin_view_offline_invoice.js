@@ -390,7 +390,13 @@ function showInvoices() {
         //customer details
         var divCustomerDetails = document.createElement('div');
         var spanCustomerDetails = document.createElement("span");
-        spanCustomerDetails.innerHTML = invoice.bill_to_name + "<br />" + "Mobile No: " + invoice.bill_to_phone;
+        spanCustomerDetails.innerHTML = invoice.bill_to_name + "<br />"
+                                        + invoice.bill_to_address_line1 + "<br />"
+                                        + invoice.bill_to_address_line2 + "<br />"
+                                        + invoice.bill_to_address_line3 + "<br />"
+                                        + "<b>City:</b> " + invoice.bill_to_city + "<br/>"
+                                        + "Pincode : " + invoice.bill_to_pincode + "<br/>"
+                                        + "Mobile No: " + invoice.bill_to_phone;
         divCustomerDetails.appendChild(spanCustomerDetails);
 
         //product Details

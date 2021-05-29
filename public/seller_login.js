@@ -147,7 +147,7 @@ function checkIfUserExist(uid, selectedUserType) {
             localStorage.setItem("sellerEmail", sellerEmail);
             mSeller = doc.data();
             console.log("Document exists");
-            if(uid == "fZw6rBze8OTr9lTOCYNKdGclKUH2"){
+            if(uid == "bETl28cWibRn5xAeClWW0yUCNri2"){
                 window.location.href="admin_home.html?sellerid=" + uid;
             }
             else
@@ -157,7 +157,16 @@ function checkIfUserExist(uid, selectedUserType) {
                                                                +"&rejection_reason=" + mSeller.suspension_reason;
                }
                else
-                    window.location.href = "home.html?sellerid=" + uid;
+               {
+                if(selectedUserType == "pharmacist")
+                {
+                 window.location.href = "pharmacist_home.html?sellerid=" + uid;
+                }
+                else{
+                 window.location.href = "home.html?sellerid=" + uid;
+                }
+               }
+             
             return true;
         } else {
             console.log("No such document!");

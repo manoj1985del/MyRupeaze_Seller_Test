@@ -29,8 +29,10 @@ var txtTodayUnits = document.getElementById("txtUnits");
 var txtTodaySales = document.getElementById("txtTodaySales");
 
 var cardPendingOrder = document.getElementById("cardPendingOrder");
-var cardUnitsToday = document.getElementById("cardUnitsToday");
-var cardSalesToday = document.getElementById("cardSalesToday");
+
+// var cardUnitsToday = document.getElementById("cardUnitsToday");
+//var cardSalesToday = document.getElementById("cardSalesToday");
+
 var cardTotalSellers = document.getElementById("cardTotalSellers");
 var hTotalSellers = document.getElementById("hTotalSellers");
 var cardPendingSellerRequest = document.getElementById("cardPendingSellerRequest");
@@ -62,26 +64,26 @@ var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsP
 var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
+var cardPendingDocRequest = document.getElementById("cardPendingDocRequest");
+var txtPendingDocRequest = document.getElementById("txtPendingDocRequest")
+
+var cardPendingPharmaRequest = document.getElementById("cardPendingPharmaRequest");
+var txtPendingPharmaRequest = document.getElementById("txtPendingPharmaRequest");
+
 
 localStorage.setItem("adminLogin", "true");
 
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
 
-
 var sellerId = getQueryVariable("sellerid");
-localStorage.setItem("sellerid", sellerId);
-
+console.log("seller id = " + sellerId);
 
 var cod_payout_seller = 0;
 var elec_payout_seller = 0;
 var cod_commission_admin = 0;
 var elec_commission_admin = 0;
 
-var btnViewMedicalDashboard = document.getElementById("btnViewMedicalDashboard"); 
-btnViewMedicalDashboard.addEventListener("click", function () {
-    window.location.href = "admin_home_medical.html?sellerid="+sellerId;
-});
 
 
 Last7Days();
@@ -90,6 +92,9 @@ loadSellerDetails(sellerId);
 loadTotalSellers();
 loadTotalUsers();
 loadPendingSellers();
+
+loadPendingDoctors();
+loadPendingPharmacists();
 
 loadPendingOrders();
 loadTodayOrders();
@@ -134,31 +139,31 @@ cardPendingOrder.addEventListener("click", function () {
 })
 
 //today sales
-cardSalesToday.addEventListener("mouseenter", function () {
-    cardSalesToday.classList.add("cardHover");
-});
+// cardSalesToday.addEventListener("mouseenter", function () {
+//     cardSalesToday.classList.add("cardHover");
+// });
 
-cardSalesToday.addEventListener("mouseleave", function () {
-    cardSalesToday.classList.remove("cardHover");
-});
+// cardSalesToday.addEventListener("mouseleave", function () {
+//     cardSalesToday.classList.remove("cardHover");
+// });
 
-cardSalesToday.addEventListener("click", function () {
-    window.location.href = "admin_orders.html?type=today";
-});
+// cardSalesToday.addEventListener("click", function () {
+//     window.location.href = "admin_orders.html?type=today";
+// });
 
 
 //today units
-cardUnitsToday.addEventListener("mouseenter", function () {
-    cardUnitsToday.classList.add("cardHover");
-});
+// cardUnitsToday.addEventListener("mouseenter", function () {
+//     cardUnitsToday.classList.add("cardHover");
+// });
 
-cardUnitsToday.addEventListener("mouseleave", function () {
-    cardUnitsToday.classList.remove("cardHover");
-});
+// cardUnitsToday.addEventListener("mouseleave", function () {
+//     cardUnitsToday.classList.remove("cardHover");
+// });
 
-cardUnitsToday.addEventListener("click", function () {
-    window.location.href = "admin_orders.html?type=today";
-});
+// cardUnitsToday.addEventListener("click", function () {
+//     window.location.href = "admin_orders.html?type=today";
+// });
 
 
 //total sellers
@@ -186,6 +191,35 @@ cardPendingSellerRequest.addEventListener("mouseleave", function () {
 cardPendingSellerRequest.addEventListener("click", function () {
     window.location.href = "admin_seller_listing.html?type=pending";
 });
+
+//pending doctor requests
+
+cardPendingDocRequest.addEventListener("mouseenter", function () {
+    cardPendingDocRequest.classList.add("cardHover");
+});
+
+cardPendingDocRequest.addEventListener("mouseleave", function () {
+    cardPendingDocRequest.classList.remove("cardHover");
+});
+
+cardPendingDocRequest.addEventListener("click", function () {
+    window.location.href = "admin_doctor_listing.html?type=pending";
+});
+
+//pending pharmacists requests
+
+cardPendingPharmaRequest.addEventListener("mouseenter", function () {
+    cardPendingPharmaRequest.classList.add("cardHover");
+});
+
+cardPendingPharmaRequest.addEventListener("mouseleave", function () {
+    cardPendingPharmaRequest.classList.remove("cardHover");
+});
+
+cardPendingPharmaRequest.addEventListener("click", function () {
+    window.location.href = "admin_pharmacist_listing.html?type=pending";
+});
+
 
 
 //total users
@@ -566,8 +600,8 @@ function loadTodayOrders() {
 
 
                 }).then(() => {
-                    txtTodayUnits.textContent = totalOrders.toString();
-                    txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
+                    // txtTodayUnits.textContent = totalOrders.toString();
+                    // txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
                 })
 
 
@@ -693,7 +727,6 @@ function loadMyAccountsInfo(seller) {
 // }
 
 function loadSellerDetails(sellerid) {
-    console.log("id"+sellerid);
     var query = firebase.firestore()
         .collection('seller').doc(sellerid);
 
@@ -778,6 +811,29 @@ function loadPendingSellers() {
         });
 }
 
+function loadPendingDoctors(){
+    firebase.firestore().collection("doctor")
+    .where("status", "==", "pending")
+    .get()
+    .then(function (querySnapshot) {
+        txtPendingDocRequest.textContent = querySnapshot.docs.length;
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+function loadPendingPharmacists(){
+    firebase.firestore().collection("pharmacist")
+    .where("status", "==", "pending")
+    .get()
+    .then(function (querySnapshot) {
+        txtPendingPharmaRequest.textContent = querySnapshot.docs.length;
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
 
 function loadTotalUsers() {
     firebase.firestore().collection("users")

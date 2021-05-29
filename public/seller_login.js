@@ -8,7 +8,8 @@ var divContent = document.getElementById("divContent");
 var imgLoading = document.getElementById("loading");
 var divErrorMsg = document.getElementById("divErrorMsg");
 var mSeller = null;
-
+var userType = document.getElementById("user_type");
+var selectedUserType = null;
 var sellerEmail;
 
 divContent.style.display = "none";
@@ -66,6 +67,9 @@ btnSubmit.addEventListener("click", function () {
     divErrorMsg.style.height = "500px";
     divContent.style.display = "none";
 
+    selectedUserType = userType.options[userType.selectedIndex].value;
+    console.log(selectedUserType);
+
 
     firebase.auth().signInWithEmailAndPassword(emailId.value, password.value).catch(function (error) {
         imgLoading.style.display = "none";
@@ -94,9 +98,10 @@ firebase.auth().onAuthStateChanged(function (user) {
         var photoURL = user.photoURL;
         var isAnonymous = user.isAnonymous;
         var uid = user.uid;
+        console.log(uid);
         var providerData = user.providerData;
 
-        checkIfUserExist(uid);
+        checkIfUserExist(uid, selectedUserType);
 
         // checkIfUserExist(uid).then(() => {
 
@@ -127,15 +132,22 @@ function logOut() {
 
 }
 
-function checkIfUserExist(uid) {
+function checkIfUserExist(uid, selectedUserType) {
 
-        var docRef = firebase.firestore().collection("seller").doc(uid);
-    docRef.get().then(function (doc) {
+    if(selectedUserType != null){
+
+        if(selectedUserType == "admin"){
+            selectedUserType = "seller";
+        }
+
+        var docRef = firebase.firestore().collection(selectedUserType).doc(uid);
+        console.log(uid);
+        docRef.get().then(function (doc) {
         if (doc.exists) {
             localStorage.setItem("sellerEmail", sellerEmail);
             mSeller = doc.data();
             console.log("Document exists");
-            if(uid == "fZw6rBze8OTr9lTOCYNKdGclKUH2"){
+            if(uid == "bETl28cWibRn5xAeClWW0yUCNri2"){
                 window.location.href="admin_home.html?sellerid=" + uid;
             }
             else
@@ -145,7 +157,16 @@ function checkIfUserExist(uid) {
                                                                +"&rejection_reason=" + mSeller.suspension_reason;
                }
                else
-                    window.location.href = "home.html?sellerid=" + uid;
+               {
+                if(selectedUserType == "pharmacist")
+                {
+                 window.location.href = "pharmacist_home.html?sellerid=" + uid;
+                }
+                else{
+                 window.location.href = "home.html?sellerid=" + uid;
+                }
+               }
+             
             return true;
         } else {
             console.log("No such document!");
@@ -157,8 +178,14 @@ function checkIfUserExist(uid) {
         console.log("Error getting document:", error);
         return false;
     });
-
-    
+}
+else{
+    firebase.auth().signOut().then(function () {
+        window.location.href = "seller_login.html";
+    }).catch(function (error) {
+        // An error happened.
+    });
+}
 
     // return new Promise((resolve, reject) =>{
 

@@ -1,6 +1,7 @@
 
 var rupeeSymbol = "₹ ";
 var btnHome = document.getElementById("btnHome");
+var btnLogout = document.getElementById("btnLogout");
 var sellerid = localStorage.getItem("sellerid");
 var adminLogin = localStorage.getItem("adminLogin");
 console.log(adminLogin);

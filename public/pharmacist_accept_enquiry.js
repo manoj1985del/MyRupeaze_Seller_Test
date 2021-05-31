@@ -71,6 +71,7 @@ function createTableHeaders() {
     tr.appendChild(thQty);
     tr.appendChild(thUnitPrice);
     tr.appendChild(thTotalPrice);
+    tr.appendChild(thGST);
     tr.appendChild(thStatus);
     tr.appendChild(thAction);
 
@@ -248,6 +249,7 @@ function createTable() {
             var unitPriceElement = document.getElementById("unitPrice" + this.id);
             var totalPriceElement = document.getElementById("totalPrice" + this.id);
             var selectElement = document.getElementById("select" + this.id);
+            var gstElement =  document.getElementById("gst" + this.id);
 
             if (selectElement.value == "Pending") {
                 alert("Please Select Available or Not Available");
@@ -278,7 +280,7 @@ function createTable() {
 
             unitPriceElement.disabled = true;
             totalPriceElement.disabled = true;
-            inputGST.disabled = true;
+            gstElement.disabled = true;
             selectElement.disabled = true;
 
             if(enquiry.gst_list == undefined || enquiry.gst_list == null){
@@ -288,7 +290,7 @@ function createTable() {
             enquiry.product_prices[index] = parseFloat(unitPriceElement.value);
             enquiry.product_prices_total[index] = parseFloat(totalPriceElement.value);
             enquiry.available_status[index] = selectElement.value;
-            enquiry.gst_list[index] = inputGST.value;
+            enquiry.gst_list[index] = parseFloat(gstElement.value);
             
 
         })

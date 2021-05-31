@@ -55,7 +55,10 @@ function createTableHeaders() {
     thUnitPrice.textContent = "Unit Price";
 
     var thTotalPrice = document.createElement("th");
-    thTotalPrice.textContent = "total Price";
+    thTotalPrice.textContent = "Total Price";
+
+    var thGST = document.createElement("th");
+    thGST.textContent = "GST (%)";
 
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
@@ -98,6 +101,7 @@ function createTable() {
         var tdQty = document.createElement('td');
         var tdUnitPrice = document.createElement('td');
         var tdTotalPrice = document.createElement('td');
+        var tdGST = document.createElement('td');
         var tdStatus = document.createElement('td');
         var tdAction = document.createElement('td');
 
@@ -156,6 +160,21 @@ function createTable() {
         inputTotalPrice.value = enquiry.product_prices_total[i];
         divTotalPrice.appendChild(inputTotalPrice);
         tdTotalPrice.appendChild(divTotalPrice);
+
+        var divGST = document.createElement('div');
+        var inputGST = document.createElement('input');
+        inputGST.setAttribute("type", "number");
+        inputGST.classList.add("form-control")
+        inputGST.setAttribute("id", "gst" + i.toString());
+        if(enquiry.gst_list == undefined || enquiry.gst_list == null){
+            inputGST.value = 0;
+        }
+        else{
+            inputGST.value = enquiry.gst_list[i];
+        }
+       
+        divGST.appendChild(inputGST);
+        tdGST.appendChild(divGST);
 
         var divStatus = document.createElement('div');
         var select = document.createElement("select");
@@ -218,6 +237,7 @@ function createTable() {
         tr.appendChild(tdQty);
         tr.appendChild(tdUnitPrice);
         tr.appendChild(tdTotalPrice);
+        tr.appendChild(tdGST);
         tr.appendChild(tdStatus);
         tr.appendChild(tdAction);
 
@@ -258,11 +278,18 @@ function createTable() {
 
             unitPriceElement.disabled = true;
             totalPriceElement.disabled = true;
+            inputGST.disabled = true;
             selectElement.disabled = true;
+
+            if(enquiry.gst_list == undefined || enquiry.gst_list == null){
+                enquiry.gst_list = [];
+            }
 
             enquiry.product_prices[index] = parseFloat(unitPriceElement.value);
             enquiry.product_prices_total[index] = parseFloat(totalPriceElement.value);
             enquiry.available_status[index] = selectElement.value;
+            enquiry.gst_list[index] = inputGST.value;
+            
 
         })
 
@@ -280,6 +307,7 @@ function createTable() {
             unitPriceElement.disabled = false;
             totalPriceElement.disabled = false;
             selectElement.disabled = false;
+            inputGST.disabled = false;
 
             enquiry.product_prices[index] = parseFloat(unitPriceElement.value);
             enquiry.product_prices_total[index] = parseFloat(totalPriceElement.value);
@@ -306,6 +334,7 @@ function submitResponse() {
         available_status: enquiry.available_status,
         product_prices: enquiry.product_prices,
         product_prices_total: enquiry.product_prices_total,
+        gst_list: enquiry.gst_list,
         status_code: 1
 
     })

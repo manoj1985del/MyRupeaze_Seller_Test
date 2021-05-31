@@ -19,7 +19,7 @@ if (adm == "1") {
     admin = true;
 }
 
-getSellerDetails();
+//getSellerDetails();
 getEnquiries();
 
 function getEnquiries() {

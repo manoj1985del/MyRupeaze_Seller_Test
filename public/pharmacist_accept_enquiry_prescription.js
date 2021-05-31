@@ -8,6 +8,7 @@ var txtQty = document.getElementById("txtQty");
 var txtUnitPrice = document.getElementById("txtUnitPrice");
 var txtTotalPrice = document.getElementById("txtTotalPrice");
 var cmbStatus = document.getElementById("cmbStatus");
+var txtGST = document.getElementById("txtGST");
 var btnAddToList = document.getElementById("btnAddToList");
 //var tblPrescription = document.getElementById("tblPrescription");
 
@@ -49,9 +50,6 @@ getEnquiryDetail().then(() => {
         
     }
 
-  //  createTableForPrescription();
-    //createTable();
-
 })
 
 function createTableHeaders() {
@@ -75,21 +73,25 @@ function createTableHeaders() {
     thUnitPrice.textContent = "Unit Price";
 
     var thTotalPrice = document.createElement("th");
-    thTotalPrice.textContent = "total Price";
+    thTotalPrice.textContent = "Total Price";
+
+    var thGST = document.createElement("th");
+    thGST.textContent = "GST (%)";
 
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
 
-    // var thAction = document.createElement("th");
-    // thAction.textContent = "Action";
+    var thAction = document.createElement("th");
+    thAction.textContent = "Action";
 
     tr.appendChild(thSNo);
     tr.appendChild(thProductName);
     tr.appendChild(thQty);
     tr.appendChild(thUnitPrice);
     tr.appendChild(thTotalPrice);
+    tr.appendChild(thGST);
     tr.appendChild(thStatus);
-    // tr.appendChild(thAction);
+     tr.appendChild(thAction);
 
     tHead.appendChild(tr);
     table.appendChild(tHead);
@@ -120,8 +122,9 @@ function createTable() {
         var tdQty = document.createElement('td');
         var tdUnitPrice = document.createElement('td');
         var tdTotalPrice = document.createElement('td');
+        var tdGST = document.createElement('td');
         var tdStatus = document.createElement('td');
-        // var tdAction = document.createElement('td');
+         var tdAction = document.createElement('td');
 
 
         var divSNo = document.createElement('div');
@@ -156,6 +159,18 @@ function createTable() {
         divTotalPrice.appendChild(spanTotalPrice);
         tdTotalPrice.appendChild(divTotalPrice);
 
+        var divGST = document.createElement('div');
+        var spanGST = document.createElement('span');
+        if(enquiry.gst_list == null || enquiry.gst_list == undefined){
+            spanGST.textContent = "0";
+        }
+        else{
+            spanGST.textContent = enquiry.gst_list[i];
+        }
+       
+        divGST.appendChild(spanGST);
+        tdGST.appendChild(divGST);
+
         var divStatus = document.createElement('div');
         var spanStatus = document.createElement('span');
         spanStatus.textContent = enquiry.available_status[i];
@@ -163,16 +178,17 @@ function createTable() {
         tdStatus.appendChild(divStatus);
         
 
-        // var divAction = document.createElement('div');
+        var divAction = document.createElement('div');
 
-        // var divAccept = document.createElement('div');
-        // var btnAcceptEnquiry = document.createElement("button");
-        // btnAcceptEnquiry.style.width = "150px";
-        // btnAcceptEnquiry.textContent = "Accept";
-        // btnAcceptEnquiry.setAttribute("id", i.toString());
-        // btnAcceptEnquiry.setAttribute("type", "button");
-        // divAccept.appendChild(btnAcceptEnquiry);
-        // divAction.appendChild(divAccept);
+        var divDelete = document.createElement('div');
+        var btnDelete = document.createElement("button");
+       // btnDelete.style.width = "150px";
+        btnDelete.textContent = "Delete";
+        btnDelete.setAttribute("id", i.toString());
+        btnDelete.setAttribute("type", "button");
+        divDelete.appendChild(btnDelete);
+        divAction.appendChild(divDelete);
+        tdAction.appendChild(divAction);
 
         // var divEdit = document.createElement('div');
         // divEdit.style.marginTop = "10px";
@@ -195,10 +211,30 @@ function createTable() {
         tr.appendChild(tdQty);
         tr.appendChild(tdUnitPrice);
         tr.appendChild(tdTotalPrice);
+        tr.appendChild(tdGST);
         tr.appendChild(tdStatus);
-        //tr.appendChild(tdAction);
+        tr.appendChild(tdAction);
 
         table.appendChild(tr);
+
+        btnDelete.addEventListener("click", function(){
+            var index = parseInt(this.id);
+            enquiry.product_names.splice(index, 1);
+            enquiry.product_prices_total.splice(index, 1);
+            enquiry.product_prices.splice(index, 1);
+            if(enquiry.gst_list != null || enquiry.gst_list != undefined){
+                enquiry.gst_list.splice(index, 1);
+            }
+            
+            enquiry.product_qty.splice(index, 1);
+            enquiry.available_status.splice(index, 1);
+
+            alert("Item removed successfully");
+
+            console.log(enquiry);
+
+            createTable();
+        })
 
         // btnAcceptEnquiry.addEventListener("click", function () {
         //     var index = parseInt(this.id);
@@ -267,8 +303,6 @@ function createTable() {
         // })
 
 
-
-
     }
     if (admin) {
         btnSubmit.style.display = "none";
@@ -276,251 +310,8 @@ function createTable() {
 }
 
 
-function createTableHeadersForPrescription() {
-
-
-    var tHead = document.createElement("thead");
-    var tr = document.createElement("tr");
-
-
-    var thProductName = document.createElement("th");
-    thProductName.textContent = "Product Name";
-
-
-    var thQty = document.createElement("th");
-    thQty.textContent = "Quantity";
-
-
-    var thUnitPrice = document.createElement("th");
-    thUnitPrice.textContent = "Unit Price";
-
-    var thTotalPrice = document.createElement("th");
-    thTotalPrice.textContent = "total Price";
-
-    var thStatus = document.createElement("th");
-    thStatus.textContent = "Status";
-
-    var thAction = document.createElement("th");
-    thAction.textContent = "Action";
-
-    tr.appendChild(thProductName);
-    tr.appendChild(thQty);
-    tr.appendChild(thUnitPrice);
-    tr.appendChild(thTotalPrice);
-    tr.appendChild(thStatus);
-    tr.appendChild(thAction);
-
-    tHead.appendChild(tr);
-    table.appendChild(tHead);
-
-}
 
 var mIndex = 0;
-
-function createTableForPrescription() {
-    createTableHeadersForPrescription();
-
-
-    var tr = document.createElement('tr');
-    var tdProductName = document.createElement('td');
-    var tdQty = document.createElement('td');
-    var tdUnitPrice = document.createElement('td');
-    var tdTotalPrice = document.createElement('td');
-    var tdStatus = document.createElement('td');
-     var tdAction = document.createElement('td');
-
-
-
-     var divProductName = document.createElement('div');
-     // <input type="number" class="form-control" id="txtReturnWindow" required></input>
-     var inputProductName = document.createElement('input');
-     inputProductName.setAttribute("type", "text");
-     inputProductName.classList.add("form-control");
-     inputProductName.setAttribute("id", "productName1");
-     divProductName.appendChild(inputProductName);
-     tdProductName.appendChild(divProductName);
-
-     var divQty = document.createElement('div');
-     // <input type="number" class="form-control" id="txtReturnWindow" required></input>
-     var inputQty = document.createElement('input');
-     inputQty.setAttribute("type", "number");
-     inputQty.classList.add("form-control");
-     inputQty.setAttribute("id", "qty1");
-     divQty.appendChild(inputQty);
-     tdQty.appendChild(inputQty);
-
-
-    var divUnitPrice = document.createElement('div');
-    // <input type="number" class="form-control" id="txtReturnWindow" required></input>
-    var inputUnitPrice = document.createElement('input');
-    inputUnitPrice.setAttribute("type", "number");
-    inputUnitPrice.classList.add("form-control");
-    inputUnitPrice.setAttribute("id", "unitPrice1");
-    divUnitPrice.appendChild(inputUnitPrice);
-    tdUnitPrice.appendChild(divUnitPrice);
-
-    var divTotalPrice = document.createElement('div');
-    var inputTotalPrice = document.createElement('input');
-    inputTotalPrice.setAttribute("type", "number");
-    inputTotalPrice.classList.add("form-control")
-    inputTotalPrice.setAttribute("id", "totalPrice1");
-    divTotalPrice.appendChild(inputTotalPrice);
-    tdTotalPrice.appendChild(divTotalPrice);
-
-    var divStatus = document.createElement('div');
-    var select = document.createElement("select");
-    select.setAttribute("id", "select1");
-
-
-    for (const val of statusValues) {
-        var option = document.createElement("option");
-        if (val == "Select Status") {
-            option.selected = true;
-            option.hidden = true;
-            option.disabled = true;
-            option.value = null;
-            option.text = val.charAt(0).toUpperCase() + val.slice(1);
-        }
-        else {
-
-            option.value = val;
-            option.text = val.charAt(0).toUpperCase() + val.slice(1);
-        }
-        select.appendChild(option);
-    }
-
-    select.value = "Available";
-
-
-    divStatus.appendChild(select);
-    tdStatus.appendChild(divStatus);
-
-
-    var divAction = document.createElement('div');
-
-    var divAddToList = document.createElement('div');
-    var btnAddToList = document.createElement("button");
-    btnAddToList.style.width = "150px";
-    btnAddToList.textContent = "Add to List";
-    btnAddToList.setAttribute("id", "btnAddtoList");
-    btnAddToList.setAttribute("type", "button");
-    divAddToList.appendChild(btnAddToList);
-    divAction.appendChild(divAddToList);
-    tdAction.appendChild(divAction);
-
-
-    tr.appendChild(tdProductName);
-    tr.appendChild(tdQty);
-    tr.appendChild(tdUnitPrice);
-    tr.appendChild(tdTotalPrice);
-    tr.appendChild(tdStatus);
-    tr.appendChild(tdAction);
-
-    table.appendChild(tr);
-
-    btnAddToList.addEventListener("click", function () {
-        var productNameElement = document.getElementById("productName1");
-        var qtyElement = document.getElementById("qty1");
-        var unitPriceElement = document.getElementById("unitPrice1");
-        var totalPriceElement = document.getElementById("totalPrice1");
-        var selectElement = document.getElementById("select1");
-
-        if (selectElement.value == "Pending") {
-            alert("Please Select Available or Not Available");
-            selectElement.focus();
-            return;
-        }
-
-        if (selectElement.value == "Available") {
-            if (unitPriceElement.value == 0) {
-                alert("Unit Price Cannot be Zero");
-                unitPriceElement.focus();
-                return;
-            }
-
-            if (totalPriceElement.value == 0) {
-                alert("Total Price Cannot be Zero");
-                totalPriceElement.focus();
-                return;
-            }
-        }
-
-        if (selectElement.value == "Not Available") {
-            unitPriceElement.value = 0;
-            totalPriceElement.value = 0;
-        }
-
-
-
-        // unitPriceElement.disabled = true;
-        // totalPriceElement.disabled = true;
-        // selectElement.disabled = true;
-
-        console.log(enquiry);
-        if(enquiry.product_names == undefined || enquiry.product_names == null){
-            enquiry.product_names = [];
-        }
-
-        if(enquiry.product_qty == undefined || enquiry.product_qty == null){
-            enquiry.product_qty = [];
-        }
-
-        if(enquiry.product_prices == undefined || enquiry.product_prices == null){
-            enquiry.product_prices = [];
-        }
-
-        if(enquiry.product_prices_total == undefined || enquiry.product_prices_total == null){
-            enquiry.product_prices_total = [];
-        }
-
-        if(enquiry.available_status == undefined || enquiry.available_status == null){
-            enquiry.available_status = [];
-        }
-
-
-        enquiry.product_names[mIndex] = parseFloat(productNameElement.value);
-        enquiry.product_qty[mIndex] = parseInt(qtyElement.value);
-        enquiry.product_prices[mIndex] = parseFloat(unitPriceElement.value);
-        enquiry.product_prices_total[mIndex] = parseFloat(totalPriceElement.value);
-        enquiry.available_status[mIndex] = selectElement.value;
-
-        createTable();
-
-        mIndex++;
-
-    })
-
-    // btnEdit.addEventListener("click", function () {
-    //     var index = parseInt(this.id);
-
-    //     var unitPriceElement = document.getElementById("unitPrice" + this.id);
-    //     var totalPriceElement = document.getElementById("totalPrice" + this.id);
-    //     var selectElement = document.getElementById("select" + this.id);
-
-    //     unitPriceElement.value = 0;
-    //     totalPriceElement.value = 0;
-    //     selectElement.value = "Pending";
-
-    //     unitPriceElement.disabled = false;
-    //     totalPriceElement.disabled = false;
-    //     selectElement.disabled = false;
-
-    //     enquiry.product_prices[index] = parseFloat(unitPriceElement.value);
-    //     enquiry.product_prices_total[index] = parseFloat(totalPriceElement.value);
-    //     enquiry.available_status[index] = selectElement.value;
-
-
-
-    // })
-
-
-
-
-
-    if (admin) {
-        btnSubmit.style.display = "none";
-    }
-}
 
 btnAddToList.addEventListener("click", ()=>{
 
@@ -544,13 +335,19 @@ btnAddToList.addEventListener("click", ()=>{
         enquiry.available_status = [];
     }
 
+    if(enquiry.gst_list == undefined || enquiry.gst_list == null){
+        enquiry.gst_list = [];
+    }
+
 
     enquiry.product_names.push(txtProductName.value);
     enquiry.product_qty.push(parseInt(txtQty.value));
     enquiry.product_prices.push(parseFloat(txtUnitPrice.value));
     enquiry.product_prices_total.push(parseFloat(txtTotalPrice.value));
+    enquiry.gst_list.push(parseFloat(txtGST.value));
     enquiry.available_status.push(cmbStatus.value);
 
+    console.log("before creating table : " + enquiry.gst_list);
     createTable();
 })
 
@@ -563,6 +360,7 @@ function submitResponse() {
         available_status: enquiry.available_status,
         product_prices: enquiry.product_prices,
         product_prices_total: enquiry.product_prices_total,
+        gst_list: enquiry.gst_list,
         status_code: 1
 
     })

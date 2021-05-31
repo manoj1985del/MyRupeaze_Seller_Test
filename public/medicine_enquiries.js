@@ -19,7 +19,7 @@ if (adm == "1") {
     admin = true;
 }
 
-//getSellerDetails();
+getSellerDetails();
 getEnquiries();
 
 function getEnquiries() {
@@ -507,6 +507,7 @@ function createTable() {
             var enquiry = enquiryList[index];
             getCustomerDetails(enquiry.customer_id).then(() => {
                 markDelivery(enquiry.doc_id);
+                addProductsToDb(enquiry);
 
             })
 
@@ -533,209 +534,210 @@ function createTable() {
         }
 
     }
+}
 
-    function rejectEnquiry(docId, reason) {
+function rejectEnquiry(docId, reason) {
 
-        var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
-        washingtonRef.update({
-            status_code: 2,
-            seller_rejection_reason: reason
+    var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
+    washingtonRef.update({
+        status_code: 2,
+        seller_rejection_reason: reason
 
+    })
+        .then(function () {
+            alert("Enquiry has ben rejected by you!!");
+            window.location.href = "medicine_enquiries.html";
         })
-            .then(function () {
-                alert("Enquiry has ben rejected by you!!");
-                window.location.href = "medicine_enquiries.html";
-            })
-            .catch(function (error) {
-                // The document probably doesn't exist.
-                console.log("doc does not exist");
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.log("doc does not exist");
 
-            });
-
-    }
-
-    function markDelivery(docId) {
-
-        updateStatusCode(5, docId);
-    }
-
-    function updateStatusCode(statusCode, docId) {
-
-        var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
-        washingtonRef.update({
-            status_code: statusCode
-
-        })
-            .then(function () {
-                alert("Update Successful!!");
-                window.location.href = "medicine_enquiries.html";
-            })
-            .catch(function (error) {
-                // The document probably doesn't exist.
-                console.log("doc does not exist");
-
-            });
-    }
-
-    function getCustomerDetails(customerid) {
-
-        return new Promise((resolve, reject) => {
-
-            var docRef = firebase.firestore()
-                .collection('users').doc(customerid);
-
-
-            docRef.get().then(function (doc) {
-                if (doc.exists) {
-                    mCustomer = doc.data();
-                    resolve();
-                } else {
-                    // doc.data() will be undefined in this case
-                    console.log("No such document!");
-                    reject();
-                }
-            }).catch(function (error) {
-                console.log("Error getting document:", error);
-                reject();
-            });
-
-        })
-    }
-
-    //to be uncommented for inovice generation..
-    // function addProductsToDb() {
-    //     getNewInvoiceId().then(() => {
-    //         createInvoice(newInvoiceId).then(() => {
-    //             window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
-    //         })
-    //     })
-    // }
-
-    // function createInvoice() {
-
-    //     return new Promise((resolve, reject) => {
-
-    //         for (var i = 0; i < productList.length; i++) {
-    //             var product = productList[i];
-    //             productNames.push(product.productName);
-    //             gstlist.push(parseInt(product.gst));
-    //             priceList.push(parseInt(product.price));
-    //             qtyList.push(parseInt(product.qty));
-    //             statusList.push("success");
-    //         }
-
-    //         firebase.firestore().collection('offline_invoices').doc(newInvoiceId).set({
-    //             invoice_id: newInvoiceId,
-    //             customer_id: mCustomer.customer_id,
-    //             seller_id: sellerId,
-    //             points_redeemed: mRedeemPoints,
-    //             seller_name: mSeller.seller_name,
-    //             sellerAddressLine1: mSeller.address_line1,
-    //             sellerAddressLine2: mSeller.address_line2,
-    //             sellerAddressLine3: mSeller.address_line3,
-    //             sellerCity: mSeller.city,
-    //             sellerState: mSeller.state,
-    //             sellerCountry: "INDIA",
-    //             sellerPin: mSeller.pincode,
-    //             sellerPAN: mSeller.pan_no,
-    //             sellerGST: mSeller.gstin,
-    //             seller_mobile: mSeller.mobile,
-    //             seller_email: mSeller.email,
-    //             merchant_id: mSeller.merchant_id,
-    //             company_name: mSeller.company_name,
-    //             bill_to_name: customer.Name,
-    //             bill_to_phone: customer.Phone,
-    //             bill_to_address_line1: customer.AddressLine1,
-    //             bill_to_address_line2: customer.AddressLine2,
-    //             bill_to_address_line3: customer.AddressLine3,
-    //             bill_to_city: customer.City,
-    //             bill_to_pincode: customer.Pincode,
-    //             bill_to_email: customer.Email,
-    //             product_names: productNames,
-    //             product_qty: qtyList,
-    //             gst_list: gstlist,
-    //             price_list: priceList,
-    //             status_list: statusList,
-    //             amount_against_points: mAmountAgainstPoints,
-    //             points_used_for_purchase: mPointsUsedForPurchase,
-    //             timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    //         })
-    //             .then(function () {
-    //                 resolve();
-    //             })
-    //             .catch(function (error) {
-    //                 console.error('Error writing new message to database', error);
-    //                 reject();
-    //                 return false;
-    //             });
-    //     });
-    // }
-
-    // function getNewInvoiceId() {
-
-    //     return new Promise((resolve, reject) => {
-
-    //         firebase.firestore().collection('offline_invoices')
-    //             .where("seller_id", '==', mSeller.seller_id)
-    //             .orderBy("timestamp", "desc").limit(1)
-    //             .get()
-    //             .then(function (querySnapshot) {
-    //                 querySnapshot.forEach(function (doc) {
-    //                     // doc.data() is never undefined for query doc snapshots
-    //                     console.log("invoice found");
-    //                     var invoice = doc.data();
-    //                     var invoiceId = invoice.invoice_id;
-    //                     var tmpInvoice = invoiceId.split('_');
-    //                     var tmpInvoiceId = tmpInvoice[1];
-    //                     var invoiceNum = parseInt(tmpInvoiceId.substring(3, tmpInvoiceId.length));
-    //                     invoiceNum = invoiceNum + 1;
-    //                     var newInvoiceNum = appendNumber(invoiceNum, 3);
-    //                     newInvoiceId = mSeller.merchant_id + "_INS" + newInvoiceNum;
-    //                     resolve();
-
-
-    //                 });
-    //             })
-    //             .then(function () {
-    //                 console.log("no invoice found");
-    //                 if (newInvoiceId == null) {
-    //                     newInvoiceId = mSeller.merchant_id + "_INS001";
-    //                     resolve();
-    //                 }
-    //             })
-    //             .catch(function (error) {
-    //                 console.log(error);
-    //                 newInvoiceId = mSeller.merchant_id + "_INS001";
-    //                 resolve();
-    //             });
-
-
-    //     })
-
-    // }
-
-    // function getSellerDetails() {
-    //     return new Promise((resolve, reject) => {
-    //         var docRef = firebase.firestore().collection("seller").doc(sellerId);
-    //         docRef.get().then(function (doc) {
-    //             if (doc.exists) {
-    //                 mSeller = doc.data();
-    //                 resolve();
-    //             } else {
-    //                 mSeller = null;
-    //                 // doc.data() will be undefined in this case
-    //                 console.log("No such document!");
-    //                 reject();
-
-    //             }
-    //         }).catch(function (error) {
-    //             seller = null;
-    //             console.log("Error getting document:", error);
-    //             reject();
-    //         });
-
-    //     })
-
-    // }
+        });
 
 }
+
+function markDelivery(docId) {
+
+    updateStatusCode(5, docId);
+}
+
+function updateStatusCode(statusCode, docId) {
+
+    var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
+    washingtonRef.update({
+        status_code: statusCode
+
+    })
+        .then(function () {
+            alert("Update Successful!!");
+            window.location.href = "medicine_enquiries.html";
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.log("doc does not exist");
+
+        });
+}
+
+function getCustomerDetails(customerid) {
+
+    return new Promise((resolve, reject) => {
+
+        var docRef = firebase.firestore()
+            .collection('users').doc(customerid);
+
+
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mCustomer = doc.data();
+                resolve();
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                reject();
+            }
+        }).catch(function (error) {
+            console.log("Error getting document:", error);
+            reject();
+        });
+
+    })
+}
+
+//to be uncommented for inovice generation..
+function addProductsToDb(enquiry) {
+    getNewInvoiceId().then(() => {
+        createInvoice(enquiry).then(() => {
+            window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
+        })
+    })
+}
+
+function createInvoice(enquiry) {
+
+    return new Promise((resolve, reject) => {
+
+        // for (var i = 0; i < enquiry.product_names.length; i++) {
+        //     var product = productList[i];
+        //     productNames.push(product.productName);
+        //     gstlist.push(parseInt(product.gst));
+        //     priceList.push(parseInt(product.price));
+        //     qtyList.push(parseInt(product.qty));
+        //     statusList.push("success");
+        // }
+
+        firebase.firestore().collection('offline_invoices').doc(newInvoiceId).set({
+            invoice_id: newInvoiceId,
+            customer_id: mCustomer.customer_id,
+            seller_id: sellerId,
+            points_redeemed: mRedeemPoints,
+            seller_name: mSeller.seller_name,
+            sellerAddressLine1: mSeller.address_line1,
+            sellerAddressLine2: mSeller.address_line2,
+            sellerAddressLine3: mSeller.address_line3,
+            sellerCity: mSeller.city,
+            sellerState: mSeller.state,
+            sellerCountry: "INDIA",
+            sellerPin: mSeller.pincode,
+            sellerPAN: mSeller.pan_no,
+            sellerGST: mSeller.gstin,
+            seller_mobile: mSeller.mobile,
+            seller_email: mSeller.email,
+            merchant_id: mSeller.merchant_id,
+            company_name: mSeller.company_name,
+            bill_to_name: mCustomer.Name,
+            bill_to_phone: mCustomer.Phone,
+            bill_to_address_line1: mCustomer.AddressLine1,
+            bill_to_address_line2: mCustomer.AddressLine2,
+            bill_to_address_line3: mCustomer.AddressLine3,
+            bill_to_city: mCustomer.City,
+            bill_to_pincode: mCustomer.Pincode,
+            bill_to_email: mCustomer.Email,
+            product_names: enquiry.product_names,
+            product_qty: enquiry.product_qty,
+            gst_list: enquiry.gst_list,
+            price_list: enquiry.product_prices,
+            status_list: "success",
+            amount_against_points: 0,
+            points_used_for_purchase: 0,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.error('Error writing new message to database', error);
+                reject();
+                return false;
+            });
+    });
+}
+
+function getNewInvoiceId() {
+
+    return new Promise((resolve, reject) => {
+
+        firebase.firestore().collection('offline_invoices')
+            .where("seller_id", '==', mSeller.seller_id)
+            .orderBy("timestamp", "desc").limit(1)
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log("invoice found");
+                    var invoice = doc.data();
+                    var invoiceId = invoice.invoice_id;
+                    var tmpInvoice = invoiceId.split('_');
+                    var tmpInvoiceId = tmpInvoice[1];
+                    var invoiceNum = parseInt(tmpInvoiceId.substring(3, tmpInvoiceId.length));
+                    invoiceNum = invoiceNum + 1;
+                    var newInvoiceNum = appendNumber(invoiceNum, 3);
+                    newInvoiceId = mSeller.merchant_id + "_INS" + newInvoiceNum;
+                    resolve();
+
+
+                });
+            })
+            .then(function () {
+                console.log("no invoice found");
+                if (newInvoiceId == null) {
+                    newInvoiceId = mSeller.merchant_id + "_INS001";
+                    resolve();
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                newInvoiceId = mSeller.merchant_id + "_INS001";
+                resolve();
+            });
+
+
+    })
+
+}
+
+function getSellerDetails() {
+    return new Promise((resolve, reject) => {
+        var docRef = firebase.firestore().collection("pharmacist").doc(sellerId);
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mSeller = doc.data();
+                resolve();
+            } else {
+                mSeller = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                reject();
+
+            }
+        }).catch(function (error) {
+            seller = null;
+            console.log("Error getting document:", error);
+            reject();
+        });
+
+    })
+
+}
+
+

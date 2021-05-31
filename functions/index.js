@@ -360,12 +360,12 @@ exports.createOrder = functions.firestore
 
     if (enquiry.status_code === 3) {
         
-        status = "Enquiry Accepted by you. Total Value: " + totalAmount.toString();
+        status = "Enquiry Accepted by customer. Total Value: " + totalAmount.toString();
      
     }
 
     if (enquiry.status_code === 4) {
-        status = "Enquiry Rejected by you";
+        status = "Enquiry Rejected by customer";
 
     }
 

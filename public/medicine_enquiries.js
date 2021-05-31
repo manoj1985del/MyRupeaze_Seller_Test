@@ -7,6 +7,11 @@ var rupeeSymbol = "₹ ";
 var sellerId = localStorage.getItem("sellerid");
 var mSeller;
 var enquiryList = [];
+var mCustomer = null;
+var newInvoiceId = null;
+var mSeller = null;
+var mRedeemPoints = 0;
+
 
 var adm = getQueryVariable("adm");
 var admin = false;
@@ -14,6 +19,7 @@ if (adm == "1") {
     admin = true;
 }
 
+getSellerDetails();
 getEnquiries();
 
 function getEnquiries() {
@@ -213,7 +219,7 @@ function createTable() {
 
         //prescription details
 
-        if(enquiry.prescription_type == "image"){
+        if (enquiry.prescription_type == "image") {
             var divPrescriptionDetails = document.createElement("div");
             var prescription = document.createElement("img");
             prescription.setAttribute("src", enquiry.prescription_url);
@@ -222,25 +228,25 @@ function createTable() {
             divPrescriptionDetails.appendChild(prescription);
             tdProductDetails.appendChild(divPrescriptionDetails);
         }
-        else if(enquiry.prescription_type == "text"){
+        else if (enquiry.prescription_type == "text") {
             var divProductDetails = document.createElement('div');
             var spanProductDetails = document.createElement('span');
-    
+
             var arrProducts = enquiry.product_names;
             var arrQty = enquiry.product_qty;
-    
+
             for (var idx = 0; idx < arrProducts.length; idx++) {
                 var productName = arrProducts[idx];
                 var qty = arrQty[idx];
-    
+
                 spanProductDetails.innerHTML += productName + " (" + qty + ")<br/>"
             }
-    
+
             divProductDetails.appendChild(spanProductDetails);
             tdProductDetails.appendChild(divProductDetails);
         }
         //Product Details
-       
+
 
 
         //Preferred pickup time
@@ -290,7 +296,7 @@ function createTable() {
             spanStatus.style.color = "#ff0000";
             var content = "Rejected by seller";
 
-            if(enquiry.seller_rejection_reason != null){
+            if (enquiry.seller_rejection_reason != null) {
                 content += " (Reason: " + enquiry.seller_rejection_reason + ")";
             }
 
@@ -304,7 +310,7 @@ function createTable() {
 
         if (enquiry.status_code == 4) {
             var content = "Rejected by Buyer";
-            if(enquiry.buyer_rejection_reason != null){
+            if (enquiry.buyer_rejection_reason != null) {
                 content += " (Reason: " + enquiry.buyer_rejection_reason + ")";
             }
             spanStatus.style.color = "#ff0000";
@@ -346,7 +352,7 @@ function createTable() {
         var divRedeemPoints = document.createElement('div');
         var spanRedeemPoints = document.createElement('span');
         spanRedeemPoints.textContent = "No";
-        if(enquiry.redeem_points){
+        if (enquiry.redeem_points) {
             spanRedeemPoints.textContent = "Yes";
         }
         divRedeemPoints.appendChild(spanRedeemPoints);
@@ -354,10 +360,10 @@ function createTable() {
 
         var divNoteToSeller = document.createElement('div');
         var spanNoteToSeller = document.createElement('span');
-        if(enquiry.note_to_seller == null){
+        if (enquiry.note_to_seller == null) {
             spanNoteToSeller.textContent = "-";
         }
-        else{
+        else {
             spanNoteToSeller.textContent = enquiry.note_to_seller;
         }
         divNoteToSeller.appendChild(spanNoteToSeller);
@@ -368,16 +374,16 @@ function createTable() {
 
         var divAction = document.createElement('div');
 
-        var divViewEnquiry = document.createElement('div');
-        var btnAcceptEnquiry = document.createElement("button");
-        btnAcceptEnquiry.style.width = "150px";
-        btnAcceptEnquiry.textContent = "View Enquiry";
-        btnAcceptEnquiry.setAttribute("id", enquiry.doc_id);
-        btnAcceptEnquiry.setAttribute("type", "button");
-        divViewEnquiry.appendChild(btnAcceptEnquiry);
-        divAction.appendChild(divViewEnquiry);
+        var divPrepareEstimate = document.createElement('div');
+        var btnPrepareEstimate = document.createElement("button");
+        btnPrepareEstimate.style.width = "150px";
+        btnPrepareEstimate.textContent = "Prepare Estimate";
+        btnPrepareEstimate.setAttribute("id", i.toString());
+        btnPrepareEstimate.setAttribute("type", "button");
+        divPrepareEstimate.appendChild(btnPrepareEstimate);
+        divAction.appendChild(divPrepareEstimate);
 
-        if(enquiry.prescription_type == "image"){
+        if (enquiry.prescription_type == "image") {
             var divViewPrescription = document.createElement('div');
             var btnViewPrescription = document.createElement("button");
             btnViewPrescription.style.width = "150px";
@@ -386,7 +392,7 @@ function createTable() {
             btnViewPrescription.style.marginTop = "10px";
             btnViewPrescription.setAttribute("type", "button");
             divViewPrescription.appendChild(btnViewPrescription);
-            divViewEnquiry.appendChild(divViewPrescription);
+            divAction.appendChild(divViewPrescription);
         }
 
         var divRejectEnquiry = document.createElement('div');
@@ -415,8 +421,8 @@ function createTable() {
         var btnMarkDelivery = document.createElement("button");
         btnMarkDelivery.style.marginTop = "10px";
         btnMarkDelivery.style.width = "150px";
-        btnMarkDelivery.textContent = "Mark Delivery";
-        btnMarkDelivery.setAttribute("id", enquiry.doc_id);
+        btnMarkDelivery.textContent = "Issue Invoice";
+        btnMarkDelivery.setAttribute("id", i.toString());
         btnMarkDelivery.setAttribute("type", "button");
         divMarkDelivry.appendChild(btnMarkDelivery);
         divAction.appendChild(divMarkDelivry);
@@ -471,27 +477,39 @@ function createTable() {
 
         table.appendChild(tr);
 
-        btnAcceptEnquiry.addEventListener("click", function () {
-            console.log(this.id);
-            openInNewTab("pharmacist_accept_enquiry.html?docid=" + this.id + "&adm=" + adm);
-        })
+        btnPrepareEstimate.addEventListener("click", function () {
+            var id = parseInt(this.id);
+            var enquiry = enquiryList[id];
+            if (enquiry.prescription_type == "image") {
+                openInNewTab("pharmacist_accept_enquiry_prescription.html?docid=" + enquiry.doc_id + "&adm=" + adm + "&et=" + enquiry.prescription_type);
+            }
+            else {
+                openInNewTab("pharmacist_accept_enquiry.html?docid=" + enquiry.doc_id + "&adm=" + adm + "&et=" + enquiry.prescription_type);
+            }
 
+        })
 
         btnReject.addEventListener("click", function () {
             var reason = prompt("Please enter rejection reason");
-            if(reason.trim() == ""){
+            if (reason.trim() == "") {
                 return;
             }
 
             rejectEnquiry(this.id, reason);
 
-            
-           
+
+
 
         })
 
         btnMarkDelivery.addEventListener("click", function () {
-            markDelivery(this.id);
+            var index = parseInt(this.id);
+            var enquiry = enquiryList[index];
+            getCustomerDetails(enquiry.customer_id).then(() => {
+                markDelivery(enquiry.doc_id);
+
+            })
+
 
         })
 
@@ -499,8 +517,8 @@ function createTable() {
             updateStatusCode(6, this.id);
         })
 
-        if(enquiry.prescription_type == "image"){
-            btnViewPrescription.addEventListener("click", function(){
+        if (enquiry.prescription_type == "image") {
+            btnViewPrescription.addEventListener("click", function () {
                 var link = document.createElement("a");
                 if (link.download !== undefined) {
                     link.setAttribute("href", this.id);
@@ -511,74 +529,213 @@ function createTable() {
                     document.body.removeChild(link);
                 }
             })
-           
+
+        }
+
     }
 
-}
+    function rejectEnquiry(docId, reason) {
 
-function rejectEnquiry(docId, reason) {
+        var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
+        washingtonRef.update({
+            status_code: 2,
+            seller_rejection_reason: reason
 
-    var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
-    washingtonRef.update({
-        status_code: 2,
-        seller_rejection_reason: reason
-
-    })
-        .then(function () {
-            alert("Enquiry has ben rejected by you!!");
-            window.location.href = "pending_enquiries.html";
         })
-        .catch(function (error) {
-            // The document probably doesn't exist.
-            console.log("doc does not exist");
+            .then(function () {
+                alert("Enquiry has ben rejected by you!!");
+                window.location.href = "medicine_enquiries.html";
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                console.log("doc does not exist");
 
-        });
+            });
 
-}
+    }
 
-function markDelivery(docId) {
-    updateStatusCode(5, docId);
-}
+    function markDelivery(docId) {
 
-function updateStatusCode(statusCode, docId) {
+        updateStatusCode(5, docId);
+    }
 
-    var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
-    washingtonRef.update({
-        status_code: statusCode
+    function updateStatusCode(statusCode, docId) {
 
-    })
-        .then(function () {
-            alert("Update Successful!!");
-            window.location.href = "pending_enquiries.html";
+        var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
+        washingtonRef.update({
+            status_code: statusCode
+
         })
-        .catch(function (error) {
-            // The document probably doesn't exist.
-            console.log("doc does not exist");
+            .then(function () {
+                alert("Update Successful!!");
+                window.location.href = "medicine_enquiries.html";
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                console.log("doc does not exist");
 
-        });
-}
+            });
+    }
 
-// function getSellerDetails() {
-//     return new Promise((resolve, reject)=>{
-//         var docRef = firebase.firestore().collection("seller").doc(sellerId);
-//         docRef.get().then(function (doc) {
-//             if (doc.exists) {
-//                 mSeller = doc.data();
-//                 resolve();
-//             } else {
-//                 mSeller = null;
-//                 // doc.data() will be undefined in this case
-//                 console.log("No such document!");
-//                 reject();
+    function getCustomerDetails(customerid) {
 
-//             }
-//         }).catch(function (error) {
-//             seller = null;
-//             console.log("Error getting document:", error);
-//             reject();
-//         });
+        return new Promise((resolve, reject) => {
 
-//     })
+            var docRef = firebase.firestore()
+                .collection('users').doc(customerid);
 
-// }
+
+            docRef.get().then(function (doc) {
+                if (doc.exists) {
+                    mCustomer = doc.data();
+                    resolve();
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                    reject();
+                }
+            }).catch(function (error) {
+                console.log("Error getting document:", error);
+                reject();
+            });
+
+        })
+    }
+
+    //to be uncommented for inovice generation..
+    // function addProductsToDb() {
+    //     getNewInvoiceId().then(() => {
+    //         createInvoice(newInvoiceId).then(() => {
+    //             window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
+    //         })
+    //     })
+    // }
+
+    // function createInvoice() {
+
+    //     return new Promise((resolve, reject) => {
+
+    //         for (var i = 0; i < productList.length; i++) {
+    //             var product = productList[i];
+    //             productNames.push(product.productName);
+    //             gstlist.push(parseInt(product.gst));
+    //             priceList.push(parseInt(product.price));
+    //             qtyList.push(parseInt(product.qty));
+    //             statusList.push("success");
+    //         }
+
+    //         firebase.firestore().collection('offline_invoices').doc(newInvoiceId).set({
+    //             invoice_id: newInvoiceId,
+    //             customer_id: mCustomer.customer_id,
+    //             seller_id: sellerId,
+    //             points_redeemed: mRedeemPoints,
+    //             seller_name: mSeller.seller_name,
+    //             sellerAddressLine1: mSeller.address_line1,
+    //             sellerAddressLine2: mSeller.address_line2,
+    //             sellerAddressLine3: mSeller.address_line3,
+    //             sellerCity: mSeller.city,
+    //             sellerState: mSeller.state,
+    //             sellerCountry: "INDIA",
+    //             sellerPin: mSeller.pincode,
+    //             sellerPAN: mSeller.pan_no,
+    //             sellerGST: mSeller.gstin,
+    //             seller_mobile: mSeller.mobile,
+    //             seller_email: mSeller.email,
+    //             merchant_id: mSeller.merchant_id,
+    //             company_name: mSeller.company_name,
+    //             bill_to_name: customer.Name,
+    //             bill_to_phone: customer.Phone,
+    //             bill_to_address_line1: customer.AddressLine1,
+    //             bill_to_address_line2: customer.AddressLine2,
+    //             bill_to_address_line3: customer.AddressLine3,
+    //             bill_to_city: customer.City,
+    //             bill_to_pincode: customer.Pincode,
+    //             bill_to_email: customer.Email,
+    //             product_names: productNames,
+    //             product_qty: qtyList,
+    //             gst_list: gstlist,
+    //             price_list: priceList,
+    //             status_list: statusList,
+    //             amount_against_points: mAmountAgainstPoints,
+    //             points_used_for_purchase: mPointsUsedForPurchase,
+    //             timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    //         })
+    //             .then(function () {
+    //                 resolve();
+    //             })
+    //             .catch(function (error) {
+    //                 console.error('Error writing new message to database', error);
+    //                 reject();
+    //                 return false;
+    //             });
+    //     });
+    // }
+
+    // function getNewInvoiceId() {
+
+    //     return new Promise((resolve, reject) => {
+
+    //         firebase.firestore().collection('offline_invoices')
+    //             .where("seller_id", '==', mSeller.seller_id)
+    //             .orderBy("timestamp", "desc").limit(1)
+    //             .get()
+    //             .then(function (querySnapshot) {
+    //                 querySnapshot.forEach(function (doc) {
+    //                     // doc.data() is never undefined for query doc snapshots
+    //                     console.log("invoice found");
+    //                     var invoice = doc.data();
+    //                     var invoiceId = invoice.invoice_id;
+    //                     var tmpInvoice = invoiceId.split('_');
+    //                     var tmpInvoiceId = tmpInvoice[1];
+    //                     var invoiceNum = parseInt(tmpInvoiceId.substring(3, tmpInvoiceId.length));
+    //                     invoiceNum = invoiceNum + 1;
+    //                     var newInvoiceNum = appendNumber(invoiceNum, 3);
+    //                     newInvoiceId = mSeller.merchant_id + "_INS" + newInvoiceNum;
+    //                     resolve();
+
+
+    //                 });
+    //             })
+    //             .then(function () {
+    //                 console.log("no invoice found");
+    //                 if (newInvoiceId == null) {
+    //                     newInvoiceId = mSeller.merchant_id + "_INS001";
+    //                     resolve();
+    //                 }
+    //             })
+    //             .catch(function (error) {
+    //                 console.log(error);
+    //                 newInvoiceId = mSeller.merchant_id + "_INS001";
+    //                 resolve();
+    //             });
+
+
+    //     })
+
+    // }
+
+    // function getSellerDetails() {
+    //     return new Promise((resolve, reject) => {
+    //         var docRef = firebase.firestore().collection("seller").doc(sellerId);
+    //         docRef.get().then(function (doc) {
+    //             if (doc.exists) {
+    //                 mSeller = doc.data();
+    //                 resolve();
+    //             } else {
+    //                 mSeller = null;
+    //                 // doc.data() will be undefined in this case
+    //                 console.log("No such document!");
+    //                 reject();
+
+    //             }
+    //         }).catch(function (error) {
+    //             seller = null;
+    //             console.log("Error getting document:", error);
+    //             reject();
+    //         });
+
+    //     })
+
+    // }
+
 }

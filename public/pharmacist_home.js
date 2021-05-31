@@ -1,4 +1,4 @@
-localStorage.clear();
+//localStorage.clear();
 
 var rupeeSymbol = "₹ ";
 var tradeCharges = 28;
@@ -120,7 +120,7 @@ cardPendingEnquiries.addEventListener("mouseleave", function () {
 });
 
 cardPendingEnquiries.addEventListener("click", function () {
-    window.location.href = "pending_enquiries.html";
+    window.location.href = "medicine_enquiries.html";
 })
 
 cardPendingOrder.addEventListener("mouseenter", function () {
@@ -645,7 +645,8 @@ function loadPendingEnquiries(){
     var pendingEnquiries = [];
     var query = firebase.firestore()
         .collection('pharmacist_requests')
-        .where("seller_id", "==", sellerId);
+        .where("seller_id", "==", sellerId)
+        .where("status_code", "==", 0);
 
     query.get()
         .then(function (snapshot) {

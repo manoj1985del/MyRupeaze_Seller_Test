@@ -1,4 +1,4 @@
-localStorage.clear();
+//localStorage.clear();
 
 var rupeeSymbol = "₹ ";
 var tradeCharges = 28;

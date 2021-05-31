@@ -69,6 +69,7 @@ btnSubmit.addEventListener("click", function () {
 
     selectedUserType = userType.options[userType.selectedIndex].value;
     console.log(selectedUserType);
+    localStorage.setItem("userType", selectedUserType);
 
 
     firebase.auth().signInWithEmailAndPassword(emailId.value, password.value).catch(function (error) {

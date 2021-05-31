@@ -1,21 +1,32 @@
 
 var rupeeSymbol = "₹ ";
 var btnHome = document.getElementById("btnHome");
+var btnLogout = document.getElementById("btnLogout");
 var sellerid = localStorage.getItem("sellerid");
 var adminLogin = localStorage.getItem("adminLogin");
+var userType = localStorage.getItem("userType");
 console.log(adminLogin);
 
 
 if (btnHome != null) {
+
     btnHome.addEventListener("click", function () {
-        if (adminLogin == null) {
-            window.location.href = "home.html?sellerid=" + sellerid;
+        if(userType == "pharmacist"){
+            window.location.href = "pharmacist_home.html?sellerid=" + sellerid;
         }
-
-        else {
-            window.location.href = "admin_home.html?sellerid=" + sellerid;
+        else
+        {
+            if (adminLogin == null) {
+                window.location.href = "home.html?sellerid=" + sellerid;
+            }
+    
+            else {
+                window.location.href = "admin_home.html?sellerid=" + sellerid;
+    
+            }
 
         }
+        
     })
 }
 

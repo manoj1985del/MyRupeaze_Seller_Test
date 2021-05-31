@@ -38,6 +38,9 @@ var cardPendingOrder = document.getElementById("cardPendingOrder");
 var cardUnitsToday = document.getElementById("cardUnitsToday");
 var cardSalesToday = document.getElementById("cardSalesToday");
 
+var cardPendingEnquiries = document.getElementById("cardPendingEnquiries");
+var hPendingEnquiries = document.getElementById("hPendingEnquiries");
+
 var h6CompanyName = document.getElementById("h6CompanyName");
 var spanMerchantid = document.getElementById("spanMerchantid");
 var spanPan = document.getElementById("spanPANCardNumber");
@@ -54,7 +57,6 @@ var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
 var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
 var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 
-var hDisbursable = document.getElementById("hDisbursable");
 var hFreezed = document.getElementById("hFreezed");
 
 var linkSubscription = document.getElementById("linkSubscription");
@@ -76,6 +78,8 @@ loadPendingOrders();
 loadTodayOrders();
 generatePayouts();
 getActiveEnquiries();
+
+loadPendingEnquiries();
 
 loadLast7DaysOrder().then(() => {
     loadLast7DaysOrderMap().then(() => {
@@ -104,6 +108,20 @@ getThisMonthOrders().then(()=>{
 // })
 //loadFreeChart();
 //loadUnitsChart();
+
+//pending pharmacist enquiries
+
+cardPendingEnquiries.addEventListener("mouseenter", function () {
+    cardPendingEnquiries.classList.add("cardHover");
+});
+
+cardPendingEnquiries.addEventListener("mouseleave", function () {
+    cardPendingEnquiries.classList.remove("cardHover");
+});
+
+cardPendingEnquiries.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html";
+})
 
 cardPendingOrder.addEventListener("mouseenter", function () {
     cardPendingOrder.classList.add("cardHover");
@@ -623,6 +641,28 @@ function fetchProductsForOrder(order, orderMap) {
     })
 }
 
+function loadPendingEnquiries(){
+    var pendingEnquiries = [];
+    var query = firebase.firestore()
+        .collection('pharmacist_requests')
+        .where("seller_id", "==", sellerId)
+        .where("status_code", "==", 0);
+
+    query.get()
+        .then(function (snapshot) {
+            snapshot.forEach(function (doc) {
+
+                var data = toQueryString(doc.data());
+                pendingEnquiries.push(data);
+            })
+        }).then(function () {
+            hPendingEnquiries.textContent = pendingEnquiries.length.toString();
+
+        }).catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
+
 
 function loadPendingOrders() {
     var query = firebase.firestore()
@@ -840,7 +880,7 @@ function generatePayouts() {
             }
             Promise.all(promiseList).then(() => {
                 calculatePayout();
-                calculateDisbursableAmount();
+                // calculateDisbursableAmount();
             })
 
 
@@ -926,128 +966,128 @@ function calculatePayout() {
 
 }
 
-function calculateDisbursableAmount() {
-    var freezedAmount = 0;
-    var disbursableAmount = 0;
-    var arrOrders = [];
+// function calculateDisbursableAmount() {
+//     var freezedAmount = 0;
+//     var disbursableAmount = 0;
+//     var arrOrders = [];
 
 
-    for (var orderNumber = 0; orderNumber < unsettledOrders.length; orderNumber++) {
-        var order = unsettledOrders[orderNumber];
-        //if order was a cancelled one.. no need to process it
-        if (order.cancelled == true) {
-            // ordersTobeSettled.set(seller.seller_id, order);
-            continue;
-        }
-        var deliveryDate = order.delivery_date;
-        var productList = unsettledOrdersProductMap.get(order.order_id);
+//     for (var orderNumber = 0; orderNumber < unsettledOrders.length; orderNumber++) {
+//         var order = unsettledOrders[orderNumber];
+//         //if order was a cancelled one.. no need to process it
+//         if (order.cancelled == true) {
+//             // ordersTobeSettled.set(seller.seller_id, order);
+//             continue;
+//         }
+//         var deliveryDate = order.delivery_date;
+//         var productList = unsettledOrdersProductMap.get(order.order_id);
 
-        var freezedAmountTemp = 0;
-        var freezedCommissionTemp = 0;
-        var disbursableAmountTemp = 0;
-        var availableCommissionTemp = 0;
+//         var freezedAmountTemp = 0;
+//         var freezedCommissionTemp = 0;
+//         var disbursableAmountTemp = 0;
+//         var availableCommissionTemp = 0;
 
-        for (var productNumber = 0; productNumber < productList.length; productNumber++) {
+//         for (var productNumber = 0; productNumber < productList.length; productNumber++) {
 
 
-            var product = productList[productNumber];
+//             var product = productList[productNumber];
            
-            var amtToReduce = 0;
-            if (product.return_requested && product.return_processed) {
-                amtToReduce = product.return_amount;
-            }
-            if(product.cancelled_by_seller){
-                product.Offer_Price= 0;
-            }
-            var commission = commision_map.get(product.Category);
-            var offer_price = product.Offer_Price * product.Qty;
-            offer_price = offer_price - amtToReduce;
-            var commission_value = (offer_price * commission) / 100;
-            // var seller_part = offer_price - commission_value;
-            // var admin_part = offer_price - seller_part;
+//             var amtToReduce = 0;
+//             if (product.return_requested && product.return_processed) {
+//                 amtToReduce = product.return_amount;
+//             }
+//             if(product.cancelled_by_seller){
+//                 product.Offer_Price= 0;
+//             }
+//             var commission = commision_map.get(product.Category);
+//             var offer_price = product.Offer_Price * product.Qty;
+//             offer_price = offer_price - amtToReduce;
+//             var commission_value = (offer_price * commission) / 100;
+//             // var seller_part = offer_price - commission_value;
+//             // var admin_part = offer_price - seller_part;
 
-            //If product is not delivered yet.. it will fall in freezed category
-            if (deliveryDate == null) {
-                freezedAmountTemp += offer_price;
-                freezedCommissionTemp += commission_value;
-            }
-            else {
-                var dtDelivery = deliveryDate.toDate();
+//             //If product is not delivered yet.. it will fall in freezed category
+//             if (deliveryDate == null) {
+//                 freezedAmountTemp += offer_price;
+//                 freezedCommissionTemp += commission_value;
+//             }
+//             else {
+//                 var dtDelivery = deliveryDate.toDate();
 
-                var dtCurrent = new Date();
-                var day = dtCurrent.getDate();
-                var month = dtCurrent.getMonth();
-                var year = dtCurrent.getFullYear();
-                if (month == 12) {
-                    year = dtCurrent.getFullYear() - 1;
-                }
+//                 var dtCurrent = new Date();
+//                 var day = dtCurrent.getDate();
+//                 var month = dtCurrent.getMonth();
+//                 var year = dtCurrent.getFullYear();
+//                 if (month == 12) {
+//                     year = dtCurrent.getFullYear() - 1;
+//                 }
 
-                //var dtFreezeWindowStart;
-                if (day < 16) {
-                    month = dtCurrent.getMonth() - 1;
+//                 //var dtFreezeWindowStart;
+//                 if (day < 16) {
+//                     month = dtCurrent.getMonth() - 1;
 
-                    dtFreezeWindowStart = new Date(year, month, 16);
-                    //   dtFreezeWindowEnd = new Date(year, month, numberofDays);
-                }
-                else {
-                    month = dtCurrent.getMonth();
-                    year = dtCurrent.getFullYear();
-                    //jaise hi 16 tarikh aayegi freezing window current month ki 1 tarikh se start ho jayegi
-                    //aur ussey pehle ke sabhi orders available me aa jayege
-                    dtFreezeWindowStart = new Date(year, month, 1);
-                    console.log(month, year);
-                    var numberofDays = getDaysInMonth(month, year);
-                    console.log(numberofDays);
-                    //if this is last day of the month move the orders from 1 to 15 in available range
-                    if (day == numberofDays) {
-                        dtFreezeWindowStart = new Date(year, month, 16);
-                    }
-                }
+//                     dtFreezeWindowStart = new Date(year, month, 16);
+//                     //   dtFreezeWindowEnd = new Date(year, month, numberofDays);
+//                 }
+//                 else {
+//                     month = dtCurrent.getMonth();
+//                     year = dtCurrent.getFullYear();
+//                     //jaise hi 16 tarikh aayegi freezing window current month ki 1 tarikh se start ho jayegi
+//                     //aur ussey pehle ke sabhi orders available me aa jayege
+//                     dtFreezeWindowStart = new Date(year, month, 1);
+//                     console.log(month, year);
+//                     var numberofDays = getDaysInMonth(month, year);
+//                     console.log(numberofDays);
+//                     //if this is last day of the month move the orders from 1 to 15 in available range
+//                     if (day == numberofDays) {
+//                         dtFreezeWindowStart = new Date(year, month, 16);
+//                     }
+//                 }
 
-                //All the orders that were delivered before freezing window started will be available for disbursement
-               // console.log("Delivery date - " + dtDelivery);
-               // console.log("Freezing window start date - " + dtFreezeWindowStart);
-                if (dtDelivery < dtFreezeWindowStart) {
-                    disbursableAmountTemp += offer_price;
-                    availableCommissionTemp += commission_value;
-                    arrOrders.push(order);
+//                 //All the orders that were delivered before freezing window started will be available for disbursement
+//                // console.log("Delivery date - " + dtDelivery);
+//                // console.log("Freezing window start date - " + dtFreezeWindowStart);
+//                 if (dtDelivery < dtFreezeWindowStart) {
+//                     disbursableAmountTemp += offer_price;
+//                     availableCommissionTemp += commission_value;
+//                     arrOrders.push(order);
 
-                }
-                else {
-                    freezedAmountTemp += offer_price;
-                    freezedCommissionTemp += commission_value;
-                }
+//                 }
+//                 else {
+//                     freezedAmountTemp += offer_price;
+//                     freezedCommissionTemp += commission_value;
+//                 }
 
 
-            }
+//             }
 
-        }
+//         }
 
-        var tradeChargesFreezed = 28;
-        var tradeChargesAvailable = 28;
+//         var tradeChargesFreezed = 28;
+//         var tradeChargesAvailable = 28;
 
-        if(freezedAmountTemp == 0){
-            tradeChargesFreezed = 0;
-        }
+//         if(freezedAmountTemp == 0){
+//             tradeChargesFreezed = 0;
+//         }
 
-        if(disbursableAmountTemp == 0){
-            tradeChargesAvailable = 0;
-        }
+//         if(disbursableAmountTemp == 0){
+//             tradeChargesAvailable = 0;
+//         }
        
-        var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
-        var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
-        var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
-        freezedAmount += freezedAmountTemp - freezedDeductions;
+//         var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
+//         var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
+//         var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
+//         freezedAmount += freezedAmountTemp - freezedDeductions;
 
-        var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
-        var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
-        var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
-        disbursableAmount += disbursableAmountTemp - disbursableDeductions;
-    }
+//         var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
+//         var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
+//         var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
+//         disbursableAmount += disbursableAmountTemp - disbursableDeductions;
+//     }
 
-    hFreezed.textContent = rupeeSymbol + freezedAmount.toFixed(2);
-    hDisbursable.textContent = rupeeSymbol + disbursableAmount.toFixed(2);
-}
+//     hFreezed.textContent = rupeeSymbol + freezedAmount.toFixed(2);
+//     hDisbursable.textContent = rupeeSymbol + disbursableAmount.toFixed(2);
+// }
 
 function getPayouts() {
 

@@ -14,6 +14,7 @@ var mRedeemPoints = 0;
 
 
 var adm = getQueryVariable("adm");
+var mType = getQueryVariable("type");
 var admin = false;
 if (adm == "1") {
     admin = true;
@@ -25,17 +26,76 @@ getEnquiries();
 function getEnquiries() {
 
     var query;
+    var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setMilliseconds(0);
+    today.setSeconds(0);
+
     if (!admin) {
 
-        query = firebase.firestore().collection("pharmacist_requests")
+        if (mType == "pending") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 0)
+                .where("seller_id", "==", sellerId)
+                .orderBy('timestamp', 'desc');
+        }
+
+        if (mType == "approved") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 3)
+                .where("seller_id", "==", sellerId)
+                .orderBy('timestamp', 'desc');
+
+            
+        }
+
+        if(mType == "today_completed"){
+            var query = firebase.firestore()
+            .collection('pharmacist_requests')
             .where("seller_id", "==", sellerId)
-            .orderBy('timestamp', 'desc');
+            .where("invoice_timestamp", ">=", today)
+            .where("cancelled", "==", false);
+        }
+
+        if (mType == "all") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("seller_id", "==", sellerId)
+                .orderBy('timestamp', 'desc');
+        }
+
 
     }
     else {
 
-        query = firebase.firestore().collection("pharmacist_requests")
-            .orderBy('timestamp', 'desc');;
+        if (mType == "pending") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 0)
+                .orderBy('timestamp', 'desc');
+
+        }
+
+        if (mType == "approved") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 3)
+                .orderBy('timestamp', 'desc');
+
+        }
+
+        if(mType == "today_completed"){
+            var query = firebase.firestore()
+            .collection('pharmacist_requests')
+            .where("invoice_timestamp", ">=", today)
+            .where("cancelled", "==", false);
+        }
+
+        if (mType == "all") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .orderBy('timestamp', 'desc');
+
+        }
+
+
     }
 
     loadEnquiry(query).then(() => {
@@ -427,13 +487,42 @@ function createTable() {
         divMarkDelivry.appendChild(btnMarkDelivery);
         divAction.appendChild(divMarkDelivry);
 
+        var divViewInvoice = document.createElement('div');
+        var btnViewInvoice = document.createElement("button");
+        btnViewInvoice.style.marginTop = "10px";
+        btnViewInvoice.style.width = "150px";
+        btnViewInvoice.textContent = "View Invoice";
+        btnViewInvoice.setAttribute("id", i.toString());
+        btnViewInvoice.setAttribute("type", "button");
+        divViewInvoice.appendChild(btnViewInvoice);
+        divAction.appendChild(divViewInvoice);
+
 
         //2. Rejected by Seller
         //4. Rejected by Buyer
         //5. Delivery Complete
+
+        //estimate can be prepared only for pending enquiries..
+        if(enquiry.statusCode == 0){
+            divPrepareEstimate.style.display = "block";
+        }
+        else{
+            divPrepareEstimate.style.display = "none";
+        }
+
+        //invoice can be viewed only for delivered products
+        if(enquiry.status_code == 5){
+            divViewInvoice.style.display = "block";
+        }
+        else{
+            divViewInvoice.style.display = "none";
+        }
+
         if (enquiry.status_code == 2 || enquiry.status_code == 4 || enquiry.status_code == 5 || enquiry.status_code == 6) {
             divRejectEnquiry.style.display = "none";
         }
+
+        
 
         if (enquiry.status_code == 3 && enquiry.pickup_from_store) {
             divReadyForPickup.style.display = "block";
@@ -448,6 +537,8 @@ function createTable() {
                 divMarkDelivry.style.display = "none";
             }
         }
+
+
 
 
         //for admin disable mark delivery or reject enquery buttons
@@ -507,11 +598,17 @@ function createTable() {
             var enquiry = enquiryList[index];
             getCustomerDetails(enquiry.customer_id).then(() => {
                 markDelivery(enquiry.doc_id);
-                addProductsToDb(enquiry);
+                addProductsToDb(enquiry)
 
             })
 
 
+        })
+
+        btnViewInvoice.addEventListener("click", function(){
+            var index = parseInt(this.id);
+            var enquiry = enquiryList[index];
+            window.location.href = "offline_invoice.html?invoiceid=" + enquiry.invoice_id;
         })
 
         btnReadyForPickup.addEventListener("click", function () {
@@ -546,7 +643,7 @@ function rejectEnquiry(docId, reason) {
     })
         .then(function () {
             alert("Enquiry has ben rejected by you!!");
-            window.location.href = "medicine_enquiries.html";
+            window.location.href = "medicine_enquiries.html?type=" + mType;
         })
         .catch(function (error) {
             // The document probably doesn't exist.
@@ -570,7 +667,7 @@ function updateStatusCode(statusCode, docId) {
     })
         .then(function () {
             alert("Update Successful!!");
-            window.location.href = "medicine_enquiries.html";
+           // window.location.href = "medicine_enquiries.html";
         })
         .catch(function (error) {
             // The document probably doesn't exist.
@@ -578,6 +675,28 @@ function updateStatusCode(statusCode, docId) {
 
         });
 }
+
+function updateInvoiceId(docId) {
+
+    return new Promise((resolve, reject)=>{
+        var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
+        washingtonRef.update({
+            invoice_id: newInvoiceId,
+            invoice_timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                reject();
+    
+            });
+    })
+
+   
+    }
 
 function getCustomerDetails(customerid) {
 
@@ -608,7 +727,10 @@ function getCustomerDetails(customerid) {
 function addProductsToDb(enquiry) {
     getNewInvoiceId().then(() => {
         createInvoice(enquiry).then(() => {
-            window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
+            updateInvoiceId(enquiry.doc_id).then(()=>{
+                window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
+            })
+           
         })
     })
 }

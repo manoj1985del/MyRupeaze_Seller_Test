@@ -32,7 +32,7 @@ var ordersLast7Days = [];
 var todayUnits = 0;
 var txtPendingOrder = document.getElementById("txtPendingOrders");
 var txtTodayUnits = document.getElementById("txtUnits");
-var txtTodaySales = document.getElementById("txtTodaySales");
+var hSalesToday = document.getElementById("hSalesToday");
 
 var cardPendingOrder = document.getElementById("cardPendingOrder");
 var cardUnitsToday = document.getElementById("cardUnitsToday");
@@ -57,7 +57,8 @@ var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
 var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
 var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 
-var hFreezed = document.getElementById("hFreezed");
+var hApprovedByBuyer = document.getElementById("hApprovedByBuyer");
+var cardApprovedByBuyer = document.getElementById("cardApprovedByBuyer")
 
 var linkSubscription = document.getElementById("linkSubscription");
 var linkOfflineInvoices = document.getElementById("linkOfflineInvoices");
@@ -79,10 +80,14 @@ loadTodayOrders();
 generatePayouts();
 getActiveEnquiries();
 
-loadPendingEnquiries();
+//pending enquires
+loadEnquiries(0);
+
+//approved by customer enquiries
+loadEnquiries(3);
 
 loadLast7DaysOrder().then(() => {
-    loadLast7DaysOrderMap().then(() => {
+    loadLast7DaysPharmacyEnquiries().then(() => {
         // console.log("orders finally fetched");
         console.log(last7DayOrderMap);
     })
@@ -92,22 +97,18 @@ loadLast7DaysOrder().then(() => {
 loadSalesChart();
 loadUnitsChart();
 
-getThisMonthOrders().then(()=>{
-    console.log(currentMonthOrders);
-    var promiseList = [];
-    for(var i = 0; i < currentMonthOrders.length; i++){
-        promiseList.push(mapCurrentMonthsProductAgainstOrder(currentMonthOrders[i]));
-    }
-    Promise.all(promiseList).then(()=>{
-        console.log("going to get amount for month");
-        getAmountForMonth();
-    })
-})
 // getThisMonthOrders().then(()=>{
-//     getAmountForMonth();
+//     console.log(currentMonthOrders);
+//     var promiseList = [];
+//     for(var i = 0; i < currentMonthOrders.length; i++){
+//         promiseList.push(mapCurrentMonthsProductAgainstOrder(currentMonthOrders[i]));
+//     }
+//     Promise.all(promiseList).then(()=>{
+//         console.log("going to get amount for month");
+//         getAmountForMonth();
+//     })
 // })
-//loadFreeChart();
-//loadUnitsChart();
+
 
 //pending pharmacist enquiries
 
@@ -120,7 +121,21 @@ cardPendingEnquiries.addEventListener("mouseleave", function () {
 });
 
 cardPendingEnquiries.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html";
+    window.location.href = "medicine_enquiries.html?type=pending";
+})
+
+//Approved by customers enquiries
+
+cardApprovedByBuyer.addEventListener("mouseenter", function () {
+    cardApprovedByBuyer.classList.add("cardHover");
+});
+
+cardApprovedByBuyer.addEventListener("mouseleave", function () {
+    cardApprovedByBuyer.classList.remove("cardHover");
+});
+
+cardApprovedByBuyer.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html?type=approved";
 })
 
 cardPendingOrder.addEventListener("mouseenter", function () {
@@ -135,6 +150,8 @@ cardPendingOrder.addEventListener("click", function () {
     window.location.href = "orders.html?type=pending";
 })
 
+
+
 //today sales
 cardSalesToday.addEventListener("mouseenter", function () {
     cardSalesToday.classList.add("cardHover");
@@ -145,7 +162,7 @@ cardSalesToday.addEventListener("mouseleave", function () {
 });
 
 cardSalesToday.addEventListener("click", function () {
-    window.location.href = "orders.html?type=today";
+    window.location.href = "medicine_enquiries.html?type=today_completed";
 });
 
 
@@ -159,7 +176,7 @@ cardUnitsToday.addEventListener("mouseleave", function () {
 });
 
 cardUnitsToday.addEventListener("click", function () {
-    window.location.href = "orders.html?type=today";
+    window.location.href = "medicine_enquiries.html?type=today_completed";
 });
 
 btnUpdate.addEventListener("click", function () {
@@ -247,8 +264,8 @@ function Last7Days() {
     //  return (result.join(','));
 }
 
-linkSubscription.addEventListener("click", function(){
-    if(spanSubscribed.textContent == "Subscription Status: Active"){
+linkSubscription.addEventListener("click", function () {
+    if (spanSubscribed.textContent == "Subscription Status: Active") {
         alert("Your have already subscribed.");
         return;
     }
@@ -256,12 +273,12 @@ linkSubscription.addEventListener("click", function(){
     window.location.href = "subscription.html";
 })
 
-linkOfflineInvoices.addEventListener("click", function(){
+linkOfflineInvoices.addEventListener("click", function () {
     window.location.href = "admin_view_offline_invoice.html?sellerid=" + sellerId;
 })
 
 function loadChart() {
-   // console.log("load charts function called");
+    // console.log("load charts function called");
 
     var chart = new CanvasJS.Chart("chartContainer", {
         title: {
@@ -378,12 +395,69 @@ function loadUnitsChart() {
     });
 }
 
+function loadLast7DaysPharmacyEnquiries() {
+    return new Promise((resolve, reject) => {
+        var index = 0;
+        var qty = 0;
+        var sales = 0;
+
+
+        for (var i = 0; i < ordersLast7Days.length; i++) {
+            var order = ordersLast7Days[i];
+            console.log(order);
+
+            var orderDate = order.invoice_timestamp.toDate();
+            var dd = orderDate.getDate();
+            var mm = orderDate.getMonth() + 1;
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            var formattedDay = dd + "-" + getMonthNmae(mm);
+
+            for (var i = 0; i < order.product_names.length; i++) {
+                qty += order.product_qty[i];
+                sales += order.product_prices_total[i];
+
+            }
+
+            var mapQty = mapUnits7Days.get(formattedDay);
+            mapQty += qty;
+
+            var mapSales = mapSales7Days.get(formattedDay);
+            mapSales += sales;
+            mapUnits7Days.set(formattedDay, mapQty);
+            mapSales7Days.set(formattedDay, mapSales);
+        }
+
+
+        for (var unit of mapUnits7Days.values()) {
+            last7DayUnits.push(unit);
+
+        }
+
+        for (var sale of mapSales7Days.values()) {
+            last7DaySales.push(sale);
+
+        }
+
+        loadSalesChart();
+        loadUnitsChart();
+        resolve();
+
+
+    })
+
+
+}
+
 async function loadLast7DaysOrderMap() {
     return new Promise((resolve, reject) => {
         var index = 0;
         var qty = 0;
         var sales = 0;
 
+        console.log("orders in last 7 days");
+        console.log(ordersLast7Days);
         for (var i = 0; i < ordersLast7Days.length; i++) {
             var order = ordersLast7Days[i];
 
@@ -403,16 +477,16 @@ async function loadLast7DaysOrderMap() {
                             dd = '0' + dd;
                         }
                         var formattedDay = dd + "-" + getMonthNmae(mm);
-                      //  console.log("formattedDay - " + formattedDay);
+                        //  console.log("formattedDay - " + formattedDay);
 
                         var productList = ele[1];
 
                         for (var i = 0; i < productList.length; i++) {
                             var product = productList[i];
                             qty += product.Qty;
-                          //  console.log("qty - " + qty);
+                            //  console.log("qty - " + qty);
                             sales += product.Offer_Price * product.Qty;
-                           // console.log(sales);
+                            // console.log(sales);
                         }
                         var mapQty = mapUnits7Days.get(formattedDay);
                         mapQty += qty;
@@ -510,10 +584,10 @@ function loadLast7DaysOrder() {
 
 
         var query = firebase.firestore()
-            .collection('orders')
+            .collection('pharmacist_requests')
             .where("seller_id", "==", sellerId)
-            .where("order_date", ">=", initialDate)
-            .where("order_date", "<", tomorrow)
+            .where("invoice_timestamp", ">=", initialDate)
+            .where("invoice_timestamp", "<", tomorrow)
             .where("cancelled", "==", false);
 
         query.get()
@@ -553,35 +627,45 @@ function loadTodayOrders() {
 
 
     var query = firebase.firestore()
-        .collection('orders')
+        .collection('pharmacist_requests')
         .where("seller_id", "==", sellerId)
-        .where("order_date", ">=", today)
+        .where("invoice_timestamp", ">=", today)
         .where("cancelled", "==", false);
 
     query.get()
         .then(function (snapshot) {
             if (snapshot.docs.length == 0 || snapshot.docs.length == undefined) {
                 txtTodayUnits.textContent = totalOrders.toString();
-                txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
+                hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
 
             }
             snapshot.forEach(function (doc) {
                 var order = doc.data();
-                fetchProductsForOrder(order, todayOrdersMap).then(() => {
-                    var productList = todayOrdersMap.get(order.order_id);
-
-                    for (var i = 0; i < productList.length; i++) {
-                        var product = productList[i];
-                        totalSales += product.Offer_Price * product.Qty;
-                        totalOrders += product.Qty;
+                for (var i = 0; i < order.product_names.length; i++) {
+                    if (order.status_code != 5) {
+                        continue;
                     }
 
+                    totalOrders += parseFloat(order.product_qty[i]);
+                    totalSales += parseFloat(order.product_prices_total[i]);
+                }
+                hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+                txtTodayUnits.textContent = totalOrders.toString();
+                // fetchProductsForOrder(order, todayOrdersMap).then(() => {
+                //     var productList = todayOrdersMap.get(order.order_id);
 
-                }).then(() => {
-                    txtTodayUnits.textContent = totalOrders.toString();
-                    txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
+                //     for (var i = 0; i < productList.length; i++) {
+                //         var product = productList[i];
+                //         totalSales += product.Offer_Price * product.Qty;
+                //         totalOrders += product.Qty;
+                //     }
 
-                })
+
+                // }).then(() => {
+                //     txtTodayUnits.textContent = totalOrders.toString();
+                //     hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+
+                // })
 
             })
         })
@@ -641,12 +725,12 @@ function fetchProductsForOrder(order, orderMap) {
     })
 }
 
-function loadPendingEnquiries(){
+function loadEnquiries(status_code) {
     var pendingEnquiries = [];
     var query = firebase.firestore()
         .collection('pharmacist_requests')
         .where("seller_id", "==", sellerId)
-        .where("status_code", "==", 0);
+        .where("status_code", "==", status_code);
 
     query.get()
         .then(function (snapshot) {
@@ -656,7 +740,14 @@ function loadPendingEnquiries(){
                 pendingEnquiries.push(data);
             })
         }).then(function () {
-            hPendingEnquiries.textContent = pendingEnquiries.length.toString();
+            if (status_code == 0) {
+                hPendingEnquiries.textContent = pendingEnquiries.length.toString();
+            }
+
+            if (status_code == 3) {
+                hApprovedByBuyer.textContent = pendingEnquiries.length.toString();
+            }
+
 
         }).catch(function (error) {
             console.log("Error getting documents: ", error);
@@ -722,7 +813,7 @@ function loadMyAccountsInfo(seller) {
         else {
             spanSubscribed.textContent = "Subscription Status: Active";
             spanValidTill.textContent = "Subscription Valid Till: " + formattedDay;
-            spanType.textContent = "Subscription Type: " +  seller.subscription_type;
+            spanType.textContent = "Subscription Type: " + seller.subscription_type;
         }
 
     }
@@ -766,7 +857,7 @@ function loadSellerDetails() {
     // console.log("loading seller details");
     // console.log("loading seller details1");
     var query = firebase.firestore()
-        .collection('seller').doc(sellerId);
+        .collection('pharmacist').doc(sellerId);
 
 
     query.get().then(function (doc) {
@@ -803,7 +894,7 @@ function loadSellerDetails() {
         if (seller.city_seller) {
             cardCity.style.display = "block";
         }
-        else{
+        else {
             cardCity.style.display = "none";
         }
 
@@ -893,7 +984,7 @@ function calculatePayout() {
     var productList = [];
 
     var totalCODValue = 0;
-    var totalPrepaidValue= 0;
+    var totalPrepaidValue = 0;
     var totalCODCommission = 0;
     var totalPrepaidCommission = 0;
 
@@ -911,7 +1002,7 @@ function calculatePayout() {
                 amtToReduce = product.return_amount;
             }
 
-            if(product.cancelled_by_seller){
+            if (product.cancelled_by_seller) {
                 product.Offer_Price = 0;
             }
 
@@ -919,7 +1010,7 @@ function calculatePayout() {
             var offer_price = product.Offer_Price * product.Qty;
             offer_price = offer_price - amtToReduce;
             var commission_value = (offer_price * commission) / 100;
-          
+
             if (order.COD == true) {
                 totalCODValue += offer_price;
                 totalCODCommission += commission_value;
@@ -927,8 +1018,8 @@ function calculatePayout() {
             else {
                 //if order is prepaid and successful payment has been made
                 if (order.payment_id != null) {
-                   totalPrepaidValue += offer_price;
-                   totalPrepaidCommission += commission_value;
+                    totalPrepaidValue += offer_price;
+                    totalPrepaidCommission += commission_value;
 
                 }
             }
@@ -938,21 +1029,21 @@ function calculatePayout() {
     var tradingChargesCOD = 28;
     var tradingChargesPrepaid = 28;
 
-    if(totalCODValue == 0){
+    if (totalCODValue == 0) {
         tradingChargesCOD = 0;
     }
 
-    if(totalPrepaidValue == 0){
+    if (totalPrepaidValue == 0) {
         tradingChargesPrepaid = 0;
     }
 
     var deductionsCODTaxable = totalCODCommission + tradingChargesCOD;
-    var taxes = deductionsCODTaxable *18 / 100;
+    var taxes = deductionsCODTaxable * 18 / 100;
     var deductionsCOD = deductionsCODTaxable + taxes;
     var cod_payout_seller = totalCODValue - deductionsCOD;
 
     var deductionsPrepaidTaxable = totalPrepaidCommission + tradingChargesPrepaid;
-    var taxes = deductionsPrepaidTaxable *18 / 100;
+    var taxes = deductionsPrepaidTaxable * 18 / 100;
     var deductionsPrepaid = deductionsPrepaidTaxable + taxes;
     var elec_payout_seller = totalPrepaidValue - deductionsPrepaid;
 
@@ -991,7 +1082,7 @@ function calculatePayout() {
 
 
 //             var product = productList[productNumber];
-           
+
 //             var amtToReduce = 0;
 //             if (product.return_requested && product.return_processed) {
 //                 amtToReduce = product.return_amount;
@@ -1073,7 +1164,7 @@ function calculatePayout() {
 //         if(disbursableAmountTemp == 0){
 //             tradeChargesAvailable = 0;
 //         }
-       
+
 //         var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
 //         var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
 //         var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
@@ -1236,8 +1327,10 @@ function getThisMonthOrders() {
 }
 
 function getAmountForMonth() {
+    console.log("current month orders");
+    console.log(currentMonthOrders);
     var finalAmount = 0;
-    
+
     for (var i = 0; i < currentMonthOrders.length; i++) {
         var order = currentMonthOrders[i];
         console.log("order = " + order);
@@ -1261,23 +1354,23 @@ function getAmountForMonth() {
 }
 
 var enquiryCount = 0;
-function getActiveEnquiries(){
+function getActiveEnquiries() {
 
-        var enquires = [];
-        firebase.firestore().collection("offline_requests")
+    var enquires = [];
+    firebase.firestore().collection("offline_requests")
         .where("seller_id", "==", sellerId)
         .where("status_code", "==", 0)
-            .get()
-            .then(function (querySnapshot) {
-                 console.log("doc length =" + querySnapshot.docs.length);
-                 enquiryCount = querySnapshot.docs.length;
-            }).then(() => {
-                linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-               // reject();
-            });
+        .get()
+        .then(function (querySnapshot) {
+            console.log("doc length =" + querySnapshot.docs.length);
+            enquiryCount = querySnapshot.docs.length;
+        }).then(() => {
+            linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+            // reject();
+        });
 
 }
 

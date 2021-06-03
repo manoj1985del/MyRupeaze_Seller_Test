@@ -257,3 +257,7 @@ function autocomplete(inp, arr) {
     var formattedDay = dd + "-" + getMonthNmae(mm) + "-" + yyyy;
     return formattedDay;
 }
+
+function appendNumber(number, digits) {
+    return String(number).padStart(digits, '0');
+  }

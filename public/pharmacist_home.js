@@ -97,6 +97,10 @@ loadLast7DaysOrder().then(() => {
 loadSalesChart();
 loadUnitsChart();
 
+getThisMonthOrders().then(()=>{
+    getAmountForMonthForEnquiries();
+})
+
 // getThisMonthOrders().then(()=>{
 //     console.log(currentMonthOrders);
 //     var promiseList = [];
@@ -1302,10 +1306,10 @@ function getThisMonthOrders() {
 
 
         var query = firebase.firestore()
-            .collection('orders')
+            .collection('pharmacist_requests')
             .where("seller_id", "==", sellerId)
-            .where("order_date", ">=", firstDay)
-            .where("order_date", "<=", lastDay)
+            .where("invoice_timestamp", ">=", firstDay)
+            .where("invoice_timestamp", "<=", lastDay)
             .where("cancelled", "==", false);
 
         query.get()
@@ -1348,6 +1352,22 @@ function getAmountForMonth() {
 
             amount = amount - amtToReduce;
             finalAmount += amount;
+        }
+    }
+    hSalesThisMonth.textContent = rupeeSymbol + finalAmount.toFixed(2);
+}
+
+
+function getAmountForMonthForEnquiries() {
+    console.log("current month orders");
+    console.log(currentMonthOrders);
+    var finalAmount = 0;
+
+    for (var i = 0; i < currentMonthOrders.length; i++) {
+        var order = currentMonthOrders[i];
+
+        for (var productIndex = 0; productIndex < order.product_names.length; productIndex++) {
+            finalAmount += order.product_prices_total[productIndex];
         }
     }
     hSalesThisMonth.textContent = rupeeSymbol + finalAmount.toFixed(2);

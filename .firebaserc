@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "my-rupeaze"
+    "default": "my-rupeaze",
+    "My Rupeaze": "my-rupeaze-594ac"
   }
 }

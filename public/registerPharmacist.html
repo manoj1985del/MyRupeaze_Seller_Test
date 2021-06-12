@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register New Seller</title>
+
+    <link rel="icon" href="img_logo.png">
+
+    <!-- Font Awesome JS -->
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+  integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+  crossorigin="anonymous"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+  integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+  crossorigin="anonymous"></script>
+
+
+<style>
+  .myBorder {
+    border: 1px lightgray solid;
+  }
+</style>
+
+<!-- CSS only -->
+<!-- <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;900&display=swap" rel="stylesheet"> -->
+
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="stylesheet" href="myStyle.css">
+</head>
+<body>
+    
+  <div id="divProgress" style="display: none;">
+    
+
+    <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+      style="width: 100%; height: 500px;">
+      <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
+      <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+
+    </div>
+  </div>
+
+   <div id = "divContent"  class="d-flex justify-content-center mt-3">
+
+    <div class="container myBorder">
+      <h1 class="d-flex justify-content-center">Pharmacist Registration Form (रजिस्ट्रेशन फॉर्म)</h1>
+      <hr />
+
+      <form>
+
+        <div class="form-group">
+          <div>
+            <label for="divPharmaCategories">Please Select Pharma Categories: </label><br>
+            <div id = "divPharmaCategories" class="ml-3">
+              <!-- <input type="checkbox" class="form-check-input">
+              <label class="form-check-label" for="chkAddExisting">Electronics</label> -->
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="form-group">
+          <label for="txtMerchanteId">Choose Merchant Id (Exact 8 Characters) (कृपया मर्चेंट आईडी भरे)</label>
+          <input type="text" class="form-control" id="txtMerchantId" aria-describedby="txtMerchantIdHelp" required>
+          <div class="mt-2">
+            <button type="button" class="btn btn-success" id="btnCheckAvailability">Check Availability</button>
+
+            <div id="divSaving" style="display: block;">
+              <image id="imgCheckAvailability" src="img_progress.gif" style="width: 70px; height: 70px; display: none;" />
+          </div>
+
+
+            <!-- <img src="img_ok.png" id="imgCheckAvailability" style="width: 20px; height: 20px; display: none;" />   -->
+          </div>
+         
+        </div>
+
+        <div class="form-group">
+          <label for="txtNameHelp">Name (नाम)</label>
+          <input type="text" class="form-control" id="txtName" aria-describedby="txtNameHelp" required>
+        </div>
+
+        <div class="form-group">
+          <label for="txtMobile">Mobile No. (मोबाइल नंबर)</label>
+          <input type="number" class="form-control" id="txtMobile">
+        </div>
+
+        <div class="form-group">
+          <label for="txtEmail">Email Address (ईमेल)</label>
+          <input type="email" class="form-control" id="txtEmail" disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="txtCompanyName">Company Name (कंपनी का नाम)</label>
+            <input type="text" class="form-control" id="txtCompanyName">
+          </div>
+
+        <div class="form-group">
+            <label for="txtAddressLine1">Address Line 1 (पता लाइन 1)</label>
+            <input type="text" class="form-control" id="txtAddressLine1">
+          </div>
+
+          <div class="form-group">
+            <label for="txtAddressLine2">Address Line 2 (पता लाइन 2)</label>
+            <input type="text" class="form-control" id="txtAddressLine2">
+          </div>
+
+          <div class="form-group">
+            <label for="txtAddressLine3">Address Line 3 (पता लाइन 3)</label>
+            <input type="text" class="form-control" id="txtAddressLine3">
+          </div>
+
+          <div class="form-group">
+            <label for="txtCity">City (शहर का नाम)</label>
+            <input type="text" class="form-control" id="txtCity">
+          </div>
+
+          <div class="form-group">
+            <label for="state">State (राज्य का नाम)</label>
+            <!-- <input type="text" class="form-control" id="txtState"> -->
+            <select name="state" id="state" class="form-control">
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+              <option value="Assam">Assam</option>
+              <option value="Bihar">Bihar</option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Chhattisgarh">Chhattisgarh</option>
+              <option value="Dadar and Nagar Haveli">Dadar and Nagar Haveli</option>
+              <option value="Daman and Diu">Daman and Diu</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Lakshadweep">Lakshadweep</option>
+              <option value="Puducherry">Puducherry</option>
+              <option value="Goa">Goa</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Himachal Pradesh">Himachal Pradesh</option>
+              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+              <option value="Jharkhand">Jharkhand</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Manipur">Manipur</option>
+              <option value="Meghalaya">Meghalaya</option>
+              <option value="Mizoram">Mizoram</option>
+              <option value="Nagaland">Nagaland</option>
+              <option value="Odisha">Odisha</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tripura">Tripura</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="West Bengal">West Bengal</option>
+              </select>
+          </div>
+
+          <div class="form-group">
+            <label for="txtPincode">Pincode (पिनकोड )</label>
+            <input type="text" class="form-control" id="txtPincode">
+          </div>
+
+          <div class="form-group">
+            <label for="txtGSTNo">GST No. (Exact 15 Characters) (जी एस टी नंबर)</label>
+            <input type="text" class="form-control" id="txtGSTNo">
+          </div>
+
+          <div class="form-group">
+            <label for="txtUploadGST">Upload GST Certificate</label>
+            <input type="file" class="form-control" id="txtUploadGST">
+            <button type="button" class="btn btn-success mt-2" id="btnUplaodGST">Upload</button>
+            <span id="gstStatus"></span>
+            <img id="gstProgress" style="width: 70px; height: 70px; display: none;" src="img_progress.gif" />
+            <button type="button" class="btn btn-info mt-2" style="display: none;" id="btnViewGST">View GST Certificate</button>
+            
+          </div>
+
+
+          <div class="form-group">
+            <label for="txtPANCardNo">PAN Card No. (Exact 10 Characters) (पैन कार्ड नंबर)</label>
+            <input type="text" class="form-control" id="txtPANCardNo">
+          </div>
+
+         
+          <h4>Bank Details</h4>
+          <div class="form-group">
+            <label for="txtAccountHolderName">Account Holder Nmae (अकाउंट होल्डर का नाम)</label>
+            <input type="text" class="form-control" id="txtAccountHolderName">
+          </div>
+
+          <div class="form-group">
+            <label for="txtAccountNumber">Account Number (अकाउंट नंबर) </label>
+            <input type="text" class="form-control" id="txtAccountNumber">
+          </div>
+
+          <div class="form-group">
+            <label for="txtBankName">Bank Name (बैंक का नाम)</label>
+            <input type="text" class="form-control" id="txtBankName">
+          </div>
+
+          <div class="form-group">
+            <label for="txtIFSCCode">IFSC Code (आई.एफ.एस.सी कोड)</label>
+            <input type="text" class="form-control" id="txtIFSCCode">
+          </div>
+
+          <div class="form-group">
+            <label for="txtUploadCancelCheque">Upload Cancelled Cheque</label>
+            <input type="file" class="form-control" id="txtUploadCancelCheque">
+            <button type="button" class="btn btn-success mt-2" id="btnUploadCancelCheque">Upload</button>
+            <span id="chequeStatus"></span>
+            <img id="chequeProgress" style="width: 70px; height: 70px; display: none;" src="img_progress.gif" />
+            <button type="button" class="btn btn-info mt-2" style="display: none;" id="btnViewCancelledCheque">View Cancelled Cheque</button>
+            
+          </div>
+
+          <div class="form-group">
+            <label for="rbYes">Account Type (अकाउंट का प्रकार)</label>
+            <hr />
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="rbCurrent" value="Current" checked>
+              <label class="form-check-label" for="rbYes">
+                Current Account (चालू खाता)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="rbSavings" value="Savings">
+              <label class="form-check-label" for="rbNo">
+                Savings Account (बचत खाता)
+              </label>
+            </div>
+
+          </div>
+
+          <hr />
+          <h4>Mr. City Details</h4>
+          <div class="form-group">
+            <label for="rbCityYes">Want to Register as Mr. City Seller?</label>
+            <hr />
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="mrcityradio" id="rbCityYes" value="Yes" checked>
+              <label class="form-check-label" for="rbCityYes">
+                Yes
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="mrcityradio" id="rbCityNo" value="No">
+              <label class="form-check-label" for="rbCityNo">
+                No
+              </label>
+            </div>
+          </div>
+
+          <div id="divCity">
+            <div class="form-group">
+              <label for="txtOpeningTime">Opening Time*</label>
+              <input type="time" class="form-control" id="txtOpeningTime">
+            </div>
+      
+            <div class="form-group">
+              <label for="txtClosingTime">Closing Time*</label>
+              <input type="time" class="form-control" id="txtClosingTime">
+            </div>
+          
+
+          <div class="form-group">
+            <label for="txtOffer">Offer</label>
+            <input type="text" class="form-control" id="txtOffer">
+          </div>
+
+          <div class="form-group">
+            <label for="txtAboutShop">About Your Shop (500 words max)</label>
+            <textarea style="height: 200px;" class="form-control" id="txtAboutShop"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+                <input type="file" name="inpFile" id="inpFile_CarouselImage1">
+                <br />
+
+                <div class="image-preview" id="imagePreview_CarouselImage1">
+                    <img src="" alt="Image Preview" class="image-preview_image" />
+                    <span class="image-preview_default-text">Shop Image</span>
+                </div>
+                <button type="button" class="mt-2"
+                    id="btnUploadCarouselImage1">Upload</button>
+                <img id="imgProgressCarouselImage1"
+                    style="width: 75px; height: auto; display: none"
+                    src="img_progress.gif" />
+                <span id="uploadMsgCarouselImage1" style="display: none;">Upload
+                    Successful</span>
+            </div>
+        </div>
+
+        </div>
+
+        <button type="button" class="btn btn-success" id="btnSubmit">Submit</button>
+        <button type="button" class="btn btn-info" id="btnLogout">Go to Login Page</button>
+      </form>
+
+
+
+      <div style="width: 100%; height: auto; display: none;" class="msgBorder mt-2 mb-3" id="msgHeader">
+        <image src="img_ok.png" style="width: 20px; height: 20px;" class="ml-2" id="imgHeader" />
+        <span id="actionMsg">Message</span>
+      </div>
+
+
+    
+</div>
+   </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="/__/firebase/7.15.5/firebase-app.js"></script>
+
+<script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+<script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+<script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+<script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+<script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+
+<!-- Initialize Firebase -->
+<script src="/__/firebase/init.js"></script>
+<script type="text/javascript" src="email.js"></script>
+<script type="text/javascript" src="common.js"></script>
+<script src="registerPharmacist.js"></script>
+
+</body>
+</html>

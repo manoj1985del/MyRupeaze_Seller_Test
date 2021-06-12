@@ -1,42 +1,45 @@
+
+
 //localStorage.clear();
 
 var rupeeSymbol = "₹ ";
-var tradeCharges = 28;
 
-var cardCity = document.getElementById("cardCity");
+
 var btnUpdate = document.getElementById("btnUpdate");
+var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 var arrLast7Days = [];
 var mapUnits7Days = new Map();
 var mapSales7Days = new Map();
 var last7DaySales = [];
 var last7DayUnits = [];
-
-
-
-var unsettledOrders = [];
+var commision_map = new Map();
 var unsettledOrdersProductMap = new Map();
+
 var currentMonthOrdersProductMap = new Map();
 var currentMonthOrders = [];
-
-var cod_payout_seller = 0;
-var elec_payout_seller = 0;
-var cod_commission_admin = 0;
-var elec_commission_admin = 0;
-var commision_map = new Map();
-var unsettledOrdersAndProductMap = new Map();
 
 
 var pendingOrders = [];
 var todayOrders = [];
 var ordersLast7Days = [];
+var unsettledOrders = [];
 var todayUnits = 0;
 var txtPendingOrder = document.getElementById("txtPendingOrders");
 var txtTodayUnits = document.getElementById("txtUnits");
 var txtTodaySales = document.getElementById("txtTodaySales");
 
 var cardPendingOrder = document.getElementById("cardPendingOrder");
-var cardUnitsToday = document.getElementById("cardUnitsToday");
-var cardSalesToday = document.getElementById("cardSalesToday");
+
+// var cardUnitsToday = document.getElementById("cardUnitsToday");
+//var cardSalesToday = document.getElementById("cardSalesToday");
+
+var cardTotalSellers = document.getElementById("cardTotalSellers");
+var hTotalSellers = document.getElementById("hTotalSellers");
+var cardPendingSellerRequest = document.getElementById("cardPendingSellerRequest");
+var hPendingSellerRequest = document.getElementById("hPendingSellerRequest");
+
+var cardTotalUsers = document.getElementById("cardTotalUsers");
+var hTotalUsers = document.getElementById("hTotalUsers");
 
 var h6CompanyName = document.getElementById("h6CompanyName");
 var spanMerchantid = document.getElementById("spanMerchantid");
@@ -44,39 +47,58 @@ var spanPan = document.getElementById("spanPANCardNumber");
 var spanGst = document.getElementById("spanGST");
 var spanSellingCategory = document.getElementById("spanSellingCategory");
 var spanBankAccountNumber = document.getElementById("spanBankAccountNumber");
-var spanSubscribed = document.getElementById("subscribed");
-var spanValidTill = document.getElementById("validTill");
-var spanType = document.getElementById("spanType");
 
 var imgProgress = document.getElementById("imgProgress");
 
+var cardElecCommission = document.getElementById("cardElecCommission");
+var hElecCommission = document.getElementById("hElecCommission");
+var hCODCommission = document.getElementById("hCODCommission");
+var cardCODCommission = document.getElementById("cardCODCommission");
+
+var cardPendingCODPayouts = document.getElementById("cardPendingCODPayouts");
 var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
+var cardPendingElecPayouts = document.getElementById("cardPendingElecPayouts");
 var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
-var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 
-var hDisbursable = document.getElementById("hDisbursable");
-var hFreezed = document.getElementById("hFreezed");
-
-var linkSubscription = document.getElementById("linkSubscription");
-var linkOfflineInvoices = document.getElementById("linkOfflineInvoices");
+var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsProduct");
+var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
+
+var cardPendingDocRequest = document.getElementById("cardPendingDocRequest");
+var txtPendingDocRequest = document.getElementById("txtPendingDocRequest")
+
+var cardPendingPharmaRequest = document.getElementById("cardPendingPharmaRequest");
+var txtPendingPharmaRequest = document.getElementById("txtPendingPharmaRequest");
+
+
+localStorage.setItem("adminLogin", "true");
 
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
 
-
 var sellerId = getQueryVariable("sellerid");
-localStorage.setItem("sellerid", sellerId);
+console.log("seller id = " + sellerId);
+
+var cod_payout_seller = 0;
+var elec_payout_seller = 0;
+var cod_commission_admin = 0;
+var elec_commission_admin = 0;
 
 
 
 Last7Days();
-loadSellerDetails();
+getPendingProducts();
+loadSellerDetails(sellerId);
+loadTotalSellers();
+loadTotalUsers();
+loadPendingSellers();
+
+loadPendingDoctors();
+loadPendingPharmacists();
+
 loadPendingOrders();
 loadTodayOrders();
-generatePayouts();
 getActiveEnquiries();
-
 loadLast7DaysOrder().then(() => {
     loadLast7DaysOrderMap().then(() => {
         // console.log("orders finally fetched");
@@ -84,9 +106,6 @@ loadLast7DaysOrder().then(() => {
     })
 
 });
-
-loadSalesChart();
-loadUnitsChart();
 
 getThisMonthOrders().then(()=>{
     console.log(currentMonthOrders);
@@ -99,9 +118,11 @@ getThisMonthOrders().then(()=>{
         getAmountForMonth();
     })
 })
-// getThisMonthOrders().then(()=>{
-//     getAmountForMonth();
-// })
+
+loadSalesChart();
+loadUnitsChart();
+generatePayouts();
+//getUnSettledOrders();
 //loadFreeChart();
 //loadUnitsChart();
 
@@ -114,39 +135,123 @@ cardPendingOrder.addEventListener("mouseleave", function () {
 });
 
 cardPendingOrder.addEventListener("click", function () {
-    window.location.href = "orders.html?type=pending";
+    window.location.href = "admin_orders.html?type=pending";
 })
 
 //today sales
-cardSalesToday.addEventListener("mouseenter", function () {
-    cardSalesToday.classList.add("cardHover");
-});
+// cardSalesToday.addEventListener("mouseenter", function () {
+//     cardSalesToday.classList.add("cardHover");
+// });
 
-cardSalesToday.addEventListener("mouseleave", function () {
-    cardSalesToday.classList.remove("cardHover");
-});
+// cardSalesToday.addEventListener("mouseleave", function () {
+//     cardSalesToday.classList.remove("cardHover");
+// });
 
-cardSalesToday.addEventListener("click", function () {
-    window.location.href = "orders.html?type=today";
-});
+// cardSalesToday.addEventListener("click", function () {
+//     window.location.href = "admin_orders.html?type=today";
+// });
 
 
 //today units
-cardUnitsToday.addEventListener("mouseenter", function () {
-    cardUnitsToday.classList.add("cardHover");
+// cardUnitsToday.addEventListener("mouseenter", function () {
+//     cardUnitsToday.classList.add("cardHover");
+// });
+
+// cardUnitsToday.addEventListener("mouseleave", function () {
+//     cardUnitsToday.classList.remove("cardHover");
+// });
+
+// cardUnitsToday.addEventListener("click", function () {
+//     window.location.href = "admin_orders.html?type=today";
+// });
+
+
+//total sellers
+cardTotalSellers.addEventListener("mouseenter", function () {
+    cardTotalSellers.classList.add("cardHover");
 });
 
-cardUnitsToday.addEventListener("mouseleave", function () {
-    cardUnitsToday.classList.remove("cardHover");
+cardTotalSellers.addEventListener("mouseleave", function () {
+    cardTotalSellers.classList.remove("cardHover");
 });
 
-cardUnitsToday.addEventListener("click", function () {
-    window.location.href = "orders.html?type=today";
+cardTotalSellers.addEventListener("click", function () {
+    window.location.href = "admin_seller_listing.html?type=approved";
 });
 
-btnUpdate.addEventListener("click", function () {
+//pending sellers
+cardPendingSellerRequest.addEventListener("mouseenter", function () {
+    cardPendingSellerRequest.classList.add("cardHover");
+});
+
+cardPendingSellerRequest.addEventListener("mouseleave", function () {
+    cardPendingSellerRequest.classList.remove("cardHover");
+});
+
+cardPendingSellerRequest.addEventListener("click", function () {
+    window.location.href = "admin_seller_listing.html?type=pending";
+});
+
+//pending doctor requests
+
+cardPendingDocRequest.addEventListener("mouseenter", function () {
+    cardPendingDocRequest.classList.add("cardHover");
+});
+
+cardPendingDocRequest.addEventListener("mouseleave", function () {
+    cardPendingDocRequest.classList.remove("cardHover");
+});
+
+cardPendingDocRequest.addEventListener("click", function () {
+    window.location.href = "admin_doctor_listing.html?type=pending";
+});
+
+//pending pharmacists requests
+
+cardPendingPharmaRequest.addEventListener("mouseenter", function () {
+    cardPendingPharmaRequest.classList.add("cardHover");
+});
+
+cardPendingPharmaRequest.addEventListener("mouseleave", function () {
+    cardPendingPharmaRequest.classList.remove("cardHover");
+});
+
+cardPendingPharmaRequest.addEventListener("click", function () {
+    window.location.href = "admin_pharmacist_listing.html?type=pending";
+});
+
+
+
+//total users
+cardTotalUsers.addEventListener("mouseenter", function () {
+    cardTotalUsers.classList.add("cardHover");
+});
+
+cardTotalUsers.addEventListener("mouseleave", function () {
+    cardTotalUsers.classList.remove("cardHover");
+});
+
+cardTotalUsers.addEventListener("click", function () {
+    window.location.href = "admin_users.html";
+});
+
+btnUpdate.addEventListener("click", function(){
     window.location.href = "RegisterUser.html?sellerid=" + sellerId;
 })
+
+//pending for approval products
+cardPendingApprovalsProduct.addEventListener("mouseenter", function(){
+    cardPendingApprovalsProduct.classList.add("cardHover");
+})
+
+cardPendingApprovalsProduct.addEventListener("mouseleave", function(){
+    cardPendingApprovalsProduct.classList.remove("cardHover");
+})
+
+cardPendingApprovalsProduct.addEventListener("click", function(){
+    window.location.href = "admin_show_listing.html?type=pending";
+})
+
 
 function getMonthNmae(index) {
     var monthName;
@@ -229,21 +334,8 @@ function Last7Days() {
     //  return (result.join(','));
 }
 
-linkSubscription.addEventListener("click", function(){
-    if(spanSubscribed.textContent == "Subscription Status: Active"){
-        alert("Your have already subscribed.");
-        return;
-    }
-
-    window.location.href = "subscription.html";
-})
-
-linkOfflineInvoices.addEventListener("click", function(){
-    window.location.href = "admin_view_offline_invoice.html?sellerid=" + sellerId;
-})
-
 function loadChart() {
-   // console.log("load charts function called");
+    console.log("load charts function called");
 
     var chart = new CanvasJS.Chart("chartContainer", {
         title: {
@@ -385,16 +477,13 @@ async function loadLast7DaysOrderMap() {
                             dd = '0' + dd;
                         }
                         var formattedDay = dd + "-" + getMonthNmae(mm);
-                      //  console.log("formattedDay - " + formattedDay);
 
                         var productList = ele[1];
 
                         for (var i = 0; i < productList.length; i++) {
                             var product = productList[i];
                             qty += product.Qty;
-                          //  console.log("qty - " + qty);
                             sales += product.Offer_Price * product.Qty;
-                           // console.log(sales);
                         }
                         var mapQty = mapUnits7Days.get(formattedDay);
                         mapQty += qty;
@@ -430,51 +519,6 @@ async function loadLast7DaysOrderMap() {
 }
 
 
-// function loadLast7DaysOrder() {
-
-//     console.log("now here");
-
-//     return new Promise((resolve, reject) => {
-
-//         var tomorrow = new Date();
-//         var initialDate = new Date();
-//         var today = new Date();
-//         tomorrow.setDate(today.getDate() + 1);
-//         initialDate.setDate(today.getDate() - 6);
-
-//         initialDate.setHours(0);
-//         initialDate.setMinutes(0);
-//         initialDate.setMilliseconds(0);
-//         initialDate.setSeconds(0);
-
-
-//         console.log("going to fetch last 7 days order");
-//         var query = firebase.firestore()
-//             .collection('orders')
-//             .where("seller_id", "==", sellerId)
-//             .where("order_date", ">=", initialDate)
-//             .where("order_date", "<", tomorrow)
-//             .where("cancelled", "==", false);
-
-//         query.get()
-//             .then(function (snapshot) {
-//                 console.log("docs count -" + snapshot.docs.length);
-//                 snapshot.forEach(function (doc) {
-
-//                     var order = doc.data();
-//                     ordersLast7Days.push(order);
-
-//                 })
-//             }).then(function () {
-//                 resolve();
-
-//             })
-
-//     })
-
-
-// }
-
 function loadLast7DaysOrder() {
 
     return new Promise((resolve, reject) => {
@@ -493,10 +537,9 @@ function loadLast7DaysOrder() {
 
         var query = firebase.firestore()
             .collection('orders')
-            .where("seller_id", "==", sellerId)
             .where("order_date", ">=", initialDate)
             .where("order_date", "<", tomorrow)
-            .where("cancelled", "==", false);
+            .where("cancelled", '==', false);
 
         query.get()
             .then(function (snapshot) {
@@ -517,10 +560,6 @@ function loadLast7DaysOrder() {
 
 }
 
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
 
 function loadTodayOrders() {
 
@@ -536,7 +575,6 @@ function loadTodayOrders() {
 
     var query = firebase.firestore()
         .collection('orders')
-        .where("seller_id", "==", sellerId)
         .where("order_date", ">=", today)
         .where("cancelled", "==", false);
 
@@ -547,6 +585,8 @@ function loadTodayOrders() {
                 txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
 
             }
+
+
             snapshot.forEach(function (doc) {
                 var order = doc.data();
                 fetchProductsForOrder(order, todayOrdersMap).then(() => {
@@ -560,10 +600,11 @@ function loadTodayOrders() {
 
 
                 }).then(() => {
-                    txtTodayUnits.textContent = totalOrders.toString();
-                    txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
-
+                    // txtTodayUnits.textContent = totalOrders.toString();
+                    // txtTodaySales.textContent = rupeeSymbol + numberWithCommas(totalSales);
                 })
+
+
 
             })
         })
@@ -623,11 +664,13 @@ function fetchProductsForOrder(order, orderMap) {
     })
 }
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 function loadPendingOrders() {
     var query = firebase.firestore()
         .collection('orders')
-        .where("seller_id", "==", sellerId)
         .where("Status", "==", "Order received. Seller Confirmation pending.");
 
     query.get()
@@ -646,47 +689,8 @@ function loadPendingOrders() {
 }
 
 function loadMyAccountsInfo(seller) {
-    spanPan.textContent = "PAN Card No. " + seller.pan_no;
-    spanGst.textContent = "GST No. " + seller.gstin;
-    spanMerchantid.textContent = "Merchant Id: " + seller.merchant_id;
-    spanSellingCategory.textContent = "Selling Category: " + seller.seller_category;
-    spanBankAccountNumber.textContent = "Bank Account Number : " + seller.account_no;
 
-    if (seller.subscription_end_date == null) {
-        spanSubscribed.textContent = "Subscription Status: Not Availed";
-
-    }
-    else {
-
-        var ord = seller.subscription_end_date.toDate();
-        var dd = ord.getDate();
-        var mm = ord.getMonth() + 1;
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        var yyyy = ord.getFullYear();
-        var formattedDay = dd + "-" + getMonthNmae(mm) + "-" + yyyy;
-
-        var today = new Date();
-        today.setHours(0);
-        today.setMinutes(0);
-        today.setMilliseconds(0);
-        today.setSeconds(0);
-
-        if (today > seller.subscription_end_date.toDate()) {
-            spanSubscribed.textContent = "Subscription Status: Expired";
-            spanValidTill.textContent = "Subscription Expired On: " + formattedDay;
-            spanType.textContent = "Subscription Type: " + seller.subscription_type;
-        }
-
-        else {
-            spanSubscribed.textContent = "Subscription Status: Active";
-            spanValidTill.textContent = "Subscription Valid Till: " + formattedDay;
-            spanType.textContent = "Subscription Type: " +  seller.subscription_type;
-        }
-
-    }
-
+   // spanMerchantid.textContent = "Merchant Id: " + seller.merchant_id;
     h6CompanyName.textContent = seller.company_name;
 
 }
@@ -722,19 +726,17 @@ function loadMyAccountsInfo(seller) {
 
 // }
 
-function loadSellerDetails() {
-    // console.log("loading seller details");
-    // console.log("loading seller details1");
+function loadSellerDetails(sellerid) {
     var query = firebase.firestore()
-        .collection('seller').doc(sellerId);
+        .collection('seller').doc(sellerid);
 
 
     query.get().then(function (doc) {
         // Document was found in the cache. If no cached document exists,
         // an error will be returned to the 'catch' block below.
         var seller = doc.data();
-        console.log(seller);
         imgProgress.style.display = "none";
+
         localStorage.setItem("sellerName", seller.company_name);
         localStorage.setItem("sellerAddressLine1", seller.address_line1);
         localStorage.setItem("sellerAddressLine2", seller.address_line2);
@@ -759,26 +761,17 @@ function loadSellerDetails() {
         localStorage.setItem("shop_closing_time", seller.shop_closing_time);
         localStorage.setItem("offers", seller.shop_offers);
 
-
-        if (seller.city_seller) {
-            cardCity.style.display = "block";
-        }
-        else{
-            cardCity.style.display = "none";
-        }
-
         loadMyAccountsInfo(seller);
+        
+
+        // if (seller.city_seller) {
 
         //     loadShopDetails().then(() => {
-        //         //console.log("going to show nav city");
-        //         cardCity.style.display = "block";
         //         loadMyAccountsInfo(seller);
 
         //     })
         // }
         // else {
-        //     //console.log("going to hid nav city");
-        //     cardCity.style.display = "none";
         //     loadMyAccountsInfo(seller);
         // }
 
@@ -794,6 +787,65 @@ function loadSellerDetails() {
 
 }
 
+function loadTotalSellers() {
+    firebase.firestore().collection("seller")
+        .where("status", "==", "approved")
+        .get()
+        .then(function (querySnapshot) {
+            hTotalSellers.textContent = querySnapshot.docs.length;
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
+
+function loadPendingSellers() {
+    firebase.firestore().collection("seller")
+        .where("status", "==", "pending")
+        .get()
+        .then(function (querySnapshot) {
+            hPendingSellerRequest.textContent = querySnapshot.docs.length;
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
+
+function loadPendingDoctors(){
+    firebase.firestore().collection("doctor")
+    .where("status", "==", "pending")
+    .get()
+    .then(function (querySnapshot) {
+        txtPendingDocRequest.textContent = querySnapshot.docs.length;
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+function loadPendingPharmacists(){
+    firebase.firestore().collection("pharmacist")
+    .where("status", "==", "pending")
+    .get()
+    .then(function (querySnapshot) {
+        txtPendingPharmaRequest.textContent = querySnapshot.docs.length;
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+function loadTotalUsers() {
+    firebase.firestore().collection("users")
+        .where("status", "==", "approved")
+        .get()
+        .then(function (querySnapshot) {
+            hTotalUsers.textContent = querySnapshot.docs.length;
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
 
 function loadComissionMap() {
     return new Promise((resolve, reject) => {
@@ -828,10 +880,8 @@ function loadComissionMap() {
 }
 
 
-
+var promiseList = [];
 function generatePayouts() {
-
-    var promiseList = [];
 
     loadComissionMap().then(() => {
         getUnSettledOrders().then(() => {
@@ -840,7 +890,6 @@ function generatePayouts() {
             }
             Promise.all(promiseList).then(() => {
                 calculatePayout();
-                calculateDisbursableAmount();
             })
 
 
@@ -859,7 +908,7 @@ function calculatePayout() {
 
     for (var i = 0; i < unsettledOrders.length; i++) {
         var order = unsettledOrders[i];
-        if (order.cancelled) {
+        if(order.cancelled){
             continue;
         }
         productList = unsettledOrdersProductMap.get(order.order_id);
@@ -867,7 +916,7 @@ function calculatePayout() {
             var product = productList[j];
 
             var amtToReduce = 0;
-            if (product.return_requested && product.return_processed) {
+            if(product.return_requested && product.return_processed){
                 amtToReduce = product.return_amount;
             }
 
@@ -920,133 +969,16 @@ function calculatePayout() {
     // hElecCommission.textContent = elec_commission_admin.toFixed(2);
     hPendingCODPayouts.textContent = rupeeSymbol + cod_payout_seller.toFixed(2);
     hPendingElecPayouts.textContent = rupeeSymbol + elec_payout_seller.toFixed(2);
+    
+
+    hCODCommission.textContent = deductionsCOD.toFixed(2);
+    hElecCommission.textContent = deductionsPrepaid.toFixed(2);
+    hPendingCODPayouts.textContent = cod_payout_seller.toFixed(2);
+    hPendingElecPayouts.textContent = elec_payout_seller.toFixed(2);
 
 
 
 
-}
-
-function calculateDisbursableAmount() {
-    var freezedAmount = 0;
-    var disbursableAmount = 0;
-    var arrOrders = [];
-
-
-    for (var orderNumber = 0; orderNumber < unsettledOrders.length; orderNumber++) {
-        var order = unsettledOrders[orderNumber];
-        //if order was a cancelled one.. no need to process it
-        if (order.cancelled == true) {
-            // ordersTobeSettled.set(seller.seller_id, order);
-            continue;
-        }
-        var deliveryDate = order.delivery_date;
-        var productList = unsettledOrdersProductMap.get(order.order_id);
-
-        var freezedAmountTemp = 0;
-        var freezedCommissionTemp = 0;
-        var disbursableAmountTemp = 0;
-        var availableCommissionTemp = 0;
-
-        for (var productNumber = 0; productNumber < productList.length; productNumber++) {
-
-
-            var product = productList[productNumber];
-           
-            var amtToReduce = 0;
-            if (product.return_requested && product.return_processed) {
-                amtToReduce = product.return_amount;
-            }
-            if(product.cancelled_by_seller){
-                product.Offer_Price= 0;
-            }
-            var commission = commision_map.get(product.Category);
-            var offer_price = product.Offer_Price * product.Qty;
-            offer_price = offer_price - amtToReduce;
-            var commission_value = (offer_price * commission) / 100;
-            // var seller_part = offer_price - commission_value;
-            // var admin_part = offer_price - seller_part;
-
-            //If product is not delivered yet.. it will fall in freezed category
-            if (deliveryDate == null) {
-                freezedAmountTemp += offer_price;
-                freezedCommissionTemp += commission_value;
-            }
-            else {
-                var dtDelivery = deliveryDate.toDate();
-
-                var dtCurrent = new Date();
-                var day = dtCurrent.getDate();
-                var month = dtCurrent.getMonth();
-                var year = dtCurrent.getFullYear();
-                if (month == 12) {
-                    year = dtCurrent.getFullYear() - 1;
-                }
-
-                //var dtFreezeWindowStart;
-                if (day < 16) {
-                    month = dtCurrent.getMonth() - 1;
-
-                    dtFreezeWindowStart = new Date(year, month, 16);
-                    //   dtFreezeWindowEnd = new Date(year, month, numberofDays);
-                }
-                else {
-                    month = dtCurrent.getMonth();
-                    year = dtCurrent.getFullYear();
-                    //jaise hi 16 tarikh aayegi freezing window current month ki 1 tarikh se start ho jayegi
-                    //aur ussey pehle ke sabhi orders available me aa jayege
-                    dtFreezeWindowStart = new Date(year, month, 1);
-                    console.log(month, year);
-                    var numberofDays = getDaysInMonth(month, year);
-                    console.log(numberofDays);
-                    //if this is last day of the month move the orders from 1 to 15 in available range
-                    if (day == numberofDays) {
-                        dtFreezeWindowStart = new Date(year, month, 16);
-                    }
-                }
-
-                //All the orders that were delivered before freezing window started will be available for disbursement
-               // console.log("Delivery date - " + dtDelivery);
-               // console.log("Freezing window start date - " + dtFreezeWindowStart);
-                if (dtDelivery < dtFreezeWindowStart) {
-                    disbursableAmountTemp += offer_price;
-                    availableCommissionTemp += commission_value;
-                    arrOrders.push(order);
-
-                }
-                else {
-                    freezedAmountTemp += offer_price;
-                    freezedCommissionTemp += commission_value;
-                }
-
-
-            }
-
-        }
-
-        var tradeChargesFreezed = 28;
-        var tradeChargesAvailable = 28;
-
-        if(freezedAmountTemp == 0){
-            tradeChargesFreezed = 0;
-        }
-
-        if(disbursableAmountTemp == 0){
-            tradeChargesAvailable = 0;
-        }
-       
-        var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
-        var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
-        var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
-        freezedAmount += freezedAmountTemp - freezedDeductions;
-
-        var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
-        var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
-        var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
-        disbursableAmount += disbursableAmountTemp - disbursableDeductions;
-    }
-
-    hFreezed.textContent = rupeeSymbol + freezedAmount.toFixed(2);
-    hDisbursable.textContent = rupeeSymbol + disbursableAmount.toFixed(2);
 }
 
 function getPayouts() {
@@ -1069,7 +1001,6 @@ function getUnSettledOrders() {
 
         firebase.firestore().collection("orders")
             .where("settlement_done", "==", false)
-            .where("seller_id", "==", sellerId)
             .get()
             .then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
@@ -1096,33 +1027,8 @@ function mapProductsAgainstOrder(order) {
                     productList.push(product);
                 })
             }).then(() => {
-
+               
                 unsettledOrdersProductMap.set(order.order_id, productList);
-                resolve();
-            })
-            .catch(function (error) {
-                console.log("Error getting documents: ", error);
-                reject();
-            });
-
-    })
-}
-
-function mapCurrentMonthsProductAgainstOrder(order) {
-
-    return new Promise((resolve, reject) => {
-        var productList = [];
-        firebase.firestore().collection("orders").doc(order.order_id).collection("products")
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    var product = doc.data();
-                    productList.push(product);
-                })
-            }).then(() => {
-
-                currentMonthOrdersProductMap.set(order.order_id, productList);
-                console.log("resolving prdouct list");
                 resolve();
             })
             .catch(function (error) {
@@ -1172,7 +1078,6 @@ function getThisMonthOrders() {
 
         var query = firebase.firestore()
             .collection('orders')
-            .where("seller_id", "==", sellerId)
             .where("order_date", ">=", firstDay)
             .where("order_date", "<=", lastDay)
             .where("cancelled", "==", false);
@@ -1220,24 +1125,62 @@ function getAmountForMonth() {
     hSalesThisMonth.textContent = rupeeSymbol + finalAmount.toFixed(2);
 }
 
+
+function mapCurrentMonthsProductAgainstOrder(order) {
+
+    return new Promise((resolve, reject) => {
+        var productList = [];
+        firebase.firestore().collection("orders").doc(order.order_id).collection("products")
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    var product = doc.data();
+                    productList.push(product);
+                })
+            }).then(() => {
+
+                currentMonthOrdersProductMap.set(order.order_id, productList);
+                console.log("resolving prdouct list");
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+    })
+}
+
+function getPendingProducts(){
+    firebase.firestore().collection("products")
+        .where("status", "==", "pending")
+        .get()
+        .then(function (querySnapshot) {
+            hPendingApprovalProducts.textContent = querySnapshot.docs.length;
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
+
 var enquiryCount = 0;
 function getActiveEnquiries(){
 
         var enquires = [];
         firebase.firestore().collection("offline_requests")
-        .where("seller_id", "==", sellerId)
         .where("status_code", "==", 0)
             .get()
             .then(function (querySnapshot) {
-                 console.log("doc length =" + querySnapshot.docs.length);
-                 enquiryCount = querySnapshot.docs.length;
+                enquiryCount = querySnapshot.docs.length;
             }).then(() => {
                 linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";
             })
             .catch(function (error) {
                 console.log("Error getting documents: ", error);
-               // reject();
+                reject();
             });
 
 }
+
+
 

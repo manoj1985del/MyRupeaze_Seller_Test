@@ -2,6 +2,8 @@ var txtEmail = document.getElementById("txtEmail");
 var txtPassword = document.getElementById("txtPassword");
 var txtConfimrPassword = document.getElementById("txtConfirmPassword");
 var btnSubmit = document.getElementById("btnSubmit");
+var userType = document.getElementById("user_type");
+var selectedUserType = null;
 
 btnSubmit.addEventListener("click", registerUser);
 
@@ -16,9 +18,21 @@ firebase.auth().onAuthStateChanged(function (user) {
         var uid = user.uid;
         var providerData = user.providerData;
 
+        selectedUserType =  userType.options[userType.selectedIndex].value;
         localStorage.setItem("sellerEmail", email);
-        window.location.href = "RegisterUser.html?sellerid=" + uid;
-
+        if(selectedUserType == "seller"){
+            window.location.href = "RegisterUser.html?sellerid=" + uid;
+        }
+        else if(selectedUserType == "doctor"){
+            window.location.href = "registerDoctor.html?sellerid=" + uid;
+            console.log("doctor registration");
+        }
+        else if(selectedUserType == "pharmacist"){
+            console.log("inside pharmacist user");
+            window.location.href = "registerPharmacist.html?sellerid=" + uid;
+            console.log("pharmacist registration");
+        }
+       
         // ...
     } else {
         // User is signed out.

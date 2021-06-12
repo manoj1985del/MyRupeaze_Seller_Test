@@ -1,6 +1,6 @@
 
 
-localStorage.clear();
+//localStorage.clear();
 
 var rupeeSymbol = "₹ ";
 
@@ -62,6 +62,7 @@ var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsP
 var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
+
 localStorage.setItem("adminLogin", "true");
 
 var todayOrdersMap = new Map();
@@ -71,11 +72,16 @@ var last7DayOrderMap = new Map();
 var sellerId = getQueryVariable("sellerid");
 localStorage.setItem("sellerid", sellerId);
 
+
 var cod_payout_seller = 0;
 var elec_payout_seller = 0;
 var cod_commission_admin = 0;
 var elec_commission_admin = 0;
 
+var btnViewMedicalDashboard = document.getElementById("btnViewMedicalDashboard"); 
+btnViewMedicalDashboard.addEventListener("click", function () {
+    window.location.href = "admin_home_medical.html?sellerid="+sellerId;
+});
 
 
 Last7Days();
@@ -84,6 +90,7 @@ loadSellerDetails(sellerId);
 loadTotalSellers();
 loadTotalUsers();
 loadPendingSellers();
+
 loadPendingOrders();
 loadTodayOrders();
 getActiveEnquiries();
@@ -179,6 +186,7 @@ cardPendingSellerRequest.addEventListener("mouseleave", function () {
 cardPendingSellerRequest.addEventListener("click", function () {
     window.location.href = "admin_seller_listing.html?type=pending";
 });
+
 
 //total users
 cardTotalUsers.addEventListener("mouseenter", function () {
@@ -685,6 +693,7 @@ function loadMyAccountsInfo(seller) {
 // }
 
 function loadSellerDetails(sellerid) {
+    console.log("id"+sellerid);
     var query = firebase.firestore()
         .collection('seller').doc(sellerid);
 
@@ -768,6 +777,7 @@ function loadPendingSellers() {
             console.log("Error getting documents: ", error);
         });
 }
+
 
 function loadTotalUsers() {
     firebase.firestore().collection("users")

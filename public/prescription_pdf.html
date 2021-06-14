@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Prescription</title>
+    <link rel="icon" href="img_logo.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="pdf.css" />
+    <script src="common.js"></script>
+    <script src="prescription_pdf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+    <style>
+        .myBorder {
+            border: 2px black solid;
+            background-color: pink;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="divProgress">
+
+
+        <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+            style="width: 100%; height: 500px;">
+            <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
+            <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+
+        </div>
+    </div>
+
+    <div class="container d-flex justify-content-center mt-50 mb-50" >
+
+        <div class="row" id="divContent" style="display: none;">
+
+            <div class="col-md-12 text-right mb-3">
+                <button class="btn btn-primary" id="download">Download PDF</button>
+            </div>
+
+            <div class="col-md-12">
+
+                <div class="card" id="consultation">
+ 
+                    <div class="card-header bg-transparent header-elements-inline" >
+                    <div class="text-left">
+                        <h6 class="card-title text-primary">My Rupeaze - Swasthya</h6>
+                        <img src="img_logo.png" />
+                    </div>
+                       
+                        <div class="text-sm-right">
+                            <h5 class="text-sm-right mb-2 mt-md-2" id="txtDoctorName"></h5>
+                            <ul class="list list-unstyled mb-0">
+                                <li><span class="font-weight-semibold" id="txtDoctorDegree"></span></li>
+                                <li><span class="font-weight-semibold" id="txtDoctorAddress"></span></li>
+                            </ul>
+                        </div>                   
+                     </div>
+                     
+                     <div class="card-header bg-transparent header-elements-inline" >
+                        <div class="text-left">
+                            <h6 class="text-left mb-2 mt-md-2" id="txtPatientName"> </h6>
+                            <h6 class="text-left mb-2 mt-md-2" id="txtPatientDetails"></h6>
+                        </div>  
+                        <div class="text-sm-right">
+                            <h6 class="text-right mb-2 mt-md-2" id="txtConsultationDate"> </h6>
+                            <h6 class="text-right mb-2 mt-md-2" id="txtConsultationId"></h6>
+                        </div>                   
+                     </div>
+
+                     <div class="card-header bg-transparent" >
+                        <div class="text-left">
+                            <h6 class="text-muted mb-2 mt-md-2">CHIEF COMPLAINTS</h6>
+                            <h6 class="text-muted mb-2 mt-md-2" id="txtComplaints1"></h6>
+                            <h6 class="text-muted mb-2 mt-md-2" id="txtComplaints2"> </h6>
+                        </div>   
+                         <div class="text-left">
+                            <h6 class="text-muted mb-2 mt-md-4">PROVISIONAL DIAGONISIS </h6>
+                            <h6 class="text-muted mb-2 mt-md-2" id="txtDiagonosis"> </h6>
+                        </div>                               
+                     </div>
+
+                     <div class="table-responsive">
+                        <table id="tblMedicine" class="table table-lg">
+                    
+                        </table>
+                    </div>
+
+
+                    <div class="card-header bg-transparent" >
+                        <div class="text-left">
+                            <h6 class="text-muted mb-2 mt-md-2">GENERAL ADVICE/NOTES </h6>
+                        </div>   
+                         <div class="text-left">
+                            <h6 class="text-muted mb-2 mt-md-2" id="txtAdvice"></h6>
+                            <h6 class="text-muted mb-2 mt-md-4" id="txtFollowUp"></h6>
+                        </div>                               
+                     </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    
+      <!-- The core Firebase JS SDK is always required and must be listed first -->
+      <script src="/__/firebase/7.15.5/firebase-app.js"></script>
+    
+      <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+      <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+      <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+      <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+      <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+    
+      <!-- TODO: Add SDKs for Firebase products that you want to use
+               https://firebase.google.com/docs/web/setup#available-libraries -->
+      <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+    
+      <!-- Initialize Firebase -->
+      <script src="/__/firebase/init.js"></script>
+      <script type="text/javascript" src="common.js"></script>
+      <script type="text/javascript" src="prescription_pdf.js"></script>
+</body>
+
+</html>

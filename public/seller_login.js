@@ -163,6 +163,9 @@ function checkIfUserExist(uid, selectedUserType) {
                 {
                  window.location.href = "pharmacist_home.html?sellerid=" + uid;
                 }
+                else if(selectedUserType == "doctor"){
+                    window.location.href = "doctor_home.html?sellerid=" + uid;  
+                }
                 else{
                  window.location.href = "home.html?sellerid=" + uid;
                 }

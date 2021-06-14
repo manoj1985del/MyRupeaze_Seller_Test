@@ -19,7 +19,7 @@ var admin = false;
 if (adm == "1") {
     admin = true;
 }
-
+console.log(admin);
 getSellerDetails();
 getEnquiries();
 

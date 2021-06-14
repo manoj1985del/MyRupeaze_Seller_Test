@@ -14,6 +14,9 @@ if (btnHome != null) {
         if(userType == "pharmacist"){
             window.location.href = "pharmacist_home.html?sellerid=" + sellerid;
         }
+        else if(userType == "doctor"){
+            window.location.href = "doctor_home.html?sellerid=" + sellerid;
+        }
         else
         {
             if (adminLogin == null) {

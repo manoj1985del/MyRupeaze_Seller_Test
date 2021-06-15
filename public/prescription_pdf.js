@@ -73,9 +73,9 @@ function loadConsultation(){
     txtDoctorDegree.textContent = doctor.speciality[0] + " " + doctor.degrees[0]; 
     txtDoctorAddress.textContent = doctor.address_line1 + ", " + doctor.address_line2 + ", " + doctor.address_line3 + ", " + doctor.city + ", "
     + doctor.state;
-    txtPatientName.textContent = consultation.customer_name;
+    txtPatientName.textContent = "Patient Name: " +  consultation.customer_name;
     txtPatientDetails.textContent = consultation.customer_age + " years, " + consultation.customer_gender;
-    txtConsultationDate.textContent = "Consultation Date: " + consultation.consultation_date;
+    txtConsultationDate.textContent = "Date: " + consultation.consultation_date;
     txtConsultationId.textContent = "Consultation Id: " + consultation.consultation_id;
     txtComplaints1.textContent = consultation.complaint1;
     txtComplaints2.textContent = consultation.complaint2;

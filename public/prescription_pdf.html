@@ -16,13 +16,25 @@
 
     <style>
         .myBorder {
-            border: 2px black solid;
-            background-color: pink;
+            border: 2px #28318c solid;
+            background-color: #28318c;
         }
     </style>
+
+   <style>
+       .textColorWhite{
+           color: white;
+       }
+   </style>
+
+   <style>
+       .backColor{
+           background-color: #dce6e8;
+       }
+   </style>
 </head>
 
-<body>
+<body style="width: 100%;">
 
     <div id="divProgress">
 
@@ -37,7 +49,7 @@
 
     <div class="container d-flex justify-content-center mt-50 mb-50" >
 
-        <div class="row" id="divContent" style="display: none;">
+        <div class="row justify-content-center" id="divContent" style="display: none;">
 
             <div class="col-md-12 text-right mb-3">
                 <button class="btn btn-primary" id="download">Download PDF</button>
@@ -47,13 +59,13 @@
 
                 <div class="card" id="consultation">
  
-                    <div class="card-header bg-transparent header-elements-inline" >
+                    <div class="card-header header-elements-inline myBorder" >
                     <div class="text-left">
-                        <h6 class="card-title text-primary">My Rupeaze - Swasthya</h6>
-                        <img src="img_logo.png" />
+                        <!-- <h6 class="card-title text-primary">My Rupeaze - Swasthya</h6> -->
+                        <img src="myrupeaze_practo.jpg" />
                     </div>
                        
-                        <div class="text-sm-right">
+                        <div class="text-sm-right textColorWhite">
                             <h5 class="text-sm-right mb-2 mt-md-2" id="txtDoctorName"></h5>
                             <ul class="list list-unstyled mb-0">
                                 <li><span class="font-weight-semibold" id="txtDoctorDegree"></span></li>

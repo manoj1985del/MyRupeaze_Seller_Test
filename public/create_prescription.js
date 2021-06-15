@@ -376,7 +376,7 @@ function submitResponse() {
         advices: advices,
         diagonosis: txtDiagonosis.value,
         followUp: txtFollowUp.value,
-        prescription_generated: true
+        status: "completed"
     })
         .then(function () {
             alert("Details saved successfully");

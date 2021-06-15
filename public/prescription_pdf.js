@@ -14,10 +14,14 @@ var txtPatientName = document.getElementById("txtPatientName");
 var txtPatientDetails = document.getElementById("txtPatientDetails");
 var txtConsultationDate = document.getElementById("txtConsultationDate");
 var txtConsultationId = document.getElementById("txtConsultationId");
-var txtComplaints1 = document.getElementById("txtComplaints1");
-var txtComplaints2 = document.getElementById("txtComplaints2");
+var ulChiefComplaints = document.getElementById('ulChiefComplaints');
+
+// var txtComplaints1 = document.getElementById("txtComplaints1");
+// var txtComplaints2 = document.getElementById("txtComplaints2");
+
 var txtDiagonosis = document.getElementById("txtDiagonosis");
-var txtAdvice = document.getElementById("txtAdvice");
+//var txtAdvice = document.getElementById("txtAdvice");
+var liAdvice = document.getElementById('liAdvice');
 var txtFollowUp = document.getElementById("txtFollowUp");
 
 var table = document.getElementById("tblMedicine");
@@ -77,11 +81,35 @@ function loadConsultation(){
     txtPatientDetails.textContent = consultation.customer_age + " years, " + consultation.customer_gender;
     txtConsultationDate.textContent = "Date: " + consultation.consultation_date;
     txtConsultationId.textContent = "Consultation Id: " + consultation.consultation_id;
-    txtComplaints1.textContent = consultation.complaint1;
-    txtComplaints2.textContent = consultation.complaint2;
-    txtDiagonosis.textContent = consultation.diagonosis;
-    txtAdvice.textContent = consultation.advice;
-    txtFollowUp.textContent = consultation.followUp;
+    var arrComplaints = consultation.chief_complaints;
+    if(arrComplaints != null){
+      for(var i = 0; i < arrComplaints.length; i++){
+        var li = document.createElement('li');
+        li.innerHTML = arrComplaints[i];
+        ulChiefComplaints.appendChild(li);
+      }
+    }
+    // txtComplaints1.textContent = consultation.complaint1;
+    // txtComplaints2.textContent = consultation.complaint2;
+    txtDiagonosis.innerHTML = consultation.diagonosis;
+    txtDiagonosis.style.fontSize = "13px";
+    txtDiagonosis.style.fontStyle = "bold";
+    var adviceList = consultation.advices;
+    if(adviceList != null){
+      for(var i = 0; i < adviceList.length; i++){
+        var advice = adviceList[i];
+        var li = document.createElement('li');
+        li.innerHTML = advice;
+        liAdvice.appendChild(li); 
+      }
+    }
+    if(consultation.followUp == null){
+      consultation.followUp = "No follow up advised";
+    }
+    else{
+      txtFollowUp.textContent = consultation.followUp;
+    }
+    
 
     var tHead = document.createElement("thead");
     var tr = document.createElement("tr");
@@ -143,7 +171,7 @@ function loadConsultation(){
         //Days
         var divDays = document.createElement('div');
         var spanDays = document.createElement('span');
-        spanDays.textContent = consultation.medicine_days;
+        spanDays.textContent = consultation.medicine_days[i];
         divDays.appendChild(spanDays);
         tdDays.appendChild(divDays);
 

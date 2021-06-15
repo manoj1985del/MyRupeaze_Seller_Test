@@ -503,7 +503,8 @@ function createTable() {
         //5. Delivery Complete
 
         //estimate can be prepared only for pending enquiries..
-        if(enquiry.statusCode == 0){
+        if(enquiry.status_code == 0){
+            console.log("showing prepare estimate");
             divPrepareEstimate.style.display = "block";
         }
         else{

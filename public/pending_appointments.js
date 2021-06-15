@@ -291,12 +291,23 @@ function createTable() {
             var btnPrescribeMedicines = document.createElement("button");
             divPrescribeMedicines.style.marginTop = "10px";
             btnPrescribeMedicines.style.width = "200px";
-            btnPrescribeMedicines.textContent = "Generate Prescription";
+            btnPrescribeMedicines.textContent = "View Prescription";
             btnPrescribeMedicines.setAttribute("id", consultation.consultation_id);
             btnPrescribeMedicines.setAttribute("type", "button");
             divPrescribeMedicines.appendChild(btnPrescribeMedicines);
             divAction.appendChild(divPrescribeMedicines);
             tdAction.appendChild(divAction);
+
+            var divCreatePrescription = document.createElement('div');
+            var btnCreatePrescription = document.createElement("button");
+            divCreatePrescription.style.marginTop = "10px";
+            btnCreatePrescription.style.width = "200px";
+            btnCreatePrescription.textContent = "Create Prescription";
+            btnCreatePrescription.setAttribute("id", consultation.consultation_id);
+            btnCreatePrescription.setAttribute("type", "button");
+            divCreatePrescription.appendChild(btnCreatePrescription);
+            divAction.appendChild(divCreatePrescription);
+
         }
        
 
@@ -336,6 +347,10 @@ function createTable() {
         else if(mType == "completed"){
             btnPrescribeMedicines.addEventListener("click", function(){
                 window.location.href = "prescription_pdf.html?consultation_id=" + consultation.consultation_id;
+            })
+
+            btnCreatePrescription.addEventListener("click", function(){
+                window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
             })
         }
 

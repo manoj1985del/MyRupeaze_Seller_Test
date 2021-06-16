@@ -288,7 +288,7 @@ function createTable() {
             divPrescriptionDetails.appendChild(prescription);
             tdProductDetails.appendChild(divPrescriptionDetails);
         }
-        else if (enquiry.prescription_type == "text") {
+        else if (enquiry.prescription_type == "text" || enquiry.prescription_type == "by_consultation") {
             var divProductDetails = document.createElement('div');
             var spanProductDetails = document.createElement('span');
 
@@ -305,6 +305,8 @@ function createTable() {
             divProductDetails.appendChild(spanProductDetails);
             tdProductDetails.appendChild(divProductDetails);
         }
+
+
         //Product Details
 
 

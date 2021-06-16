@@ -114,7 +114,7 @@ function createTable() {
         divSNo.appendChild(spanSNo);
         tdSNo.appendChild(divSNo);
 
-        if(enquiry.prescription_type == "text"){
+        if(enquiry.prescription_type == "text" || enquiry.prescription_type == "by_consultation"){
 
             var divProductName = document.createElement('div');
             var spanProductName = document.createElement('span');

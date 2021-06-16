@@ -102,6 +102,8 @@ loadTodayAppointments();
 // //approved by customer enquiries
 // loadEnquiries(3);
 
+//loadLast7DaysPharmacyEnquiries();
+
 loadLast7DaysOrder().then(() => {
     loadLast7DaysPharmacyEnquiries().then(() => {
         // console.log("orders finally fetched");
@@ -393,7 +395,7 @@ function loadUnitsChart() {
         data: {
             labels: arrLast7Days,
             datasets: [{
-                label: 'Weekly Units',
+                label: 'Weekly Consultations',
                 data: last7DayUnits,
                 backgroundColor: [
                     'rgba(255, 99, 132, 1)',
@@ -443,7 +445,7 @@ function loadLast7DaysPharmacyEnquiries() {
             var order = ordersLast7Days[i];
             console.log(order);
 
-            var orderDate = order.invoice_timestamp.toDate();
+            var orderDate = order.timestamp.toDate();
             var dd = orderDate.getDate();
             var mm = orderDate.getMonth() + 1;
             if (dd < 10) {
@@ -451,11 +453,14 @@ function loadLast7DaysPharmacyEnquiries() {
             }
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
-            for (var i = 0; i < order.product_names.length; i++) {
-                qty += order.product_qty[i];
-                sales += order.product_prices_total[i];
+            qty += 1;
+            sales += mSeller.charges;
 
-            }
+            // for (var i = 0; i < order.product_names.length; i++) {
+            //     qty += order.product_qty[i];
+            //     sales += order.product_prices_total[i];
+
+            // }
 
             var mapQty = mapUnits7Days.get(formattedDay);
             mapQty += qty;
@@ -621,18 +626,18 @@ function loadLast7DaysOrder() {
 
 
         var query = firebase.firestore()
-            .collection('pharmacist_requests')
+            .collection('consultations')
             .where("seller_id", "==", sellerId)
-            .where("invoice_timestamp", ">=", initialDate)
-            .where("invoice_timestamp", "<", tomorrow)
+            .where("timestamp", ">=", initialDate)
+            .where("timestamp", "<", tomorrow)
             .where("cancelled", "==", false);
 
         query.get()
             .then(function (snapshot) {
                 snapshot.forEach(function (doc) {
 
-                    var order = doc.data();
-                    ordersLast7Days.push(order);
+                    var consultation = doc.data();
+                    ordersLast7Days.push(consultation);
 
                 })
             }).then(function () {

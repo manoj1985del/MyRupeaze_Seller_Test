@@ -35,7 +35,7 @@ var pendingAppointments = [];
 var todayOrders = [];
 var ordersLast7Days = [];
 var todayUnits = 0;
-var txtPendingOrder = document.getElementById("txtPendingOrders");
+var txtConsultationsRxedToday = document.getElementById("txtConsultationsRxedToday");
 var txtTodayAppointments = document.getElementById("txtTodayAppointments");
 var hSalesToday = document.getElementById("hSalesToday");
 
@@ -74,17 +74,20 @@ var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
 
+var mSeller = null;
 
 var sellerId = getQueryVariable("sellerid");
 localStorage.setItem("sellerid", sellerId);
 
 localStorage.setItem("userType", "doctor");
 
+getSellerDetails().then(()=>{
 
+    Last7Days();
+//loadSellerDetails();
+imgProgress.style.display = "none";
+loadMyAccountsInfo(mSeller);
 
-Last7Days();
-loadSellerDetails();
-loadPendingOrders();
 loadTodayOrders();
 generatePayouts();
 getActiveEnquiries();
@@ -113,6 +116,10 @@ loadUnitsChart();
 getThisMonthOrders().then(()=>{
     getAmountForMonthForEnquiries();
 })
+
+})
+
+
 
 // getThisMonthOrders().then(()=>{
 //     console.log(currentMonthOrders);
@@ -206,7 +213,7 @@ cardTodayAppointment.addEventListener("mouseleave", function () {
 });
 
 cardTodayAppointment.addEventListener("click", function () {
-    window.location.href = "today_appointments.html";
+    window.location.href = "pending_appointments.html?type=today";
 });
 
 btnUpdate.addEventListener("click", function () {
@@ -688,9 +695,9 @@ function loadTodayOrders() {
 
 
     var query = firebase.firestore()
-        .collection('pharmacist_requests')
+        .collection('consultations')
         .where("seller_id", "==", sellerId)
-        .where("invoice_timestamp", ">=", today)
+        .where("timestamp", ">=", today)
         .where("cancelled", "==", false);
 
     query.get()
@@ -701,34 +708,17 @@ function loadTodayOrders() {
 
             }
             snapshot.forEach(function (doc) {
-                var order = doc.data();
-                for (var i = 0; i < order.product_names.length; i++) {
-                    if (order.status_code != 5) {
-                        continue;
-                    }
-
-                    totalOrders += parseFloat(order.product_qty[i]);
-                    totalSales += parseFloat(order.product_prices_total[i]);
-                }
-                hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
-                //txtTodayUnits.textContent = totalOrders.toString();
-                // fetchProductsForOrder(order, todayOrdersMap).then(() => {
-                //     var productList = todayOrdersMap.get(order.order_id);
-
-                //     for (var i = 0; i < productList.length; i++) {
-                //         var product = productList[i];
-                //         totalSales += product.Offer_Price * product.Qty;
-                //         totalOrders += product.Qty;
-                //     }
-
-
-                // }).then(() => {
-                //     txtTodayUnits.textContent = totalOrders.toString();
-                //     hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
-
-                // })
+                var consultation = doc.data();
+               
+                totalSales += parseFloat(mSeller.charges);
+                console.log('sales = ' + totalSales);
+                totalOrders += 1;
+               
 
             })
+
+            hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+            txtConsultationsRxedToday.textContent = totalOrders;
         })
         .catch(function (error) {
             console.log("Error getting documents: ", error);
@@ -816,26 +806,7 @@ function fetchProductsForOrder(order, orderMap) {
 // }
 
 
-function loadPendingOrders() {
-    var query = firebase.firestore()
-        .collection('orders')
-        .where("seller_id", "==", sellerId)
-        .where("Status", "==", "Order received. Seller Confirmation pending.");
 
-    query.get()
-        .then(function (snapshot) {
-            snapshot.forEach(function (doc) {
-
-                var data = toQueryString(doc.data());
-                pendingOrders.push(data);
-            })
-        }).then(function () {
-            txtPendingOrder.textContent = pendingOrders.length.toString();
-
-        }).catch(function (error) {
-            console.log("Error getting documents: ", error);
-        });
-}
 
 function loadingPendingAppointments(){ 
     var appointments = [];
@@ -1003,7 +974,7 @@ function loadSellerDetails() {
             cardCity.style.display = "none";
         }
 
-        loadMyAccountsInfo(seller);
+        loadMyAccountsInfo(mSeller);
 
         //     loadShopDetails().then(() => {
         //         //console.log("going to show nav city");
@@ -1469,4 +1440,33 @@ function getActiveEnquiries() {
         });
 
 }
+
+
+function getSellerDetails() {
+    return new Promise((resolve, reject) =>{
+
+        var docRef = firebase.firestore().collection("doctor").doc(sellerId);
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mSeller = doc.data();
+                resolve();
+            } else {
+                mSeller = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                reject();
+    
+            }
+        }).catch(function (error) {
+            mSeller = null;
+            console.log("Error getting document:", error);
+            reject();
+        });
+
+    })
+   
+}
+
+
+
 

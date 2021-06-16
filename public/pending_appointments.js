@@ -49,12 +49,12 @@ function getEnquiries() {
             
         }
 
-        if(mType == "today_completed"){
+        if(mType == "today"){
             var query = firebase.firestore()
             .collection('consultations')
             .where("seller_id", "==", sellerId)
-            .where("invoice_timestamp", ">=", today)
-            .where("cancelled", "==", false);
+            .where("timestamp", ">=", today)
+            .orderBy('timestamp', 'desc');
         }
 
         if (mType == "all") {
@@ -81,13 +81,14 @@ function getEnquiries() {
 
         }
 
-        if(mType == "today_completed"){
+        if(mType == "today"){
             var query = firebase.firestore()
             .collection('consultations')
-            .where("invoice_timestamp", ">=", today)
-            .where("cancelled", "==", false);
+            .where("seller_id", "==", sellerId)
+            .where("timestamp", ">=", today)
+            .orderBy('timestamp', 'desc');
         }
-
+        
         if (mType == "all") {
             query = firebase.firestore().collection("consultations")
                 .orderBy('timestamp', 'desc');
@@ -276,13 +277,13 @@ function createTable() {
             tdAction.appendChild(divAction);
     
             var divRejectConsultation = document.createElement('div');
-            var btnReject = document.createElement("button");
-            btnReject.style.marginTop = "10px";
-            btnReject.style.width = "150px";
-            btnReject.textContent = "Reject";
-            btnReject.setAttribute("id", consultation.consultation_id);
-            btnReject.setAttribute("type", "button");
-            divRejectConsultation.appendChild(btnReject);
+            var btnCancelAppointment = document.createElement("button");
+            btnCancelAppointment.style.marginTop = "10px";
+            btnCancelAppointment.style.width = "150px";
+            btnCancelAppointment.textContent = "Cancel Appointment";
+            btnCancelAppointment.setAttribute("id", consultation.consultation_id);
+            btnCancelAppointment.setAttribute("type", "button");
+            divRejectConsultation.appendChild(btnCancelAppointment);
             divAction.appendChild(divRejectConsultation);
         }
 
@@ -338,8 +339,8 @@ function createTable() {
                 acceptConsultation(this.id);
             })
     
-            btnReject.addEventListener("click", function(){
-                rejectConsultation(this.id);
+            btnCancelAppointment.addEventListener("click", function(){
+                cancelAppointment(this.id);
             })
 
         }
@@ -377,14 +378,15 @@ function acceptConsultation(docId) {
 }
 
 
-function rejectConsultation(docId) {
+function cancelAppointment(docId) {
 
     var consultationRef = firebase.firestore().collection("consultations").doc(docId);
     consultationRef.update({
-        status: "rejected"
+        status: "cancelled",
+        cancelled: true
     })
         .then(function () {
-            alert("Appointment has ben rejected by you!!");
+            alert("Appointment has ben cancelled by you!!");
             window.location.href = "pending_appointments.html?type=" + mType;
         })
         .catch(function (error) {

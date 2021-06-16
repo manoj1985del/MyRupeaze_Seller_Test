@@ -11,6 +11,8 @@ var newInvoiceId = null;
 var mSeller = null;
 var mRedeemPoints = 0;
 
+var todayDate;
+
 
 var adm = getQueryVariable("adm");
 var mType = getQueryVariable("type");
@@ -25,6 +27,18 @@ getEnquiries();
 function getEnquiries() {
 
     var query;
+
+    var d = new Date();
+    var dd = d.getDate();
+    var mm = d.getMonth() + 1;
+    var month = getMonthNmae(mm);
+    var yyyy = d.getFullYear().toString();
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    var yy = yyyy.slice(-2);
+    todayDate = dd + '-' + month + '-' + yy;
+
     var today = new Date();
     today.setHours(0);
     today.setMinutes(0);
@@ -53,9 +67,25 @@ function getEnquiries() {
             var query = firebase.firestore()
             .collection('consultations')
             .where("seller_id", "==", sellerId)
+            .where("consultation_date", "==", todayDate)
+        }
+
+        if(mType == "receivedToday"){
+            var query = firebase.firestore()
+            .collection('consultations')
+            .where("seller_id", "==", sellerId)
             .where("timestamp", ">=", today)
             .orderBy('timestamp', 'desc');
         }
+
+        if(mType == "approved"){
+            var query = firebase.firestore()
+            .collection('consultations')
+            .where("seller_id", "==", sellerId)
+            .where("status", "==", "approved")
+            .orderBy('timestamp', 'desc');
+        }
+
 
         if (mType == "all") {
             query = firebase.firestore().collection("consultations")
@@ -85,7 +115,22 @@ function getEnquiries() {
             var query = firebase.firestore()
             .collection('consultations')
             .where("seller_id", "==", sellerId)
+            .where("consultation_date", "==", todayDate)
+        }
+
+        if(mType == "receivedToday"){
+            var query = firebase.firestore()
+            .collection('consultations')
+            .where("seller_id", "==", sellerId)
             .where("timestamp", ">=", today)
+            .orderBy('timestamp', 'desc');
+        }
+
+        if(mType == "approved"){
+            var query = firebase.firestore()
+            .collection('consultations')
+            .where("seller_id", "==", sellerId)
+            .where("status", "==", "approved")
             .orderBy('timestamp', 'desc');
         }
         
@@ -299,6 +344,59 @@ function createTable() {
             divAction.appendChild(divPrescribeMedicines);
             tdAction.appendChild(divAction);
 
+
+        }
+
+        else if(mType == "today" || mType == "receivedToday" || mType == "all"){
+            if(consultation.status == "pending"){
+                var divAcceptConsultation = document.createElement('div');
+                var btnAccept = document.createElement("button");
+                divAcceptConsultation.style.marginTop = "10px";
+                btnAccept.style.width = "150px";
+                btnAccept.textContent = "Accept";
+                btnAccept.setAttribute("id", consultation.consultation_id);
+                btnAccept.setAttribute("type", "button");
+                divAcceptConsultation.appendChild(btnAccept);
+                divAction.appendChild(divAcceptConsultation);
+                tdAction.appendChild(divAction);
+        
+                var divRejectConsultation = document.createElement('div');
+                var btnCancelAppointment = document.createElement("button");
+                btnCancelAppointment.style.marginTop = "10px";
+                btnCancelAppointment.style.width = "150px";
+                btnCancelAppointment.textContent = "Cancel Appointment";
+                btnCancelAppointment.setAttribute("id", consultation.consultation_id);
+                btnCancelAppointment.setAttribute("type", "button");
+                divRejectConsultation.appendChild(btnCancelAppointment);
+                divAction.appendChild(divRejectConsultation);
+            }
+            else if(consultation.status == "completed"){
+                var divPrescribeMedicines = document.createElement('div');
+                var btnPrescribeMedicines = document.createElement("button");
+                divPrescribeMedicines.style.marginTop = "10px";
+                btnPrescribeMedicines.style.width = "200px";
+                btnPrescribeMedicines.textContent = "View Prescription";
+                btnPrescribeMedicines.setAttribute("id", consultation.consultation_id);
+                btnPrescribeMedicines.setAttribute("type", "button");
+                divPrescribeMedicines.appendChild(btnPrescribeMedicines);
+                divAction.appendChild(divPrescribeMedicines);
+                tdAction.appendChild(divAction);
+            }
+            else if(consultation.status == "approved"){
+                var divCreatePrescription = document.createElement('div');
+                var btnCreatePrescription = document.createElement("button");
+                divCreatePrescription.style.marginTop = "10px";
+                btnCreatePrescription.style.width = "200px";
+                btnCreatePrescription.textContent = "Create Prescription";
+                btnCreatePrescription.setAttribute("id", consultation.consultation_id);
+                btnCreatePrescription.setAttribute("type", "button");
+                divCreatePrescription.appendChild(btnCreatePrescription);
+                divAction.appendChild(divCreatePrescription);
+                tdAction.appendChild(divAction);
+            }
+        }
+
+        else if(mType == "approved"){
             var divCreatePrescription = document.createElement('div');
             var btnCreatePrescription = document.createElement("button");
             divCreatePrescription.style.marginTop = "10px";
@@ -308,9 +406,8 @@ function createTable() {
             btnCreatePrescription.setAttribute("type", "button");
             divCreatePrescription.appendChild(btnCreatePrescription);
             divAction.appendChild(divCreatePrescription);
-
+            tdAction.appendChild(divAction);
         }
-       
 
         //for admin disable mark delivery or reject enquery buttons
         if (admin) {
@@ -350,11 +447,40 @@ function createTable() {
                 window.location.href = "prescription_pdf.html?consultation_id=" + consultation.consultation_id;
             })
 
-            btnCreatePrescription.addEventListener("click", function(){
-                window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
-            })
+          
         }
 
+        else if(mType == "today" || mType == "all"){
+            if(consultation.status == "pending"){
+                btnAccept.addEventListener("click", function () {
+                    acceptConsultation(this.id);
+                })
+        
+                btnCancelAppointment.addEventListener("click", function(){
+                    cancelAppointment(this.id);
+                })
+            }
+
+            else if(consultation.status == "completed"){
+                btnPrescribeMedicines.addEventListener("click", function(){
+                    window.location.href = "prescription_pdf.html?consultation_id=" + consultation.consultation_id;
+                })
+            }
+
+            else if(consultation.status == "approved"){
+                btnCreatePrescription.addEventListener("click", function(){
+                    window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
+                })
+            }
+
+        }
+
+        else if(mType == "approved"){
+            btnCreatePrescription.addEventListener("click", function(){
+               window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
+                })
+        }
+    
 
     }
 }

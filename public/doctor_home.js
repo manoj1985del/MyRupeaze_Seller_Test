@@ -35,11 +35,11 @@ var pendingAppointments = [];
 var todayOrders = [];
 var ordersLast7Days = [];
 var todayUnits = 0;
-var txtConsultationsRxedToday = document.getElementById("txtConsultationsRxedToday");
+var txtConsultationReceivedToday = document.getElementById("txtConsultationReceivedToday");
 var txtTodayAppointments = document.getElementById("txtTodayAppointments");
 var hSalesToday = document.getElementById("hSalesToday");
 
-var cardPendingOrder = document.getElementById("cardPendingOrder");
+var cardConsultationReceivedToday = document.getElementById("cardConsultationReceivedToday");
 var cardTodayAppointment = document.getElementById("cardTodayAppointment");
 var cardSalesToday = document.getElementById("cardSalesToday");
 
@@ -64,8 +64,8 @@ var cardCompletedAppointments = document.getElementById("cardCompletedAppointmen
 var hCompletedAppointments = document.getElementById("hCompletedAppointments");
 var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 
-var hApprovedByBuyer = document.getElementById("hApprovedByBuyer");
-var cardApprovedByBuyer = document.getElementById("cardApprovedByBuyer")
+var hApprovedConsultations = document.getElementById("hApprovedConsultations");
+var cardApprovedConsultations = document.getElementById("cardApprovedConsultations")
 
 var linkSubscription = document.getElementById("linkSubscription");
 var linkOfflineInvoices = document.getElementById("linkOfflineInvoices");
@@ -88,13 +88,14 @@ getSellerDetails().then(()=>{
 imgProgress.style.display = "none";
 loadMyAccountsInfo(mSeller);
 
-loadTodayOrders();
+loadConsultationReceivedToday();
 generatePayouts();
 getActiveEnquiries();
 
 loadingPendingAppointments();
 loadCompletedAppointments();
 loadTodayAppointments();
+loadApprovedConsultations();
 
 //pending enquires
 // loadEnquiries(0);
@@ -106,7 +107,6 @@ loadTodayAppointments();
 
 loadLast7DaysOrder().then(() => {
     loadLast7DaysPharmacyEnquiries().then(() => {
-        // console.log("orders finally fetched");
         console.log(last7DayOrderMap);
     })
 
@@ -163,30 +163,32 @@ cardCompletedAppointments.addEventListener("click", function () {
     window.location.href = "pending_appointments.html?type=completed";
 })
 
-//Approved by customers enquiries
+//Approved consultations
 
-cardApprovedByBuyer.addEventListener("mouseenter", function () {
-    cardApprovedByBuyer.classList.add("cardHover");
+cardApprovedConsultations.addEventListener("mouseenter", function () {
+    cardApprovedConsultations.classList.add("cardHover");
 });
 
-cardApprovedByBuyer.addEventListener("mouseleave", function () {
-    cardApprovedByBuyer.classList.remove("cardHover");
+cardApprovedConsultations.addEventListener("mouseleave", function () {
+    cardApprovedConsultations.classList.remove("cardHover");
 });
 
-cardApprovedByBuyer.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=approved";
+cardApprovedConsultations.addEventListener("click", function () {
+    window.location.href = "pending_appointments.html?type=approved";
 })
 
-cardPendingOrder.addEventListener("mouseenter", function () {
-    cardPendingOrder.classList.add("cardHover");
+//Consultation Received Today
+
+cardConsultationReceivedToday.addEventListener("mouseenter", function () {
+    cardConsultationReceivedToday.classList.add("cardHover");
 });
 
-cardPendingOrder.addEventListener("mouseleave", function () {
-    cardPendingOrder.classList.remove("cardHover");
+cardConsultationReceivedToday.addEventListener("mouseleave", function () {
+    cardConsultationReceivedToday.classList.remove("cardHover");
 });
 
-cardPendingOrder.addEventListener("click", function () {
-    window.location.href = "orders.html?type=pending";
+cardConsultationReceivedToday.addEventListener("click", function () {
+    window.location.href = "pending_appointments.html?type=receivedToday";
 })
 
 
@@ -201,7 +203,7 @@ cardSalesToday.addEventListener("mouseleave", function () {
 });
 
 cardSalesToday.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=today_completed";
+    window.location.href = "pending_appointments.html?type=receivedToday";
 });
 
 
@@ -443,7 +445,7 @@ function loadLast7DaysPharmacyEnquiries() {
 
         for (var i = 0; i < ordersLast7Days.length; i++) {
             var order = ordersLast7Days[i];
-            console.log(order);
+          
 
             var orderDate = order.timestamp.toDate();
             var dd = orderDate.getDate();
@@ -498,8 +500,7 @@ async function loadLast7DaysOrderMap() {
         var qty = 0;
         var sales = 0;
 
-        console.log("orders in last 7 days");
-        console.log(ordersLast7Days);
+       
         for (var i = 0; i < ordersLast7Days.length; i++) {
             var order = ordersLast7Days[i];
 
@@ -690,32 +691,41 @@ query.get()
 }
 
 
-function loadTodayOrders() {
+function loadConsultationReceivedToday() {
+
+    console.log("inside method");
 
     var totalOrders = 0;
     var totalSales = 0;
 
     var today = new Date();
-    console.log(today);
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setMilliseconds(0);
+    today.setSeconds(0);
 
-
-    var query = firebase.firestore()
+        var query = firebase.firestore()
         .collection('consultations')
         .where("seller_id", "==", sellerId)
         .where("timestamp", ">=", today)
-        .where("cancelled", "==", false);
+        .orderBy('timestamp', 'desc');
+
+        console.log(today);
 
     query.get()
         .then(function (snapshot) {
             if (snapshot.docs.length == 0 || snapshot.docs.length == undefined) {
                // txtTodayUnits.textContent = totalOrders.toString();
+                console.log("empty list");
                 hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
 
             }
             snapshot.forEach(function (doc) {
                 var consultation = doc.data();
+                console.log(consultation);
+
                
-                totalSales += parseFloat(mSeller.charges);
+                totalSales += parseFloat(consultation.charges);
                 console.log('sales = ' + totalSales);
                 totalOrders += 1;
                
@@ -723,7 +733,7 @@ function loadTodayOrders() {
             })
 
             hSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
-            txtConsultationsRxedToday.textContent = totalOrders;
+            txtConsultationReceivedToday.textContent = totalOrders;
         })
         .catch(function (error) {
             console.log("Error getting documents: ", error);
@@ -781,34 +791,28 @@ function fetchProductsForOrder(order, orderMap) {
     })
 }
 
-// function loadEnquiries(status_code) {
-//     var pendingEnquiries = [];
-//     var query = firebase.firestore()
-//         .collection('pharmacist_requests')
-//         .where("seller_id", "==", sellerId)
-//         .where("status_code", "==", status_code);
+function loadApprovedConsultations() {
+    var approvedConsultations = [];
+    var query = firebase.firestore()
+        .collection('consultations')
+        .where("seller_id", "==", sellerId)
+        .where("status", "==", "approved");
 
-//     query.get()
-//         .then(function (snapshot) {
-//             snapshot.forEach(function (doc) {
+    query.get()
+        .then(function (snapshot) {
+            snapshot.forEach(function (doc) {
 
-//                 var data = toQueryString(doc.data());
-//                 pendingEnquiries.push(data);
-//             })
-//         }).then(function () {
-//             if (status_code == 0) {
-//                 hPendingEnquiries.textContent = pendingEnquiries.length.toString();
-//             }
-
-//             if (status_code == 3) {
-//                 hApprovedByBuyer.textContent = pendingEnquiries.length.toString();
-//             }
+                var data = doc.data();
+                approvedConsultations.push(data);
+            })
+        }).then(function () {
+            hApprovedConsultations.textContent = approvedConsultations.length;
 
 
-//         }).catch(function (error) {
-//             console.log("Error getting documents: ", error);
-//         });
-// }
+        }).catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
 
 
 
@@ -1380,13 +1384,11 @@ function getThisMonthOrders() {
         lastDay.setSeconds(50);
 
 
-
-
         var query = firebase.firestore()
-            .collection('pharmacist_requests')
+            .collection('consultations')
             .where("seller_id", "==", sellerId)
-            .where("invoice_timestamp", ">=", firstDay)
-            .where("invoice_timestamp", "<=", lastDay)
+            .where("timestamp", ">=", firstDay)
+            .where("timestamp", "<=", lastDay)
             .where("cancelled", "==", false);
 
         query.get()
@@ -1411,16 +1413,12 @@ function getAmountForMonth() {}
 
 
 function getAmountForMonthForEnquiries() {
-    console.log("current month orders");
-    console.log(currentMonthOrders);
+
     var finalAmount = 0;
 
     for (var i = 0; i < currentMonthOrders.length; i++) {
-        var order = currentMonthOrders[i];
-
-        for (var productIndex = 0; productIndex < order.product_names.length; productIndex++) {
-            finalAmount += order.product_prices_total[productIndex];
-        }
+        var consultation = currentMonthOrders[i];
+        finalAmount += parseFloat(consultation.charges);
     }
     hSalesThisMonth.textContent = rupeeSymbol + finalAmount.toFixed(2);
 }

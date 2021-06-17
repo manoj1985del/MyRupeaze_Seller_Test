@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
   integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <link rel="stylesheet" href="myStyle.css">
+<link rel="stylesheet" href="table.css">
 </head>
 <body>
     
@@ -118,6 +119,11 @@
             <label for="txtCompanyName">Company Name (कंपनी का नाम)</label>
             <input type="text" class="form-control" id="txtCompanyName">
           </div>
+          
+        <div class="form-group">
+            <label for="txtConsultationCharges">Consultation Charges</label>
+            <input type="number" class="form-control" id="txtConsultationCharges">
+        </div>
 
         <div class="form-group">
             <label for="txtAddressLine1">Address Line 1 (पता लाइन 1)</label>
@@ -271,6 +277,15 @@
               <label for="txtClosingTime">Closing Time*</label>
               <input type="time" class="form-control" id="txtClosingTime">
             </div>
+
+
+              <div class="form-group">
+                <label for="txtConsultationSlots">Consultation Slots (HH:MM AM/PM) </label>
+                <input type="text" class="form-control" id="txtConsultationSlots">
+                <button type="button" class="btn btn-success mt-2" id="btnAddSlot">Add Slot</button>
+              </div>
+
+              <table id="slotTable"></table>
           
 
       

@@ -375,6 +375,13 @@ function createTable() {
             divCreatePrescription.style.display = "block";
         }
 
+        if(consultation.status == "cancelled"){
+            divAcceptConsultation.style.display = "none";
+            divRejectConsultation.style.display = "none";
+            divPrescribeMedicines.style.display = "none";
+            divCreatePrescription.style.display = "none";
+        }
+
         //for admin disable mark delivery or reject enquery buttons
         if (admin) {
             divAcceptConsultation.style.display = "none";

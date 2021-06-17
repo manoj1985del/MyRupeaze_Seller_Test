@@ -2,7 +2,7 @@ var divContent = document.getElementById("divContent");
 
 var sellerId = localStorage.getItem("sellerid");
 var consultation;
-var doctor;
+var seller;
 
 var divProgress = document.getElementById("divProgress");
 
@@ -56,11 +56,11 @@ function fetchConsultation(consultationId) {
           }).then(function () {
     
             var query = firebase.firestore()
-              .collection('doctor').doc(sellerId);
+              .collection('seller').doc(sellerId);
     
             query.get()
               .then(function (snapshot) {
-                   doctor = snapshot.data();
+                   seller = snapshot.data();
                     resolve();
               })
     
@@ -72,11 +72,11 @@ function fetchConsultation(consultationId) {
 function loadConsultation(){
 
   console.log(consultation);
-  console.log(doctor);
+  console.log(seller);
     txtDoctorName.textContent = "Dr " + consultation.seller_name;
-    txtDoctorDegree.textContent = doctor.speciality[0] + " " + doctor.degrees[0]; 
-    txtDoctorAddress.textContent = doctor.address_line1 + ", " + doctor.address_line2 + ", " + doctor.address_line3 + ", " + doctor.city + ", "
-    + doctor.state;
+    txtDoctorDegree.textContent = seller.speciality[0] + " " + seller.degrees[0]; 
+    txtDoctorAddress.textContent = seller.address_line1 + ", " + seller.address_line2 + ", " + seller.address_line3 + ", " + seller.city + ", "
+    + seller.state;
     txtPatientName.textContent = "Patient Name: " +  consultation.customer_name;
     txtPatientDetails.textContent = consultation.customer_age + " years, " + consultation.customer_gender;
     txtConsultationDate.textContent = "Date: " + consultation.consultation_date;

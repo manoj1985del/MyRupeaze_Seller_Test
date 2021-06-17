@@ -17,6 +17,8 @@ var arrSpecialityLabels = [];
 var degreeCheckboxes = [];
 var specialityCheckboxes = [];
 
+var consultationSlots = [];
+
 
 var txtNmae = document.getElementById("txtName");
 var txtMobile = document.getElementById("txtMobile");
@@ -25,6 +27,11 @@ var txtAddressLine1 = document.getElementById("txtAddressLine1");
 var txtAddressLine2 = document.getElementById("txtAddressLine2");
 var txtAddressLine3 = document.getElementById("txtAddressLine3");
 var txtCity = document.getElementById("txtCity");
+
+var txtConsultationSlots = document.getElementById("txtConsultationSlots");
+var txtConsultationCharges = document.getElementById("txtConsultationCharges");
+var btnAddSlot = document.getElementById("btnAddSlot");
+var slotTable = document.getElementById("slotTable");
 
 var txtPincode = document.getElementById("txtPincode");
 var txtGST = document.getElementById("txtGSTNo");
@@ -120,6 +127,7 @@ var url_Carousel_Img2 = null;
 
 var fileCarousel_Img3;
 var url_Carousel_Img3 = null;
+
 
 
 
@@ -334,6 +342,93 @@ btnUploadCancelCheque.addEventListener("click", function () {
 })
 
 
+btnAddSlot.addEventListener("click", function(){
+   if(!txtConsultationSlots.value == ""){
+      consultationSlots.push(txtConsultationSlots.value);
+      txtConsultationSlots.value = "";
+  }
+   showSlotsTable();
+})
+
+function showSlotsTable(){
+   if(!consultationSlots.length == 0){
+
+   deleteSlotsRow();
+   
+   var tHead = document.createElement("thead");
+   var tr = document.createElement("tr");
+
+   var thSNo = document.createElement("th");
+   thSNo.textContent = "S.No.";
+
+   var thSlot = document.createElement("th");
+   thSlot.textContent = "Time Slot";
+
+   var thAction = document.createElement("th");
+   thAction.textContent = "Action";
+ 
+   tr.appendChild(thSNo);
+   tr.appendChild(thSlot);
+   tr.appendChild(thAction);
+
+   tHead.appendChild(tr);
+   slotTable.appendChild(tHead);
+
+   for (var i = 0; i < consultationSlots.length; i++) {
+
+       var tr = document.createElement('tr');
+       tr.setAttribute("id", "tr" + i.toString());
+       var tdSNo = document.createElement('td');
+       var tdSlot = document.createElement('td');
+       var tdAction = document.createElement('td');
+     
+
+       var divSNo = document.createElement('div');
+       var rowNum = i + 1;
+       var spanSNo = document.createElement('span');
+       spanSNo.textContent = rowNum.toString();
+       divSNo.appendChild(spanSNo);
+       tdSNo.appendChild(divSNo);
+
+       var divSlot = document.createElement('div');
+       var spainSlot = document.createElement('span');
+       spainSlot.textContent = consultationSlots[i];
+       divSlot.appendChild(spainSlot);
+       tdSlot.appendChild(divSlot);
+
+       
+       var divAction = document.createElement('div');
+
+       var divDelete = document.createElement('div');
+       var btnDelete = document.createElement("button");
+       btnDelete.style.width = "150px";
+       btnDelete.setAttribute("id", i.toString());
+       btnDelete.textContent = "Delete Slot";
+       btnDelete.setAttribute("type", "button");
+       divDelete.appendChild(btnDelete);
+       divAction.appendChild(divDelete);
+
+       tdAction.appendChild(divAction);
+
+       console.log(i);
+
+
+       tr.appendChild(tdSNo);
+       tr.appendChild(tdSlot);
+       tr.appendChild(tdAction);
+
+       slotTable.appendChild(tr);
+
+       btnDelete.addEventListener("click", function () {
+           var index = parseInt(this.id);
+           consultationSlots.splice(index, 1);
+           alert("Item removed successfully");
+           showSlotsTable();
+   })
+       
+}
+}
+}
 
 
 txtUploadGST.addEventListener("change", function () {
@@ -387,6 +482,8 @@ function loadUI() {
    btnCheckAvailability.style.display = "none";
    txtCompanyName.value = mSeller.company_name;
    txtEmail.value = mSeller.email;
+   txtConsultationCharges = mSeller.charges,
+   consultationSlots = mSeller.slots,
    txtAddressLine1.value = mSeller.address_line1;
    txtAddressLine2.value = mSeller.address_line2;
    txtAddressLine3.value = mSeller.address_line3;
@@ -557,6 +654,15 @@ function getQueryVariable(variable) {
    return null;
 }
 
+function deleteSlotsRow() {
+   //e.firstElementChild can be used. 
+   var child = slotTable.lastElementChild;
+   while (child) {
+       slotTable.removeChild(child);
+       child = slotTable.lastElementChild;
+   }
+}
+
 //This function will validate if all the details are filled up correctly...
 function validateFormDetails() {
    var errorMsg = "";
@@ -590,6 +696,16 @@ function validateFormDetails() {
 
    if (txtCompanyName.value == "") {
       errorMsg += "Please Enter Company Name<br/>"
+      errorFound = true;
+   }
+
+   if (txtConsultationCharges.value == ""){
+      errorMsg += "Please Enter Consultation Charges<br/>"
+      errorFound = true;
+   }
+
+   if (consultationSlots.length == 0){
+      errorMsg += "Please Enter Consultation Slots<br/>"
       errorFound = true;
    }
 
@@ -946,6 +1062,9 @@ function updateSellerDetails() {
    return washingtonRef.update({
       seller_name: txtNmae.value,
       mobile: txtMobile.value,
+      charges: txtConsultationCharges.value,
+      consultation_id: txtConsultationId,
+      slots: consultationSlots,
       company_name: txtCompanyName.value,
       address_line1: txtAddressLine1.value,
       address_line2: txtAddressLine2.value,
@@ -1039,12 +1158,17 @@ function saveSellerDetails() {
 
       var citySeller = true;
 
+      var consultationId = txtMerchantId.value + "_" + "con000";
+
       firebase.firestore().collection('seller').doc(sellerId).set({
          seller_id: sellerId,
          seller_name: txtNmae.value,
          email: email,
          mobile: txtMobile.value,
          company_name: txtCompanyName.value,
+         charges: txtConsultationCharges.value,
+         consultation_id: consultationId,
+         slots: consultationSlots,
          address_line1: txtAddressLine1.value,
          address_line2: txtAddressLine2.value,
          address_line3: txtAddressLine3.value,

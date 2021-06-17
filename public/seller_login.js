@@ -8,7 +8,7 @@ var divContent = document.getElementById("divContent");
 var imgLoading = document.getElementById("loading");
 var divErrorMsg = document.getElementById("divErrorMsg");
 var mSeller = null;
-var userType = document.getElementById("user_type");
+//var userType = document.getElementById("user_type");
 var selectedUserType = null;
 var sellerEmail;
 
@@ -67,9 +67,9 @@ btnSubmit.addEventListener("click", function () {
     divErrorMsg.style.height = "500px";
     divContent.style.display = "none";
 
-    selectedUserType = userType.options[userType.selectedIndex].value;
-    console.log(selectedUserType);
-    localStorage.setItem("userType", selectedUserType);
+    // selectedUserType = userType.options[userType.selectedIndex].value;
+    // console.log(selectedUserType);
+    // localStorage.setItem("userType", selectedUserType);
 
 
     firebase.auth().signInWithEmailAndPassword(emailId.value, password.value).catch(function (error) {
@@ -79,10 +79,10 @@ btnSubmit.addEventListener("click", function () {
         divContent.style.display = "block";
         // Handle Errors here.
         var errorCode = error.code;
-       
+
         console.log(error.message);
         setErrorHeader(error.message);
-        
+
         // ...
     });
 });
@@ -102,7 +102,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         console.log(uid);
         var providerData = user.providerData;
 
-        checkIfUserExist(uid, selectedUserType);
+         checkIfUserExist(uid);
 
         // checkIfUserExist(uid).then(() => {
 
@@ -133,61 +133,46 @@ function logOut() {
 
 }
 
-function checkIfUserExist(uid, selectedUserType) {
+function checkIfUserExist(uid) {
 
-    if(selectedUserType != null){
-
-        if(selectedUserType == "admin"){
-            selectedUserType = "seller";
-        }
-
-        var docRef = firebase.firestore().collection(selectedUserType).doc(uid);
-        console.log(uid);
-        docRef.get().then(function (doc) {
+    var docRef = firebase.firestore().collection("seller").doc(uid);
+    console.log(uid);
+    docRef.get().then(function (doc) {
         if (doc.exists) {
             localStorage.setItem("sellerEmail", sellerEmail);
             mSeller = doc.data();
             console.log("Document exists");
-            if(uid == "bETl28cWibRn5xAeClWW0yUCNri2"){
-                window.location.href="admin_home.html?sellerid=" + uid;
+            if (mSeller.sellerType == "admin") {
+                window.location.href = "admin_home.html?sellerid=" + uid;
             }
             else
-               if(mSeller.status != "approved"){
-                   window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
-                                                               + "&name=" + mSeller.company_name + "&status=" + mSeller.status
-                                                               +"&rejection_reason=" + mSeller.suspension_reason;
-               }
-               else
-               {
-                if(selectedUserType == "pharmacist")
-                {
-                 window.location.href = "pharmacist_home.html?sellerid=" + uid;
+                if (mSeller.status != "approved") {
+                    window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
+                        + "&name=" + mSeller.company_name + "&status=" + mSeller.status
+                        + "&rejection_reason=" + mSeller.suspension_reason;
                 }
-                else if(selectedUserType == "doctor"){
-                    window.location.href = "doctor_home.html?sellerid=" + uid;  
+                else {
+                    if (mSeller.sellerType == "pharmacist") {
+                        window.location.href = "pharmacist_home.html?sellerid=" + uid;
+                    }
+                    else if (mSeller.sellerType == "doctor") {
+                        window.location.href = "doctor_home.html?sellerid=" + uid;
+                    }
+                    else {
+                        window.location.href = "home.html?sellerid=" + uid;
+                    }
                 }
-                else{
-                 window.location.href = "home.html?sellerid=" + uid;
-                }
-               }
-             
+
             return true;
         } else {
             console.log("No such document!");
             window.location.href = "RegisterUser.html?sellerid=" + uid;
             return false;
-            
+
         }
     }).catch(function (error) {
         console.log("Error getting document:", error);
         return false;
-    });
-}
-else{
-    firebase.auth().signOut().then(function () {
-        window.location.href = "seller_login.html";
-    }).catch(function (error) {
-        // An error happened.
     });
 }
 
@@ -223,4 +208,4 @@ else{
     //         });
 
     // })
-}
+//}

@@ -953,7 +953,8 @@ function saveSellerDetails() {
          shop_offers: shop_offers,
          img_url: url_Carousel_Img1,
          about_shop: txtAboutShop.value,
-         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+         sellerType: 'seller'
       }).then(function () {
          divProgress.style.display = "none";
          resolve();

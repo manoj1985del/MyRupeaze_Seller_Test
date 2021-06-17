@@ -732,7 +732,7 @@ function registerSeller() {
 function loadSellerDetails(sellerid) {
    return new Promise((resolve, reject) => {
 
-      var docRef = firebase.firestore().collection("pharmacist").doc(sellerid);
+      var docRef = firebase.firestore().collection("seller").doc(sellerid);
 
       docRef.get().then(function (doc) {
          if (doc.exists) {
@@ -752,7 +752,7 @@ function loadSellerDetails(sellerid) {
 }
 
 function updateGSTURL() {
-   var washingtonRef = firebase.firestore().collection("pharmacist").doc(mSeller.seller_id);
+   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
    // Set the "capital" field of the city 'DC'
    return washingtonRef.update({
@@ -769,7 +769,7 @@ function updateGSTURL() {
 }
 
 function updateChequeURL() {
-   var washingtonRef = firebase.firestore().collection("pharmacist").doc(mSeller.seller_id);
+   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
    // Set the "capital" field of the city 'DC'
    return washingtonRef.update({
@@ -823,7 +823,7 @@ function updateSellerDetails() {
    divContent.style.display = "none";
 
 
-   var washingtonRef = firebase.firestore().collection("pharmacist").doc(mSeller.seller_id);
+   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
    // Set the "capital" field of the city 'DC'
    return washingtonRef.update({
@@ -854,6 +854,7 @@ function updateSellerDetails() {
       img_url: url_Carousel_Img1,
       about_shop: txtAboutShop.value,
       suspension_reason: null,
+      sellerType: 'pharmacist'
    })
       .then(function () {
 
@@ -918,7 +919,7 @@ function saveSellerDetails() {
 
       var citySeller = rbCityYes.checked;
 
-      firebase.firestore().collection('pharmacist').doc(sellerId).set({
+      firebase.firestore().collection('seller').doc(sellerId).set({
          seller_id: sellerId,
          seller_name: txtNmae.value,
          email: email,
@@ -955,7 +956,8 @@ function saveSellerDetails() {
          shop_offers: shop_offers,
          img_url: url_Carousel_Img1,
          about_shop: txtAboutShop.value,
-         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+         sellerType: 'pharmacist'
       }).then(function () {
          divProgress.style.display = "none";
          resolve();

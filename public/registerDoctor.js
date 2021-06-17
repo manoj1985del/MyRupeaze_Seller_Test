@@ -274,31 +274,22 @@ function saveImageAtFirebase(file, groupname) {
 
 loadDoctorDegree().then(() => {
 
-   loadSellerDetails(sellerId).then(() => {
-      //seller exists.. we are at this form for updation
-      if (mSeller != null) {
-         bUpdate = true;
-         loadShopDetails(sellerId).then(() => {
+   loadDoctorspeciality().then(()=>{
+
+      loadSellerDetails(sellerId).then(() => {
+         //seller exists.. we are at this form for updation
+         if (mSeller != null) {
+            bUpdate = true;
             loadUI();
-         })
-      }
+         }
+      })
+
    })
+  
 
 });
 
-loadDoctorspeciality().then(() => {
 
-   loadSellerDetails(sellerId).then(() => {
-      //seller exists.. we are at this form for updation
-      if (mSeller != null) {
-         bUpdate = true;
-         loadShopDetails(sellerId).then(() => {
-            loadUI();
-         })
-      }
-   })
-
-});
 
 
 
@@ -529,7 +520,7 @@ btnCheckAvailability.addEventListener("click", function () {
 function merchantIdAlreadyExists(merchantId) {
    return new Promise((resolve, reject) => {
 
-      firebase.firestore().collection("doctor")
+      firebase.firestore().collection("seller")
          .where("merchant_id", "==", merchantId)
          .get()
          .then(function (querySnapshot) {
@@ -840,7 +831,7 @@ function registerSeller() {
 function loadSellerDetails(sellerid) {
    return new Promise((resolve, reject) => {
 
-      var docRef = firebase.firestore().collection("doctor").doc(sellerid);
+      var docRef = firebase.firestore().collection("seller").doc(sellerid);
 
       docRef.get().then(function (doc) {
          if (doc.exists) {
@@ -860,7 +851,7 @@ function loadSellerDetails(sellerid) {
 }
 
 function updateGSTURL() {
-   var washingtonRef = firebase.firestore().collection("doctor").doc(mSeller.seller_id);
+   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
    // Set the "capital" field of the city 'DC'
    return washingtonRef.update({
@@ -877,7 +868,7 @@ function updateGSTURL() {
 }
 
 function updateChequeURL() {
-   var washingtonRef = firebase.firestore().collection("doctor").doc(mSeller.seller_id);
+   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
    // Set the "capital" field of the city 'DC'
    return washingtonRef.update({
@@ -949,7 +940,7 @@ function updateSellerDetails() {
    divContent.style.display = "none";
 
 
-   var washingtonRef = firebase.firestore().collection("doctor").doc(mSeller.seller_id);
+   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
    // Set the "capital" field of the city 'DC'
    return washingtonRef.update({
@@ -977,7 +968,7 @@ function updateSellerDetails() {
       merchant_id: txtMerchantId.value,
       shop_opening_time: shop_opening_time,
       shop_closing_time: shop_closing_time,
-
+      selelrType: "doctor",
       status: status,
       doctor_img_url: url_Carousel_Img1,
       logo_url: url_Carousel_Img2,
@@ -1048,7 +1039,7 @@ function saveSellerDetails() {
 
       var citySeller = true;
 
-      firebase.firestore().collection('doctor').doc(sellerId).set({
+      firebase.firestore().collection('seller').doc(sellerId).set({
          seller_id: sellerId,
          seller_name: txtNmae.value,
          email: email,
@@ -1084,6 +1075,7 @@ function saveSellerDetails() {
          subscription_type: null,
          shop_opening_time: shop_opening_time,
          shop_closing_time: shop_closing_time,
+         sellerType: "doctor",
       
          doctor_img_url: url_Carousel_Img1,
          logo_url: url_Carousel_Img2,

@@ -79,7 +79,7 @@ var mSeller = null;
 var sellerId = getQueryVariable("sellerid");
 localStorage.setItem("sellerid", sellerId);
 
-localStorage.setItem("userType", "doctor");
+l//ocalStorage.setItem("userType", "doctor");
 
 getSellerDetails().then(()=>{
 
@@ -1448,7 +1448,7 @@ function getActiveEnquiries() {
 function getSellerDetails() {
     return new Promise((resolve, reject) =>{
 
-        var docRef = firebase.firestore().collection("doctor").doc(sellerId);
+        var docRef = firebase.firestore().collection("seller").doc(sellerId);
         docRef.get().then(function (doc) {
             if (doc.exists) {
                 mSeller = doc.data();

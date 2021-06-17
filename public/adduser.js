@@ -18,7 +18,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         var uid = user.uid;
         var providerData = user.providerData;
 
-        selectedUserType =  userType.options[userType.selectedIndex].value;
+        selectedUserType =  userType.value;
         localStorage.setItem("sellerEmail", email);
         if(selectedUserType == "seller"){
             window.location.href = "RegisterUser.html?sellerid=" + uid;

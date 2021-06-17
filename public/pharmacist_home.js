@@ -861,7 +861,7 @@ function loadSellerDetails() {
     // console.log("loading seller details");
     // console.log("loading seller details1");
     var query = firebase.firestore()
-        .collection('pharmacist').doc(sellerId);
+        .collection('seller').doc(sellerId);
 
 
     query.get().then(function (doc) {

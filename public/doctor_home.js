@@ -79,7 +79,7 @@ var mSeller = null;
 var sellerId = getQueryVariable("sellerid");
 localStorage.setItem("sellerid", sellerId);
 
-l//ocalStorage.setItem("userType", "doctor");
+localStorage.setItem("userType", "doctor");
 
 getSellerDetails().then(()=>{
 

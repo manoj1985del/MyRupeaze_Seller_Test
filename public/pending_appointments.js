@@ -490,8 +490,9 @@ function cancelAppointment(docId) {
 }
 
 function getSellerDetails() {
+
     return new Promise((resolve, reject) => {
-        var docRef = firebase.firestore().collection("doctor").doc(sellerId);
+        var docRef = firebase.firestore().collection("seller").doc(sellerId);
         docRef.get().then(function (doc) {
             if (doc.exists) {
                 mSeller = doc.data();

@@ -17,13 +17,27 @@ var tblComplaint = document.getElementById("tblComplaints");
 
 var tblAdvices = document.getElementById("tblAdvices");
 
-var tbl
+var tbl;
 
 var complaints = [];
 var advices = [];
 
-btnAddComplaint.addEventListener("click", function(){
-    if(!txtChiefComplaints.value == ""){
+var mConsultation = null;
+var mDoctor = null;
+var consultationId = getQueryVariable("consultation_id");
+
+getConsultationDetails().then(()=>{
+    console.log("consultation rxed");
+    console.log(mConsultation);
+    getDoctorDetails(mConsultation.seller_id).then(()=>{
+        console.log("doctor rxed");
+        console.log(mDoctor);
+    })
+   
+})
+
+btnAddComplaint.addEventListener("click", function () {
+    if (!txtChiefComplaints.value == "") {
         complaints.push(txtChiefComplaints.value);
         txtChiefComplaints.value = "";
     }
@@ -32,184 +46,184 @@ btnAddComplaint.addEventListener("click", function(){
     showComplaintTable();
 })
 
-function showComplaintTable(){
+function showComplaintTable() {
 
     console.log(complaints);
-    if(!complaints.length == 0){
+    if (!complaints.length == 0) {
 
-    deleteComplaintsRows();
-    
-    var tHead = document.createElement("thead");
-    var tr = document.createElement("tr");
+        deleteComplaintsRows();
 
-    var thSNo = document.createElement("th");
-    thSNo.textContent = "S.No.";
+        var tHead = document.createElement("thead");
+        var tr = document.createElement("tr");
 
-    var thAction = document.createElement("th");
-    thAction.textContent = "Action";
+        var thSNo = document.createElement("th");
+        thSNo.textContent = "S.No.";
 
-    var thComplaint = document.createElement("th");
-    thComplaint.textContent = "Complaint";
+        var thAction = document.createElement("th");
+        thAction.textContent = "Action";
 
-    tr.appendChild(thSNo);
-    tr.appendChild(thComplaint);
-    tr.appendChild(thAction);
+        var thComplaint = document.createElement("th");
+        thComplaint.textContent = "Complaint";
 
-    tHead.appendChild(tr);
-    tblComplaint.appendChild(tHead);
+        tr.appendChild(thSNo);
+        tr.appendChild(thComplaint);
+        tr.appendChild(thAction);
 
-    for (var i = 0; i < complaints.length; i++) {
+        tHead.appendChild(tr);
+        tblComplaint.appendChild(tHead);
 
-        var tr = document.createElement('tr');
-        tr.setAttribute("id", "tr" + i.toString());
-        var tdSNo = document.createElement('td');
-        var tdComplaint = document.createElement('td');
-        var tdAction = document.createElement('td');
-      
+        for (var i = 0; i < complaints.length; i++) {
 
-        var divSNo = document.createElement('div');
-        var rowNum = i + 1;
-        var spanSNo = document.createElement('span');
-        spanSNo.textContent = rowNum.toString();
-        divSNo.appendChild(spanSNo);
-        tdSNo.appendChild(divSNo);
-
-        var divComplaint = document.createElement('div');
-        var spainComplaint = document.createElement('span');
-        spainComplaint.textContent = complaints[i];
-        divComplaint.appendChild(spainComplaint);
-        tdComplaint.appendChild(divComplaint);
-
-        
-        var divAction = document.createElement('div');
-
-        var divDelete = document.createElement('div');
-        var btnDelete = document.createElement("button");
-        btnDelete.style.width = "150px";
-        btnDelete.setAttribute("id", i.toString());
-        btnDelete.textContent = "Delete Complaint";
-        btnDelete.setAttribute("type", "button");
-        divDelete.appendChild(btnDelete);
-        divAction.appendChild(divDelete);
-
-        tdAction.appendChild(divAction);
-
-        console.log(i);
+            var tr = document.createElement('tr');
+            tr.setAttribute("id", "tr" + i.toString());
+            var tdSNo = document.createElement('td');
+            var tdComplaint = document.createElement('td');
+            var tdAction = document.createElement('td');
 
 
-        tr.appendChild(tdSNo);
-        tr.appendChild(tdComplaint);
-        tr.appendChild(tdAction);
+            var divSNo = document.createElement('div');
+            var rowNum = i + 1;
+            var spanSNo = document.createElement('span');
+            spanSNo.textContent = rowNum.toString();
+            divSNo.appendChild(spanSNo);
+            tdSNo.appendChild(divSNo);
 
-        tblComplaint.appendChild(tr);
+            var divComplaint = document.createElement('div');
+            var spainComplaint = document.createElement('span');
+            spainComplaint.textContent = complaints[i];
+            divComplaint.appendChild(spainComplaint);
+            tdComplaint.appendChild(divComplaint);
 
-        btnDelete.addEventListener("click", function () {
-            var index = parseInt(this.id);
-            complaints.splice(index, 1);
-            alert("Item removed successfully");
-            console.log(complaints);
-            console.log("index" + index);
 
-            showComplaintTable();
-    })
-        
- }
+            var divAction = document.createElement('div');
+
+            var divDelete = document.createElement('div');
+            var btnDelete = document.createElement("button");
+            btnDelete.style.width = "150px";
+            btnDelete.setAttribute("id", i.toString());
+            btnDelete.textContent = "Delete Complaint";
+            btnDelete.setAttribute("type", "button");
+            divDelete.appendChild(btnDelete);
+            divAction.appendChild(divDelete);
+
+            tdAction.appendChild(divAction);
+
+            console.log(i);
+
+
+            tr.appendChild(tdSNo);
+            tr.appendChild(tdComplaint);
+            tr.appendChild(tdAction);
+
+            tblComplaint.appendChild(tr);
+
+            btnDelete.addEventListener("click", function () {
+                var index = parseInt(this.id);
+                complaints.splice(index, 1);
+                alert("Item removed successfully");
+                console.log(complaints);
+                console.log("index" + index);
+
+                showComplaintTable();
+            })
+
+        }
 
 
     }
 }
 
-btnAddAdvice.addEventListener("click", function(){
-    if(!txtAdvices.value == ""){
+btnAddAdvice.addEventListener("click", function () {
+    if (!txtAdvices.value == "") {
         advices.push(txtAdvices.value);
         txtAdvices.value = "";
     }
 
     console.log(advices);
-   showAdviceTable();
+    showAdviceTable();
 })
 
 
-function showAdviceTable(){
-   
+function showAdviceTable() {
 
-    if(!advices.length == 0){
 
-    deleteAdvicesRows();
-    
-    var tHead = document.createElement("thead");
-    var tr = document.createElement("tr");
+    if (!advices.length == 0) {
 
-    var thSNo = document.createElement("th");
-    thSNo.textContent = "S.No.";
+        deleteAdvicesRows();
 
-    var thAdvice = document.createElement("th");
-    thAdvice.textContent = "Advice";
+        var tHead = document.createElement("thead");
+        var tr = document.createElement("tr");
 
-    var thAction = document.createElement("th");
-    thAction.textContent = "Action";
+        var thSNo = document.createElement("th");
+        thSNo.textContent = "S.No.";
 
-    tr.appendChild(thSNo);
-    tr.appendChild(thAdvice);
-    tr.appendChild(thAction);
+        var thAdvice = document.createElement("th");
+        thAdvice.textContent = "Advice";
 
-    tHead.appendChild(tr);
-    tblAdvices.appendChild(tHead);
+        var thAction = document.createElement("th");
+        thAction.textContent = "Action";
 
-    for (var i = 0; i < advices.length; i++) {
+        tr.appendChild(thSNo);
+        tr.appendChild(thAdvice);
+        tr.appendChild(thAction);
 
-        var tr = document.createElement('tr');
-        tr.setAttribute("id", "tr" + i.toString());
-        var tdSNo = document.createElement('td');
-        var tdAdvice = document.createElement('td');
-        var tdAction = document.createElement('td');
-      
+        tHead.appendChild(tr);
+        tblAdvices.appendChild(tHead);
 
-        var divSNo = document.createElement('div');
-        var rowNum = i + 1;
-        var spanSNo = document.createElement('span');
-        spanSNo.textContent = rowNum.toString();
-        divSNo.appendChild(spanSNo);
-        tdSNo.appendChild(divSNo);
+        for (var i = 0; i < advices.length; i++) {
 
-        var divAdvice = document.createElement('div');
-        var spanAdvice = document.createElement('span');
-        spanAdvice.textContent = advices[i];
-        divAdvice.appendChild(spanAdvice);
-        tdAdvice.appendChild(divAdvice);
+            var tr = document.createElement('tr');
+            tr.setAttribute("id", "tr" + i.toString());
+            var tdSNo = document.createElement('td');
+            var tdAdvice = document.createElement('td');
+            var tdAction = document.createElement('td');
 
-        var divAction = document.createElement('div');
 
-        var divDelete = document.createElement('div');
-        var btnDelete = document.createElement("button");
-        btnDelete.style.width = "150px";
-        btnDelete.setAttribute("id", i.toString());
-        btnDelete.textContent = "Delete Advice";
-        btnDelete.setAttribute("type", "button");
-        divDelete.appendChild(btnDelete);
-        divAction.appendChild(divDelete);
-        tdAction.appendChild(divAction);
+            var divSNo = document.createElement('div');
+            var rowNum = i + 1;
+            var spanSNo = document.createElement('span');
+            spanSNo.textContent = rowNum.toString();
+            divSNo.appendChild(spanSNo);
+            tdSNo.appendChild(divSNo);
 
-        tr.appendChild(tdSNo);
-        tr.appendChild(tdAdvice);
-        tr.appendChild(tdAction);
+            var divAdvice = document.createElement('div');
+            var spanAdvice = document.createElement('span');
+            spanAdvice.textContent = advices[i];
+            divAdvice.appendChild(spanAdvice);
+            tdAdvice.appendChild(divAdvice);
 
-        tblAdvices.appendChild(tr);
+            var divAction = document.createElement('div');
 
-        btnDelete.addEventListener("click", function () {
-            var index = parseInt(this.id);
-            advices.splice(index, 1);
-            alert("Item removed successfully");
+            var divDelete = document.createElement('div');
+            var btnDelete = document.createElement("button");
+            btnDelete.style.width = "150px";
+            btnDelete.setAttribute("id", i.toString());
+            btnDelete.textContent = "Delete Advice";
+            btnDelete.setAttribute("type", "button");
+            divDelete.appendChild(btnDelete);
+            divAction.appendChild(divDelete);
+            tdAction.appendChild(divAction);
 
-            showAdviceTable();
-    })
- }
+            tr.appendChild(tdSNo);
+            tr.appendChild(tdAdvice);
+            tr.appendChild(tdAction);
+
+            tblAdvices.appendChild(tr);
+
+            btnDelete.addEventListener("click", function () {
+                var index = parseInt(this.id);
+                advices.splice(index, 1);
+                alert("Item removed successfully");
+
+                showAdviceTable();
+            })
+        }
 
 
     }
 }
 
-var consultationId = getQueryVariable("consultation_id");
+
 
 var headerCreated = false;
 
@@ -323,7 +337,7 @@ function createTable() {
 
         tdAction.appendChild(divAction);
 
-       
+
         tr.appendChild(tdMedicineName);
         tr.appendChild(tdTiming);
         tr.appendChild(tdFrequency);
@@ -337,7 +351,7 @@ function createTable() {
             var medicineName = document.getElementById("medicines" + this.id);
             var timing = document.getElementById("medicine_timing" + this.id);
             var frequency = document.getElementById("frequency" + this.id);
-            var days =  document.getElementById("days" + this.id);
+            var days = document.getElementById("days" + this.id);
 
             console.log(medicineName.value);
 
@@ -346,10 +360,10 @@ function createTable() {
             medicine_frequency[index] = parseFloat(frequency.value);
             medicne_days[index] = parseFloat(days.value);
 
-            if(medicineName.value == "" || timing.value == "" || frequency.value == "" || days.value == ""){
+            if (medicineName.value == "" || timing.value == "" || frequency.value == "" || days.value == "") {
 
             }
-            else{
+            else {
                 showMedicineTable();
                 medicineName.value = "";
                 timing.value = "";
@@ -360,7 +374,7 @@ function createTable() {
             index++;
         })
     }
-  
+
 }
 
 
@@ -380,6 +394,7 @@ function submitResponse() {
     })
         .then(function () {
             alert("Details saved successfully");
+            window.location.href = "prescription_pdf.html?consultation_id=" + consultationId;
         })
         .catch(function (error) {
             console.log("doc does not exist");
@@ -388,14 +403,20 @@ function submitResponse() {
 }
 
 btnSubmit.addEventListener("click", function () {
-   console.log("clicked");
+    console.log("clicked");
+
+    console.log(mDoctor);
+    console.log(mDoctor.charges);
+    console.log(mConsultation.customer_id);
+   // alert("wait");
+    common_CreditAndDebitPoints(mDoctor.charges, mConsultation.customer_id, false);
     submitResponse();
 
 })
 
 
 
-function createHeaders(){
+function createHeaders() {
 
     headerCreated = true;
 
@@ -422,7 +443,7 @@ function createHeaders(){
     var thAction = document.createElement("th");
     thAction.textContent = "Action";
 
- 
+
 
     tr.appendChild(thSNo);
     tr.appendChild(thMedicineName);
@@ -467,7 +488,7 @@ function deleteComplaintsRows() {
 
 
 
-function showMedicineTable(){
+function showMedicineTable() {
 
     var tblMedicine = document.getElementById("tblMedicine");
     deleteTableRows();
@@ -488,7 +509,7 @@ function showMedicineTable(){
         var tdFrequency = document.createElement('td');
         var tdDays = document.createElement('td');
         var tdAction = document.createElement('td');
-      
+
 
         var divSNo = document.createElement('div');
         var rowNum = i + 1;
@@ -534,7 +555,7 @@ function showMedicineTable(){
         divAction.appendChild(divDelete);
 
         tdAction.appendChild(divAction);
-    
+
         tr.appendChild(tdSNo);
         tr.appendChild(tdMedicineName);
         tr.appendChild(tdTiming);
@@ -546,15 +567,66 @@ function showMedicineTable(){
 
 
         btnDelete.addEventListener("click", function () {
-                var index = parseInt(this.id);
-                medicine_names.splice(index, 1);
-                medicine_timing.splice(index, 1);
-                medicine_frequency.splice(index, 1);
-                medicne_days.splice(index, 1);
-    
-                alert("Item removed successfully");
-    
-                showMedicineTable();
+            var index = parseInt(this.id);
+            medicine_names.splice(index, 1);
+            medicine_timing.splice(index, 1);
+            medicine_frequency.splice(index, 1);
+            medicne_days.splice(index, 1);
+
+            alert("Item removed successfully");
+
+            showMedicineTable();
         })
- }
+    }
+}
+
+function getConsultationDetails() {
+    return new Promise((resolve, reject) =>{
+
+        var docRef = firebase.firestore().collection("consultations").doc(consultationId);
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                 mConsultation = doc.data();
+                 resolve();
+            } else {
+                seller = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                reject();
+    
+            }
+        }).catch(function (error) {
+            seller = null;
+            console.log("Error getting document:", error);
+            reject();
+        });
+
+    })
+
+}
+
+
+function getDoctorDetails(sellerId) {
+    return new Promise((resolve, reject)=>{
+
+        var docRef = firebase.firestore().collection("seller").doc(sellerId);
+    docRef.get().then(function (doc) {
+        if (doc.exists) {
+            mDoctor = doc.data();
+            resolve();
+        } else {
+            mDoctor = null;
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            reject();
+
+        }
+    }).catch(function (error) {
+        mDoctor = null;
+        console.log("Error getting document:", error);
+        reject();
+    });
+
+    })
+    
 }

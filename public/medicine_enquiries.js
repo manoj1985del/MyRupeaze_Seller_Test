@@ -479,15 +479,15 @@ function createTable() {
         divReadyForPickup.style.display = "none";
         divAction.appendChild(divReadyForPickup);
 
-        var divMarkDelivry = document.createElement('div');
-        var btnMarkDelivery = document.createElement("button");
-        btnMarkDelivery.style.marginTop = "10px";
-        btnMarkDelivery.style.width = "150px";
-        btnMarkDelivery.textContent = "Issue Invoice";
-        btnMarkDelivery.setAttribute("id", i.toString());
-        btnMarkDelivery.setAttribute("type", "button");
-        divMarkDelivry.appendChild(btnMarkDelivery);
-        divAction.appendChild(divMarkDelivry);
+        var divIssueInvoice = document.createElement('div');
+        var btnIssueInvoice = document.createElement("button");
+        btnIssueInvoice.style.marginTop = "10px";
+        btnIssueInvoice.style.width = "150px";
+        btnIssueInvoice.textContent = "Issue Invoice";
+        btnIssueInvoice.setAttribute("id", i.toString());
+        btnIssueInvoice.setAttribute("type", "button");
+        divIssueInvoice.appendChild(btnIssueInvoice);
+        divAction.appendChild(divIssueInvoice);
 
         var divViewInvoice = document.createElement('div');
         var btnViewInvoice = document.createElement("button");
@@ -505,12 +505,18 @@ function createTable() {
         //5. Delivery Complete
 
         //estimate can be prepared only for pending enquiries..
-        if(enquiry.status_code == 0){
+        if(enquiry.status_code != 0){
             console.log("showing prepare estimate");
             divPrepareEstimate.style.display = "block";
+            
         }
         else{
             divPrepareEstimate.style.display = "none";
+        }
+
+        if(enquiry.status_code == 3){
+            divPrepareEstimate.style.display = "block";
+            btnPrepareEstimate.textContent = "View Estimate";
         }
 
         //invoice can be viewed only for delivered products
@@ -534,10 +540,10 @@ function createTable() {
         else {
             //show mark delivery button only if it was accepted by buyer or ready for pickup.
             if (enquiry.status_code == 3 || enquiry.status_code == 6) {
-                divMarkDelivry.style.display = "block";
+                divIssueInvoice.style.display = "block";
 
             } else {
-                divMarkDelivry.style.display = "none";
+                divIssueInvoice.style.display = "none";
             }
         }
 
@@ -546,7 +552,7 @@ function createTable() {
 
         //for admin disable mark delivery or reject enquery buttons
         if (admin) {
-            divMarkDelivry.style.display = "none";
+            divIssueInvoice.style.display = "none";
             divRejectEnquiry.style.display = "none";
             divReadyForPickup.style.display = "none";
         }
@@ -596,10 +602,16 @@ function createTable() {
 
         })
 
-        btnMarkDelivery.addEventListener("click", function () {
+        btnIssueInvoice.addEventListener("click", function () {
             var index = parseInt(this.id);
             var enquiry = enquiryList[index];
             getCustomerDetails(enquiry.customer_id).then(() => {
+                var total = 0;
+                for (var tp = 0; tp < enquiry.product_prices_total.length; tp++) {
+                    total += enquiry.product_prices_total[tp];
+                }
+
+                common_CreditAndDebitPoints(total, enquiry.customer_id, false);
                 markDelivery(enquiry.doc_id);
                 addProductsToDb(enquiry)
 

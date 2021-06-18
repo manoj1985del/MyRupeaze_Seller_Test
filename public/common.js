@@ -5,6 +5,11 @@ var btnLogout = document.getElementById("btnLogout");
 var sellerid = localStorage.getItem("sellerid");
 var adminLogin = localStorage.getItem("adminLogin");
 var userType = localStorage.getItem("userType");
+
+var  mNumberOfPointsInOneRupee = 8;
+
+var  mPercentOfAmountCreditedIntoPoints = 1.25;
+
 console.log(adminLogin);
 
 
@@ -264,3 +269,38 @@ function autocomplete(inp, arr) {
 function appendNumber(number, digits) {
     return String(number).padStart(digits, '0');
   }
+
+  function common_CreditAndDebitPoints(netPayable, customerId, bDebit){
+
+    var dp = (netPayable * mPercentOfAmountCreditedIntoPoints) / 100;
+    var pointsToIncrement = Math.ceil(dp * mNumberOfPointsInOneRupee);
+    creditAndDebitPoints(customerId, pointsToIncrement, bDebit);
+  }
+
+  function creditAndDebitPoints(customerId, points, debit) {
+
+    return new Promise((resolve, reject) => {
+        if(debit)
+        {
+            points = -points;
+        }
+       
+
+        var washingtonRef = firebase.firestore().collection("users").doc(customerId);
+
+        // Set the "capital" field of the city 'DC'
+        return washingtonRef.update({
+            points: firebase.firestore.FieldValue.increment(points)
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                resolve();
+            });
+
+    })
+
+
+}

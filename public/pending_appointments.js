@@ -332,15 +332,15 @@ function createTable() {
         divAction.appendChild(divRejectConsultation);
 
         //completed
-        var divPrescribeMedicines = document.createElement('div');
-        var btnPrescribeMedicines = document.createElement("button");
-        divPrescribeMedicines.style.marginTop = "10px";
-        btnPrescribeMedicines.style.width = "200px";
-        btnPrescribeMedicines.textContent = "View Prescription";
-        btnPrescribeMedicines.setAttribute("id", consultation.consultation_id);
-        btnPrescribeMedicines.setAttribute("type", "button");
-        divPrescribeMedicines.appendChild(btnPrescribeMedicines);
-        divAction.appendChild(divPrescribeMedicines);
+        var divViewPrescription = document.createElement('div');
+        var btnViewPrescription = document.createElement("button");
+        divViewPrescription.style.marginTop = "10px";
+        btnViewPrescription.style.width = "200px";
+        btnViewPrescription.textContent = "View Prescription";
+        btnViewPrescription.setAttribute("id", consultation.consultation_id);
+        btnViewPrescription.setAttribute("type", "button");
+        divViewPrescription.appendChild(btnViewPrescription);
+        divAction.appendChild(divViewPrescription);
 
         var divCreatePrescription = document.createElement('div');
         var btnCreatePrescription = document.createElement("button");
@@ -354,31 +354,31 @@ function createTable() {
 
         tdAction.appendChild(divAction);
 
-        if(consultation.status == "pending"){
+        if (consultation.status == "pending") {
             divAcceptConsultation.style.display = "block";
             divRejectConsultation.style.display = "block";
-            divPrescribeMedicines.style.display = "none";
+            divViewPrescription.style.display = "none";
             divCreatePrescription.style.display = "none";
         }
 
-        if(consultation.status == "completed"){
+        if (consultation.status == "completed") {
             divAcceptConsultation.style.display = "none";
             divRejectConsultation.style.display = "none";
-            divPrescribeMedicines.style.display = "block";
+            divViewPrescription.style.display = "block";
             divCreatePrescription.style.display = "none";
         }
 
-        if(consultation.status == "approved"){
+        if (consultation.status == "approved") {
             divAcceptConsultation.style.display = "none";
             divRejectConsultation.style.display = "none";
-            divPrescribeMedicines.style.display = "none";
+            divViewPrescription.style.display = "none";
             divCreatePrescription.style.display = "block";
         }
 
-        if(consultation.status == "cancelled"){
+        if (consultation.status == "cancelled") {
             divAcceptConsultation.style.display = "none";
             divRejectConsultation.style.display = "none";
-            divPrescribeMedicines.style.display = "none";
+            divViewPrescription.style.display = "none";
             divCreatePrescription.style.display = "none";
         }
 
@@ -386,7 +386,7 @@ function createTable() {
         if (admin) {
             divAcceptConsultation.style.display = "none";
             divRejectConsultation.style.display = "none";
-            divPrescribeMedicines.style.display = "none";
+            divViewPrescription.style.display = "none";
         }
 
         tr.appendChild(tdConsultationId);
@@ -403,56 +403,45 @@ function createTable() {
 
         table.appendChild(tr);
 
-        if (mType == "pending") {
+        btnAccept.addEventListener("click", function () {
+            acceptConsultation(this.id);
+        })
 
-            btnAccept.addEventListener("click", function () {
-                acceptConsultation(this.id);
-            })
+        btnCancelAppointment.addEventListener("click", function () {
+            cancelAppointment(this.id);
+        })
 
-            btnCancelAppointment.addEventListener("click", function () {
-                cancelAppointment(this.id);
-            })
+        btnCreatePrescription.addEventListener("click", function () {
+            var consultation_id = this.id;
+            window.location.href = "create_prescription.html?consultation_id=" + consultation_id;
+        })
 
-        }
+        btnViewPrescription.addEventListener("click", function () {
 
-        else if (mType == "completed") {
-            btnPrescribeMedicines.addEventListener("click", function () {
-                window.location.href = "prescription_pdf.html?consultation_id=" + consultation.consultation_id;
-            })
+            var consultation_id = this.id;
+            window.location.href = "prescription_pdf.html?consultation_id=" + consultation_id;
+        })
 
 
-        }
 
-        else if (mType == "today" || mType == "all") {
-            if (consultation.status == "pending") {
-                btnAccept.addEventListener("click", function () {
-                    acceptConsultation(this.id);
-                })
 
-                btnCancelAppointment.addEventListener("click", function () {
-                    cancelAppointment(this.id);
-                })
-            }
 
-            else if (consultation.status == "completed") {
-                btnPrescribeMedicines.addEventListener("click", function () {
-                    window.location.href = "prescription_pdf.html?consultation_id=" + consultation.consultation_id;
-                })
-            }
 
-            else if (consultation.status == "approved") {
-                btnCreatePrescription.addEventListener("click", function () {
-                    window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
-                })
-            }
 
-        }
 
-        else if (mType == "approved") {
-            btnCreatePrescription.addEventListener("click", function () {
-                window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
-            })
-        }
+        //     else if (consultation.status == "approved") {
+        //         btnCreatePrescription.addEventListener("click", function () {
+        //             window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
+        //         })
+        //     }
+
+        // }
+
+        // else if (mType == "approved") {
+        //     btnCreatePrescription.addEventListener("click", function () {
+        //         window.location.href = "create_prescription.html?consultation_id=" + consultation.consultation_id;
+        //     })
+        // }
 
 
     }
@@ -493,7 +482,6 @@ function cancelAppointment(docId) {
             console.log("doc does not exist");
 
         });
-
 }
 
 function getSellerDetails() {

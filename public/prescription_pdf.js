@@ -24,6 +24,10 @@ var txtDiagonosis = document.getElementById("txtDiagonosis");
 var liAdvice = document.getElementById('liAdvice');
 var txtFollowUp = document.getElementById("txtFollowUp");
 
+var btnUpload = document.getElementById('btnUpload');
+
+var prescriptionUrl = null;
+
 var table = document.getElementById("tblMedicine");
 
 
@@ -199,4 +203,63 @@ function loadConsultation(){
           html2pdf().from(consultation).set(opt).save();
         })
 
+}
+
+
+btnUpload.addEventListener("click", function(){
+  var input = document.createElement("INPUT");
+  input.setAttribute("type", "file"); 
+  input.click();
+
+  var pdfFile;
+
+  input.addEventListener("change", function () {
+    var file = this.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        pdfFile = file;
+        uploadFile(pdfFile);
+    }
+});
+})
+
+function uploadFile(file) {
+
+  if (file == null) {
+      alert("Please select file to upload");
+      return;
+  }
+
+  console.log(file.type);
+
+  if (!(file.type == "application/pdf")) {
+      alert("Only PDF files are allowed to upload");
+      return;
+  }
+
+
+  console.log("going to show progress bar");
+
+  saveFileToFirebase(file).then(() => {
+    firebase.firestore().collection('consultations').doc(consultationId).update({
+      prescription_url: prescriptionUrl
+  })
+    alert("File Uploaded Successfuly")
+})
+}
+
+function saveFileToFirebase(file) {
+ 
+  var imagePath = "doctor_prescription" + '/' + file.name;
+  return new Promise((resolve, reject) => {
+      firebase.storage().ref(imagePath).put(file).then(function () {
+          firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
+            prescriptionUrl = url;
+              console.log(prescriptionUrl);
+              console.log("resolving");
+              resolve();
+          });
+      });
+  });
 }

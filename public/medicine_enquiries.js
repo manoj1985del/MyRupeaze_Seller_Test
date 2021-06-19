@@ -47,15 +47,15 @@ function getEnquiries() {
                 .where("seller_id", "==", sellerId)
                 .orderBy('timestamp', 'desc');
 
-            
+
         }
 
-        if(mType == "today_completed"){
+        if (mType == "today_completed") {
             var query = firebase.firestore()
-            .collection('pharmacist_requests')
-            .where("seller_id", "==", sellerId)
-            .where("invoice_timestamp", ">=", today)
-            .where("cancelled", "==", false);
+                .collection('pharmacist_requests')
+                .where("seller_id", "==", sellerId)
+                .where("invoice_timestamp", ">=", today)
+                .where("cancelled", "==", false);
         }
 
         if (mType == "all") {
@@ -82,11 +82,11 @@ function getEnquiries() {
 
         }
 
-        if(mType == "today_completed"){
+        if (mType == "today_completed") {
             var query = firebase.firestore()
-            .collection('pharmacist_requests')
-            .where("invoice_timestamp", ">=", today)
-            .where("cancelled", "==", false);
+                .collection('pharmacist_requests')
+                .where("invoice_timestamp", ">=", today)
+                .where("cancelled", "==", false);
         }
 
         if (mType == "all") {
@@ -281,12 +281,22 @@ function createTable() {
 
         if (enquiry.prescription_type == "image") {
             var divPrescriptionDetails = document.createElement("div");
-            var prescription = document.createElement("img");
-            prescription.setAttribute("src", enquiry.prescription_url);
-            prescription.setAttribute("height", "200px");
-            prescription.setAttribute("width", "100px");
-            divPrescriptionDetails.appendChild(prescription);
+            var urlPrescription = document.createElement('a');
+            urlPrescription.href = enquiry.prescription_url;
+            urlPrescription.textContent = "Download Prescription";
+            urlPrescription.target = "_blank";
+            divPrescriptionDetails.appendChild(urlPrescription);
             tdProductDetails.appendChild(divPrescriptionDetails);
+
+
+
+
+            // var prescription = document.createElement("img");
+            // prescription.setAttribute("src", enquiry.prescription_url);
+            // prescription.setAttribute("height", "200px");
+            // prescription.setAttribute("width", "100px");
+            // divPrescriptionDetails.appendChild(prescription);
+            // tdProductDetails.appendChild(divPrescriptionDetails);
         }
         else if (enquiry.prescription_type == "text" || enquiry.prescription_type == "by_consultation") {
             var divProductDetails = document.createElement('div');
@@ -505,25 +515,25 @@ function createTable() {
         //5. Delivery Complete
 
         //estimate can be prepared only for pending enquiries..
-        if(enquiry.status_code != 0){
+        if (enquiry.status_code != 0) {
             console.log("showing prepare estimate");
             divPrepareEstimate.style.display = "block";
-            
+
         }
-        else{
+        else {
             divPrepareEstimate.style.display = "none";
         }
 
-        if(enquiry.status_code == 3){
+        if (enquiry.status_code == 3) {
             divPrepareEstimate.style.display = "block";
             btnPrepareEstimate.textContent = "View Estimate";
         }
 
         //invoice can be viewed only for delivered products
-        if(enquiry.status_code == 5){
+        if (enquiry.status_code == 5) {
             divViewInvoice.style.display = "block";
         }
-        else{
+        else {
             divViewInvoice.style.display = "none";
         }
 
@@ -531,7 +541,7 @@ function createTable() {
             divRejectEnquiry.style.display = "none";
         }
 
-        
+
 
         if (enquiry.status_code == 3 && enquiry.pickup_from_store) {
             divReadyForPickup.style.display = "block";
@@ -596,10 +606,6 @@ function createTable() {
             }
 
             rejectEnquiry(this.id, reason);
-
-
-
-
         })
 
         btnIssueInvoice.addEventListener("click", function () {
@@ -620,7 +626,7 @@ function createTable() {
 
         })
 
-        btnViewInvoice.addEventListener("click", function(){
+        btnViewInvoice.addEventListener("click", function () {
             var index = parseInt(this.id);
             var enquiry = enquiryList[index];
             window.location.href = "offline_invoice.html?invoiceid=" + enquiry.invoice_id;
@@ -682,7 +688,7 @@ function updateStatusCode(statusCode, docId) {
     })
         .then(function () {
             alert("Update Successful!!");
-           // window.location.href = "medicine_enquiries.html";
+            // window.location.href = "medicine_enquiries.html";
         })
         .catch(function (error) {
             // The document probably doesn't exist.
@@ -693,12 +699,12 @@ function updateStatusCode(statusCode, docId) {
 
 function updateInvoiceId(docId) {
 
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
         var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
         washingtonRef.update({
             invoice_id: newInvoiceId,
             invoice_timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    
+
         })
             .then(function () {
                 resolve();
@@ -706,12 +712,12 @@ function updateInvoiceId(docId) {
             .catch(function (error) {
                 // The document probably doesn't exist.
                 reject();
-    
+
             });
     })
 
-   
-    }
+
+}
 
 function getCustomerDetails(customerid) {
 
@@ -742,10 +748,10 @@ function getCustomerDetails(customerid) {
 function addProductsToDb(enquiry) {
     getNewInvoiceId().then(() => {
         createInvoice(enquiry).then(() => {
-            updateInvoiceId(enquiry.doc_id).then(()=>{
+            updateInvoiceId(enquiry.doc_id).then(() => {
                 window.location.href = "offline_invoice.html?invoiceid=" + newInvoiceId;
             })
-           
+
         })
     })
 }

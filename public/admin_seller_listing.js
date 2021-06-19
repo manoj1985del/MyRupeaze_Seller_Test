@@ -74,7 +74,8 @@ cmbSearchBy.addEventListener("change", function(){
 
 })
 if (type == "all") {
-     query = firebase.firestore().collection("seller");
+     query = firebase.firestore().collection("seller")
+            .where(sellerType, "==", "seller");
 }
 
 if (type == "byseller") {

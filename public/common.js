@@ -4,36 +4,70 @@ var btnHome = document.getElementById("btnHome");
 var btnLogout = document.getElementById("btnLogout");
 var sellerid = localStorage.getItem("sellerid");
 var adminLogin = localStorage.getItem("adminLogin");
-var userType = localStorage.getItem("userType");
+//var userType = localStorage.getItem("userType");
 
 var  mNumberOfPointsInOneRupee = 8;
 
 var  mPercentOfAmountCreditedIntoPoints = 1.25;
 
 console.log(adminLogin);
+var mSeller = null;
+
+function getSellerDetails() {
+    return new Promise((resolve, reject) =>{
+
+        var docRef = firebase.firestore().collection("seller").doc(sellerid);
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mSeller = doc.data();
+                resolve();
+            } else {
+                mSeller = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                reject();
+    
+            }
+        }).catch(function (error) {
+            mSeller = null;
+            console.log("Error getting document:", error);
+            reject();
+        });
+
+    })
+
+}
 
 
 if (btnHome != null) {
 
     btnHome.addEventListener("click", function () {
-        if(userType == "pharmacist"){
-            window.location.href = "pharmacist_home.html?sellerid=" + sellerid;
-        }
-        else if(userType == "doctor"){
-            window.location.href = "doctor_home.html?sellerid=" + sellerid;
-        }
-        else
-        {
-            if (adminLogin == null) {
-                window.location.href = "home.html?sellerid=" + sellerid;
+
+        getSellerDetails().then(()=>{
+
+            var userType = mSeller.sellerType;
+
+            if(userType == "pharmacist"){
+                window.location.href = "pharmacist_home.html?sellerid=" + sellerid;
             }
-    
-            else {
-                window.location.href = "admin_home.html?sellerid=" + sellerid;
+            else if(userType == "doctor"){
+                window.location.href = "doctor_home.html?sellerid=" + sellerid;
+            }
+            else
+            {
+                if (adminLogin == null) {
+                    window.location.href = "home.html?sellerid=" + sellerid;
+                }
+        
+                else {
+                    window.location.href = "admin_home.html?sellerid=" + sellerid;
+        
+                }
     
             }
 
-        }
+        })
+       
         
     })
 }

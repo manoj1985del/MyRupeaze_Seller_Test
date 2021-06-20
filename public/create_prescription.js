@@ -390,6 +390,7 @@ function submitResponse() {
         advices: advices,
         diagonosis: txtDiagonosis.value,
         followUp: txtFollowUp.value,
+        medicines_suggested : true,
         status: "completed"
     })
         .then(function () {

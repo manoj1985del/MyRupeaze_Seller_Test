@@ -725,7 +725,7 @@ function loadConsultationReceivedToday() {
                 console.log(consultation);
 
                
-                totalSales += parseFloat(consultation.charges);
+                totalSales += parseFloat(mSeller.charges);
                 console.log('sales = ' + totalSales);
                 totalOrders += 1;
                
@@ -818,7 +818,6 @@ function loadApprovedConsultations() {
 
 
 function loadingPendingAppointments(){ 
-    var appointments = [];
     var query = firebase.firestore()
     .collection('consultations')
     .where("seller_id", "==", sellerId)
@@ -826,14 +825,8 @@ function loadingPendingAppointments(){
 
 query.get()
     .then(function (snapshot) {
-        snapshot.forEach(function (doc) {
-
-            var data = toQueryString(doc.data());
-            appointments.push(data);
-        })
-    }).then(function () {
-        hPendingAppointments.textContent = appointments.length.toString();
-
+        hPendingAppointments.textContent = snapshot.docs.length.toString();
+        console.log(snapshot.docs.length.toString());
     }).catch(function (error) {
         console.log("Error getting documents: ", error);
     });
@@ -1418,7 +1411,7 @@ function getAmountForMonthForEnquiries() {
 
     for (var i = 0; i < currentMonthOrders.length; i++) {
         var consultation = currentMonthOrders[i];
-        finalAmount += parseFloat(consultation.charges);
+        finalAmount += parseFloat(mSeller.charges);
     }
     hSalesThisMonth.textContent = rupeeSymbol + finalAmount.toFixed(2);
 }

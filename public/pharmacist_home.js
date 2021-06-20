@@ -30,11 +30,11 @@ var pendingOrders = [];
 var todayOrders = [];
 var ordersLast7Days = [];
 var todayUnits = 0;
-var txtPendingOrder = document.getElementById("txtPendingOrders");
+//var txtPendingOrder = document.getElementById("txtPendingOrders");
 var txtTodayUnits = document.getElementById("txtUnits");
 var hSalesToday = document.getElementById("hSalesToday");
 
-var cardPendingOrder = document.getElementById("cardPendingOrder");
+//var cardPendingOrder = document.getElementById("cardPendingOrder");
 var cardUnitsToday = document.getElementById("cardUnitsToday");
 var cardSalesToday = document.getElementById("cardSalesToday");
 
@@ -64,6 +64,9 @@ var linkSubscription = document.getElementById("linkSubscription");
 var linkOfflineInvoices = document.getElementById("linkOfflineInvoices");
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
+var hWaitingForPickup = document.getElementById('hWaitingForPickup');
+var cardWaitingForPickup = document.getElementById('cardWaitingForPickup');
+
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
 
@@ -75,16 +78,19 @@ localStorage.setItem("sellerid", sellerId);
 
 Last7Days();
 loadSellerDetails();
-loadPendingOrders();
+
 loadTodayOrders();
 generatePayouts();
 getActiveEnquiries();
 
 //pending enquires
-loadEnquiries(0);
+loadEnquiries(0, hPendingEnquiries);
 
 //approved by customer enquiries
-loadEnquiries(3);
+loadEnquiries(3, hApprovedByBuyer);
+
+//waiting for pickup
+loadEnquiries(6, hWaitingForPickup);
 
 loadLast7DaysOrder().then(() => {
     loadLast7DaysPharmacyEnquiries().then(() => {
@@ -142,17 +148,7 @@ cardApprovedByBuyer.addEventListener("click", function () {
     window.location.href = "medicine_enquiries.html?type=approved";
 })
 
-cardPendingOrder.addEventListener("mouseenter", function () {
-    cardPendingOrder.classList.add("cardHover");
-});
 
-cardPendingOrder.addEventListener("mouseleave", function () {
-    cardPendingOrder.classList.remove("cardHover");
-});
-
-cardPendingOrder.addEventListener("click", function () {
-    window.location.href = "orders.html?type=pending";
-})
 
 
 
@@ -182,6 +178,20 @@ cardUnitsToday.addEventListener("mouseleave", function () {
 cardUnitsToday.addEventListener("click", function () {
     window.location.href = "medicine_enquiries.html?type=today_completed";
 });
+
+//today units
+cardWaitingForPickup.addEventListener("mouseenter", function () {
+    this.classList.add("cardHover");
+});
+
+cardWaitingForPickup.addEventListener("mouseleave", function () {
+    this.classList.remove("cardHover");
+});
+
+cardWaitingForPickup.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html?type=waiting_for_pickup";
+});
+
 
 btnUpdate.addEventListener("click", function () {
     window.location.href = "RegisterUser.html?sellerid=" + sellerId;
@@ -729,7 +739,7 @@ function fetchProductsForOrder(order, orderMap) {
     })
 }
 
-function loadEnquiries(status_code) {
+function loadEnquiries(status_code, hElement) {
     var pendingEnquiries = [];
     var query = firebase.firestore()
         .collection('pharmacist_requests')
@@ -744,13 +754,8 @@ function loadEnquiries(status_code) {
                 pendingEnquiries.push(data);
             })
         }).then(function () {
-            if (status_code == 0) {
-                hPendingEnquiries.textContent = pendingEnquiries.length.toString();
-            }
-
-            if (status_code == 3) {
-                hApprovedByBuyer.textContent = pendingEnquiries.length.toString();
-            }
+            hElement.textContent = pendingEnquiries.length.toString();
+           
 
 
         }).catch(function (error) {
@@ -759,26 +764,7 @@ function loadEnquiries(status_code) {
 }
 
 
-function loadPendingOrders() {
-    var query = firebase.firestore()
-        .collection('orders')
-        .where("seller_id", "==", sellerId)
-        .where("Status", "==", "Order received. Seller Confirmation pending.");
 
-    query.get()
-        .then(function (snapshot) {
-            snapshot.forEach(function (doc) {
-
-                var data = toQueryString(doc.data());
-                pendingOrders.push(data);
-            })
-        }).then(function () {
-            txtPendingOrder.textContent = pendingOrders.length.toString();
-
-        }).catch(function (error) {
-            console.log("Error getting documents: ", error);
-        });
-}
 
 function loadMyAccountsInfo(seller) {
     spanPan.textContent = "PAN Card No. " + seller.pan_no;

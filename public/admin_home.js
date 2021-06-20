@@ -62,6 +62,32 @@ var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsP
 var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
+var cardPendingDoctorsRequest = document.getElementById('cardPendingDoctorsRequest');
+var hPendingDoctorsRequest = document.getElementById('hPendingDoctorsRequest');
+var cardTotalDoctors = document.getElementById('cardTotalDoctors');
+var hTotalDoctors = document.getElementById('hTotalDoctors');
+
+var cardPendingPharmacyRequest = document.getElementById('cardPendingPharmacyRequest');
+var hPendingPharmacyRequest = document.getElementById('hPendingPharmacyRequest');
+var cardTtotalPharmacies = document.getElementById('cardTtotalPharmacies');
+var hTotalPharacists = document.getElementById('hTotalPharacists');
+
+var hPendingPharmaEnquiries = document.getElementById('hPendingPharmaEnquiries');
+var cardPendingPharmaEnquiries = document.getElementById('cardPendingPharmaEnquiries');
+ 
+var cardPharmaOrdersToPickup = document.getElementById('cardPharmaOrdersToPickup');
+var hPharmaOrdersToPickup = document.getElementById('hPharmaOrdersToPickup');
+
+var cardPharmacySalesToday = document.getElementById('cardPharmacySalesToday');
+var hPharmacySalesToday = document.getElementById('hPharmacySalesToday');
+ 
+var cardAppointmentsScheduledToday = document.getElementById('cardAppointmentsScheduledToday');
+var hAppointmentsScheduledToday = document.getElementById('hAppointmentsScheduledToday'); 
+
+var hPendingAppointments = document.getElementById('hPendingAppointments');
+var cardPendingAppointments = document.getElementById('cardPendingAppointments');
+
+
 
 localStorage.setItem("adminLogin", "true");
 
@@ -70,6 +96,7 @@ var last7DayOrderMap = new Map();
 
 
 var sellerId = getQueryVariable("sellerid");
+
 localStorage.setItem("sellerid", sellerId);
 
 
@@ -84,15 +111,30 @@ btnViewMedicalDashboard.addEventListener("click", function () {
 });
 
 
+
 Last7Days();
 getPendingProducts();
 loadSellerDetails(sellerId);
-loadTotalSellers();
+
+loadSellers("seller", hTotalSellers, "approved");
+loadSellers("seller", hPendingSellerRequest, "pending");
+loadSellers("pharmacist", hPendingPharmacyRequest, "pending");
+loadSellers("doctor", hPendingDoctorsRequest, "pending");
+loadSellers('pharmacist', hTotalPharacists, "approved" );
+loadSellers("doctor", hTotalDoctors, "approved");
+
+loadEnquiries(0, hPendingPharmaEnquiries);
+loadEnquiries(6, hPharmaOrdersToPickup);
+loadTodayAppointments();
+loadPendingAppointments();
+
 loadTotalUsers();
-loadPendingSellers();
+
+
 
 loadPendingOrders();
 loadTodayOrders();
+loadTodayPharmacyOrders();
 getActiveEnquiries();
 loadLast7DaysOrder().then(() => {
     loadLast7DaysOrderMap().then(() => {
@@ -184,7 +226,7 @@ cardPendingSellerRequest.addEventListener("mouseleave", function () {
 });
 
 cardPendingSellerRequest.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=pending";
+    window.location.href = "admin_seller_listing.html?type=pending&sellerType=seller";
 });
 
 
@@ -217,6 +259,127 @@ cardPendingApprovalsProduct.addEventListener("mouseleave", function(){
 cardPendingApprovalsProduct.addEventListener("click", function(){
     window.location.href = "admin_show_listing.html?type=pending";
 })
+
+
+//pending doctors approvals
+cardPendingDoctorsRequest.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPendingDoctorsRequest.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPendingDoctorsRequest.addEventListener("click", function () {
+    window.location.href = "admin_seller_listing.html?type=pending&sellerType=doctor";
+});
+
+//All doctors approvals
+cardTotalDoctors.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardTotalDoctors.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardTotalDoctors.addEventListener("click", function () {
+    window.location.href = "admin_seller_listing.html?type=approved&sellerType=doctor";
+});
+
+//pending pharmacies
+cardPendingPharmacyRequest.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPendingPharmacyRequest.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPendingPharmacyRequest.addEventListener("click", function () {
+    window.location.href = "admin_seller_listing.html?type=pending&sellerType=pharmacist";
+});
+
+//total pharmacies
+cardTtotalPharmacies.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardTtotalPharmacies.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardTtotalPharmacies.addEventListener("click", function () {
+    window.location.href = "admin_seller_listing.html?type=approved&sellerType=pharmacist";
+});
+
+//pending pharma enquireis
+cardPendingPharmaEnquiries.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPendingPharmaEnquiries.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPendingPharmaEnquiries.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html?type=pending&sellerType=admin";
+});
+
+//pending pharma enquireis
+cardPharmaOrdersToPickup.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPharmaOrdersToPickup.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPharmaOrdersToPickup.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html?type=waiting_for_pickup&sellerType=admin";
+});
+
+//pending pharma enquireis
+cardPharmacySalesToday.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPharmacySalesToday.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPharmacySalesToday.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html?type=today_completed&sellerType=admin";
+});
+
+
+//pending pharma enquireis
+cardAppointmentsScheduledToday.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardAppointmentsScheduledToday.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardAppointmentsScheduledToday.addEventListener("click", function () {
+    window.location.href = "pending_appointments.html?type=today&sellerType=admin";
+});
+
+//pending pharma enquireis
+cardPendingAppointments.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPendingAppointments.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPendingAppointments.addEventListener("click", function () {
+    window.location.href = "pending_appointments.html?type=pending&sellerType=admin";
+});
+
+
 
 
 function getMonthNmae(index) {
@@ -754,29 +917,22 @@ function loadSellerDetails(sellerid) {
 
 }
 
-function loadTotalSellers() {
+function loadSellers(sellerType, hCtrlHeader, status) {
+  
+    console.log("sellertype = " + sellerType);
     firebase.firestore().collection("seller")
-        .where("status", "==", "approved")
+        .where("status", "==", status)
+        .where("sellerType", "==", sellerType)
         .get()
         .then(function (querySnapshot) {
-            hTotalSellers.textContent = querySnapshot.docs.length;
+            hCtrlHeader.textContent = querySnapshot.docs.length;
         })
         .catch(function (error) {
             console.log("Error getting documents: ", error);
+            console.log(sellerType + " - " + status);
         });
 }
 
-function loadPendingSellers() {
-    firebase.firestore().collection("seller")
-        .where("status", "==", "pending")
-        .get()
-        .then(function (querySnapshot) {
-            hPendingSellerRequest.textContent = querySnapshot.docs.length;
-        })
-        .catch(function (error) {
-            console.log("Error getting documents: ", error);
-        });
-}
 
 
 function loadTotalUsers() {
@@ -1125,6 +1281,113 @@ function getActiveEnquiries(){
             });
 
 }
+
+function loadEnquiries(status_code, hElement) {
+    var pendingEnquiries = [];
+    var query = firebase.firestore()
+        .collection('pharmacist_requests')
+        .where("status_code", "==", status_code);
+
+    query.get()
+        .then(function (snapshot) {
+            snapshot.forEach(function (doc) {
+
+                var data = toQueryString(doc.data());
+                pendingEnquiries.push(data);
+            })
+        }).then(function () {
+            hElement.textContent = pendingEnquiries.length.toString();
+           
+        }).catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+}
+
+function loadTodayPharmacyOrders() {
+
+    var totalOrders = 0;
+    var totalSales = 0;
+
+    var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setMilliseconds(0);
+    today.setSeconds(0);
+
+
+    var query = firebase.firestore()
+        .collection('pharmacist_requests')
+        .where("invoice_timestamp", ">=", today)
+        .where("cancelled", "==", false);
+
+    query.get()
+        .then(function (snapshot) {
+            if (snapshot.docs.length == 0 || snapshot.docs.length == undefined) {
+               // txtTodayUnits.textContent = totalOrders.toString();
+                hPharmacySalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+
+            }
+            snapshot.forEach(function (doc) {
+                var order = doc.data();
+                for (var i = 0; i < order.product_names.length; i++) {
+                    if (order.status_code != 5) {
+                        continue;
+                    }
+
+                   // totalOrders += parseFloat(order.product_qty[i]);
+                    totalSales += parseFloat(order.product_prices_total[i]);
+                }
+                hPharmacySalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+               // txtTodayUnits.textContent = totalOrders.toString();
+
+            })
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+
+}
+
+function loadTodayAppointments(){
+    var d = new Date();
+    var dd = d.getDate();
+    var mm = d.getMonth() + 1;
+    var month = getMonthNmae(mm);
+    var yyyy = d.getFullYear().toString();
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    var yy = yyyy.slice(-2);
+    var formattedDate = dd + '-' + month + '-' + yy;
+
+    console.log(formattedDate);
+
+    var query = firebase.firestore()
+    .collection('consultations')
+    .where("consultation_date", "==", formattedDate)
+
+query.get()
+    .then(function (snapshot) {
+        hAppointmentsScheduledToday.textContent = snapshot.docs.length.toString();
+    }).catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+function loadPendingAppointments(){ 
+    var query = firebase.firestore()
+    .collection('consultations')
+    .where("status", "==", "pending");
+
+query.get()
+    .then(function (snapshot) {
+        hPendingAppointments.textContent = snapshot.docs.length.toString();
+    }).catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+
 
 
 

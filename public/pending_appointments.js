@@ -14,10 +14,10 @@ var mRedeemPoints = 0;
 var todayDate;
 
 
-var adm = getQueryVariable("adm");
+var sellerType = getQueryVariable("sellerType");
 var mType = getQueryVariable("type");
 var admin = false;
-if (adm == "1") {
+if (sellerType == "admin") {
     admin = true;
 }
 
@@ -114,7 +114,6 @@ function getEnquiries() {
         if (mType == "today") {
             var query = firebase.firestore()
                 .collection('consultations')
-                .where("seller_id", "==", sellerId)
                 .where("consultation_date", "==", todayDate)
         }
 
@@ -129,7 +128,6 @@ function getEnquiries() {
         if (mType == "approved") {
             var query = firebase.firestore()
                 .collection('consultations')
-                .where("seller_id", "==", sellerId)
                 .where("status", "==", "approved")
                 .orderBy('timestamp', 'desc');
         }
@@ -198,10 +196,11 @@ function createTableHeaders() {
     thDoctor.textContent = "Doctor Details";
 
     var thDate = document.createElement("th");
-    thDate.textContent = "Date";
+    thDate.textContent = "Booking Date";
+
 
     var thConsultationSlot = document.createElement("th");
-    thConsultationSlot.textContent = "Time Slot";
+    thConsultationSlot.textContent = "Consultation Date/Slot";
 
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
@@ -256,7 +255,7 @@ function createTable() {
         //Patient Details
         var divPatientDetails = document.createElement('div');
         var spanPatientDetails = document.createElement('span');
-        spanPatientDetails.innerHTML = consultation.customer_name + "<br />Phone No. " + consultation.customer_phone
+        spanPatientDetails.innerHTML = consultation.customer_name + "<br />Phone No. " + mCustomer.Phone
             + "<br />" + consultation.customer_address_line_1 + "<br />" + consultation.customer_address_line_2 + "<br/>" + consultation.customer_address_line_3
             + "<br />" + consultation.customer_city + " - (" + consultation.customer_state + ")" + "<br />"
             + "Pincode: " + consultation.customer_pincode;
@@ -294,7 +293,8 @@ function createTable() {
         // Consultation Slot
         var divTimeSlot = document.createElement('div');
         var spanTimeSlot = document.createElement('span');
-        spanTimeSlot.textContent = consultation.slot;
+        spanTimeSlot.innerHTML = "<b>Consultation Date:</b> " + consultation.consultation_date + "<br /><b>Slot: </b>" + consultation.slot;
+      //  spanTimeSlot.textContent = consultation.slot;
         divTimeSlot.appendChild(spanTimeSlot);
         tdConsultationSlot.appendChild(divTimeSlot);
 

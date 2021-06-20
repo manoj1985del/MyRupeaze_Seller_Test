@@ -1062,7 +1062,7 @@ function updateSellerDetails() {
    return washingtonRef.update({
       seller_name: txtNmae.value,
       mobile: txtMobile.value,
-      charges: txtConsultationCharges.value,
+      charges:  parseFloat(txtConsultationCharges.value),
       consultation_id: txtConsultationId,
       slots: consultationSlots,
       company_name: txtCompanyName.value,
@@ -1166,7 +1166,7 @@ function saveSellerDetails() {
          email: email,
          mobile: txtMobile.value,
          company_name: txtCompanyName.value,
-         charges: txtConsultationCharges.value,
+         charges: parseFloat(txtConsultationCharges.value),
          consultation_id: consultationId,
          slots: consultationSlots,
          address_line1: txtAddressLine1.value,

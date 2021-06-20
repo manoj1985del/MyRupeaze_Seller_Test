@@ -5,6 +5,7 @@ var table = document.getElementById("tblData");
 var rupeeSymbol = "₹ ";
 
 var sellerId = localStorage.getItem("sellerid");
+
 var mSeller;
 var enquiryList = [];
 var mCustomer = null;
@@ -13,12 +14,13 @@ var mSeller = null;
 var mRedeemPoints = 0;
 
 
-var adm = getQueryVariable("adm");
 var mType = getQueryVariable("type");
 var admin = false;
-if (adm == "1") {
+var sellerType = getQueryVariable('sellerType');
+if(sellerType == 'admin'){
     admin = true;
 }
+
 console.log(admin);
 getSellerDetails();
 getEnquiries();
@@ -50,6 +52,15 @@ function getEnquiries() {
 
         }
 
+        if (mType == "waiting_for_pickup") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 6)
+                .where("seller_id", "==", sellerId)
+                .orderBy('timestamp', 'desc');
+
+
+        }
+
         if (mType == "today_completed") {
             var query = firebase.firestore()
                 .collection('pharmacist_requests')
@@ -57,6 +68,8 @@ function getEnquiries() {
                 .where("invoice_timestamp", ">=", today)
                 .where("cancelled", "==", false);
         }
+
+
 
         if (mType == "all") {
             query = firebase.firestore().collection("pharmacist_requests")
@@ -87,6 +100,14 @@ function getEnquiries() {
                 .collection('pharmacist_requests')
                 .where("invoice_timestamp", ">=", today)
                 .where("cancelled", "==", false);
+        }
+
+        if (mType == "waiting_for_pickup") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 6)
+                .orderBy('timestamp', 'desc');
+
+
         }
 
         if (mType == "all") {
@@ -476,6 +497,9 @@ function createTable() {
         btnReject.setAttribute("type", "button");
         divRejectEnquiry.appendChild(btnReject);
         divAction.appendChild(divRejectEnquiry);
+        if(admin){
+            divAction.style.display = "none";
+        }
         tdAction.appendChild(divAction);
 
         var divReadyForPickup = document.createElement('div');
@@ -515,7 +539,7 @@ function createTable() {
         //5. Delivery Complete
 
         //estimate can be prepared only for pending enquiries..
-        if (enquiry.status_code != 0) {
+        if (enquiry.status_code == 0) {
             console.log("showing prepare estimate");
             divPrepareEstimate.style.display = "block";
 
@@ -591,10 +615,10 @@ function createTable() {
             var id = parseInt(this.id);
             var enquiry = enquiryList[id];
             if (enquiry.prescription_type == "image") {
-                openInNewTab("pharmacist_accept_enquiry_prescription.html?docid=" + enquiry.doc_id + "&adm=" + adm + "&et=" + enquiry.prescription_type);
+                openInNewTab("pharmacist_accept_enquiry_prescription.html?docid=" + enquiry.doc_id + "&adm=" + admin + "&et=" + enquiry.prescription_type);
             }
             else {
-                openInNewTab("pharmacist_accept_enquiry.html?docid=" + enquiry.doc_id + "&adm=" + adm + "&et=" + enquiry.prescription_type);
+                openInNewTab("pharmacist_accept_enquiry.html?docid=" + enquiry.doc_id + "&adm=" + admin + "&et=" + enquiry.prescription_type);
             }
 
         })

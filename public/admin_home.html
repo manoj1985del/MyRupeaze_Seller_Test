@@ -38,7 +38,7 @@
 
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #020001;">
-    <a class="navbar-brand" href="#"><img src ="img_logo.png" alt="">
+    <a class="navbar-brand" href="#"><img src="img_logo.png" alt="">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,197 +46,266 @@
     </button>
 
     <div class="ml-auto">
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
 
-      <ul class="navbar-nav">
+        <ul class="navbar-nav">
 
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Orders
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
-            <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
-            <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
-            <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
-            <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
-            <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
-          </div>
-        </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Orders
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
+              <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
+              <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
+              <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
+              <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
+              <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
+            </div>
+          </li>
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Sellers
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For Approval</a>
-            <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
-            <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
-            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended Sellers</a>
-           
-          </div>
-        </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Sellers
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="admin_seller_listing.html?type=pending&sellerType=seller">Sellers - Pending
+                For Approval</a>
+              <a class="dropdown-item" href="admin_seller_listing.html?type=approved&sellerType=seller">Approved
+                Sellers</a>
+              <a class="dropdown-item" href="admin_seller_listing.html?type=all&sellerType=seller">All Sellers</a>
+              <a class="dropdown-item" href="admin_seller_listing.html?type=suspended&sellerType=seller">Suspended
+                Sellers</a>
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Products
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
-            <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
-           
-          </div>
-        </li>
+            </div>
+          </li>
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Videos
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
-            <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
-           
-          </div>
-        </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Products
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
+              <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
+
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Videos
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
+              <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
+
+            </div>
+          </li>
 
 
-        <button type="submit" id="btnHome" value="Home" class="btn mr-3" style="width: 100px; background-color: #e95807; color:white">Home</button>
-        <button type="submit" id="btnLogout" value="Logout" class="btn" style="width: 100px; background-color: #e95807; color:white">
-         
-          Logout
-        </button> 
-      </ul>
+          <button type="submit" id="btnHome" value="Home" class="btn mr-3"
+            style="width: 100px; background-color: #e95807; color:white">Home</button>
+          <button type="submit" id="btnLogout" value="Logout" class="btn"
+            style="width: 100px; background-color: #e95807; color:white">
+
+            Logout
+          </button>
+        </ul>
+      </div>
     </div>
-  </div>
   </nav>
 
-<div id="seller">
+  <div id="seller">
 
-  <div class="container mt-3">
-    <div class="row">
-      <div class="col-sm-3">
-        <div class="card" id="cardSalesToday">
-          <div class="card-body">
-            <h5 class="card-title d-flex justify-content-center" id="txtTodaySales">0</h5>
-            <p class="card-text d-flex justify-content-center">Sales Today</p>
+    <div class="mt-3">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="card" id="cardSalesToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="txtTodaySales">0</h5>
+              <p class="card-text d-flex justify-content-center">Sales Today</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="col-sm-3">
-        <div class="card" id="cardUnitsToday">
-          <div class="card-body">
-            <h5 class="card-title d-flex justify-content-center" id="txtUnits">0</h5>
-            <p class="card-text d-flex justify-content-center">Units Today</p>
+        <div class="col-md-2">
+          <div class="card" id="cardUnitsToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="txtUnits">0</h5>
+              <p class="card-text d-flex justify-content-center">Units Today</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="col-sm-3">
-        <div class="card" id="cardPendingSellerRequest">
-          <div class="card-body">
-            <h5 class="card-title d-flex justify-content-center" id="hPendingSellerRequest">0</h5>
-            <p class="card-text d-flex justify-content-center">Pending Seller Requests</p>
+        <div class="col-md-2">
+          <div class="card" id="cardPendingSellerRequest">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingSellerRequest">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Seller Requests</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="col-sm-3">
-        <div class="card" id="cardTotalSellers">
-          <div class="card-body">
-            <h5 class="card-title d-flex justify-content-center" id="hTotalSellers">0</h5>
-            <p class="card-text d-flex justify-content-center">Total Sellers Associated</p>
+        <div class="col-md-2">
+          <div class="card" id="cardTotalSellers">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hTotalSellers">0</h5>
+              <p class="card-text d-flex justify-content-center">Total Sellers Associated</p>
+            </div>
           </div>
         </div>
-      </div>
 
+        <div class="col-md-2">
+          <div class="card" id="cardPendingOrder">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="txtPendingOrders">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Orders</p>
+            </div>
+          </div>
 
-      
-    </div>
-
-    <div class="row mt-2">
-    <div class="col-sm-3">
-      <div class="card" id="cardPendingOrder">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="txtPendingOrders">0</h5>
-          <p class="card-text d-flex justify-content-center">Pending Orders</p>
         </div>
-      </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="card" id="cardPendingCODPayouts">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hPendingCODPayouts">0</h5>
-          <p class="card-text d-flex justify-content-center">Pending COD Payout</p>
+        <div class="col-md-2">
+          <div class="card" id="cardPendingCODPayouts">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingCODPayouts">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending COD Payout</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="card" id="cardPendingElecPayouts">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hPendingElecPayouts">0</h5>
-          <p class="card-text d-flex justify-content-center">Pending Electronic Payout</p>
+      </div>
+
+      <div class="row mt-2">
+
+        <div class="col-md-2">
+          <div class="card" id="cardPendingElecPayouts">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingElecPayouts">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Electronic Payout</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hSalesThisMonth">0</h5>
-          <p class="card-text d-flex justify-content-center">Sales This Month</p>
+        <div class="col-md-2">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hSalesThisMonth">0</h5>
+              <p class="card-text d-flex justify-content-center">Sales This Month</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-
-  </div>
-
-  <div class="row mt-2">
-    <div class="col-sm-3">
-      <div class="card" id="cardTotalUsers">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hTotalUsers">0</h5>
-          <p class="card-text d-flex justify-content-center">Total Users Associated</p>
+        <div class="col-md-2">
+          <div class="card" id="cardTotalUsers">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hTotalUsers">0</h5>
+              <p class="card-text d-flex justify-content-center">Total Users Associated</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="card" id="cardCODCommission">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hCODCommission">0</h5>
-          <p class="card-text d-flex justify-content-center">COD Commission Balance</p>
+        <div class="col-md-2">
+          <div class="card" id="cardCODCommission">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hCODCommission">0</h5>
+              <p class="card-text d-flex justify-content-center">COD Commission Balance</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="card" id="cardElecCommission">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hElecCommission">0</h5>
-          <p class="card-text d-flex justify-content-center">Electronic Commission Balance</p>
+        <div class="col-md-2">
+          <div class="card" id="cardElecCommission">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hElecCommission">0</h5>
+              <p class="card-text d-flex justify-content-center">Electronic Commission Balance</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="card" id="cardPendingApprovalsProduct">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center" id="hPendingApprovalProducts">0</h5>
-          <p class="card-text d-flex justify-content-center">Pending Approvals For Products</p>
+        <div class="col-md-2">
+          <div class="card" id="cardPendingApprovalsProduct">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingApprovalProducts">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Approvals For Products</p>
+            </div>
+          </div>
         </div>
+
+
       </div>
-    </div>
-<!-- 
+
+      <hr />
+
+      <div class="row mt-2">
+
+        <div class="col-md-2">
+          <div class="card" id="cardPharmacySalesToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPharmacySalesToday">0</h5>
+              <p class="card-text d-flex justify-content-center">Pharmacy Sales Today</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardDoctorSalesToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hDoctorSalesToday">0</h5>
+              <p class="card-text d-flex justify-content-center">Doctor Sales Today</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardPendingAppointments">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingAppointments">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Appointments</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardAppointmentsScheduledToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hAppointmentsScheduledToday">0</h5>
+              <p class="card-text d-flex justify-content-center">Appointments Scheduled Today</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardPendingDoctorsRequest">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingDoctorsRequest">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Doctors Requests</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardPendingPharmacyRequest">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingPharmacyRequest">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Pharmacy Requests</p>
+            </div>
+          </div>
+        </div>
+
+
+        
+
+       
+
+   
+        <!-- 
     <div class="col-sm-3">
       <div class="card">
         <div class="card-body">
@@ -247,29 +316,104 @@
     </div> -->
 
 
-  </div>
+      </div>
 
-  </div>
+      <div class="row mt-2">
 
-  <div class="row ml-2">
-  <div class="col-md-4">
-    <canvas id="myChart" width="500" height="500"></canvas>
-  </div>
+        <div class="col-md-2">
+          <div class="card" id="cardTtotalPharmacies">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hTotalPharacists">0</h5>
+              <p class="card-text d-flex justify-content-center">Total Pharmacies Associated</p>
+            </div>
+          </div>
+        </div>
 
-  <div class="col-md-4">
-    <canvas id="myChart1" width="500" height="500"></canvas>
-  </div>
+        <div class="col-md-2">
+          <div class="card" id="cardTotalDoctors">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hTotalDoctors">0</h5>
+              <p class="card-text d-flex justify-content-center">Total Doctors Associated</p>
+            </div>
+          </div>
+        </div>
 
-  <div  class="card mt-4" style="width: 25rem;">
-    <img id="imgProgress" src="img_progress.gif" style="width: 70px; height: 70px"/>
-    <div class="card-body">
-      <h5 class="card-title">My Account</h5>
-      <h6 id="h6CompanyName" class="card-subtitle mb-2 text-muted"></h6>
-      <hr />
-      <!-- <span id="spanMerchantid"></span> -->
-      <!-- <br />
+        <div class="col-md-2">
+          <div class="card" id="cardPendingPharmaEnquiries">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingPharmaEnquiries">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Pharma Enquiries</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardPharmaOrdersToPickup">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPharmaOrdersToPickup">0</h5>
+              <p class="card-text d-flex justify-content-center">Pharma Orders To Pickup</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardPendingDoctorsRequest">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingDoctorsRequest">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Doctors Requests</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="card" id="cardPendingPharmacyRequest">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id=" ">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Pharmacy Requests</p>
+            </div>
+          </div>
+        </div>
+
+
+        
+
+       
+
+   
+        <!-- 
+    <div class="col-sm-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-center">0</h5>
+          <p class="card-text d-flex justify-content-center">Sales This Month</p>
+        </div>
+      </div>
+    </div> -->
+
+
+      </div>
+
+    </div>
+
+    <div class="row ml-2">
+      <div class="col-md-4">
+        <canvas id="myChart" width="500" height="500"></canvas>
+      </div>
+
+      <div class="col-md-4">
+        <canvas id="myChart1" width="500" height="500"></canvas>
+      </div>
+
+      <div class="card mt-4" style="width: 25rem;">
+        <img id="imgProgress" src="img_progress.gif" style="width: 70px; height: 70px" />
+        <div class="card-body">
+          <h5 class="card-title">My Account</h5>
+          <h6 id="h6CompanyName" class="card-subtitle mb-2 text-muted"></h6>
+          <hr />
+          <!-- <span id="spanMerchantid"></span> -->
+          <!-- <br />
       <br /> -->
-      <!-- <span id="spanGST"></span>
+          <!-- <span id="spanGST"></span>
       <br />
       <br />
       <span id="spanPANCardNumber"></span>
@@ -284,54 +428,57 @@
       <br />
       <br /> -->
 
-      <div>
-        <button id="btnViewMedicalDashboard">View Medical Dashboard</b>
-          <!-- <a href="admin_home_medical.html" class="card-link" style="visibility: none;">View Medical Dashboard</a> -->
+          <div>
+            <button id="btnViewMedicalDashboard">View Medical Dashboard</b>
+              <!-- <a href="admin_home_medical.html" class="card-link" style="visibility: none;">View Medical Dashboard</a> -->
 
+          </div>
+
+          <a href="#" class="card-link" id="btnUpdate" style="visibility: none;">Update Details</a>
+          <div>
+            <a href="admin_dashboard.html" class="card-link" id="btnUpdate" style="visibility: none;">Update
+              Dashboard</a>
+          </div>
+
+          <div>
+            <a href="admin_view_offline_invoice.html" class="card-link" id="btnViewOfflineInvoices"
+              style="visibility: none;">Offline Invoices</a>
+          </div>
+
+          <div>
+            <a href="admin_categories_and_subcategories.html" class="card-link" id="btnViewOfflineInvoices"
+              style="visibility: none;">Define SubCategories</a>
+          </div>
+
+          <div>
+            <a href="admin_coupons.html" class="card-link">Add New Coupon</a>
+          </div>
+
+          <div>
+            <a href="order_enquiries.html?adm=1" class="card-link" id="linkOrderEnquiries">Order Enquiries</a>
+          </div>
+
+          <div>
+            <a href="admin_feedback.html" class="card-link" id="linkOrderEnquiries">Feedbacks and Suggestions</a>
+          </div>
+
+          <div>
+            <a href="faq.html" class="card-link" id="linkfaq">FAQ Management</a>
+          </div>
+
+
+        </div>
       </div>
-
-      <a href="#" class="card-link" id="btnUpdate" style="visibility: none;">Update Details</a>
-      <div>
-        <a href="admin_dashboard.html" class="card-link" id="btnUpdate" style="visibility: none;">Update Dashboard</a>
-      </div>
-
-      <div>
-        <a href="admin_view_offline_invoice.html" class="card-link" id="btnViewOfflineInvoices" style="visibility: none;">Offline Invoices</a>
-      </div>
-
-      <div>
-        <a href="admin_categories_and_subcategories.html" class="card-link" id="btnViewOfflineInvoices" style="visibility: none;">Define SubCategories</a>
-      </div>
-
-      <div>
-        <a href="admin_coupons.html" class="card-link">Add New Coupon</a>
-      </div>
-
-      <div>
-        <a href="order_enquiries.html?adm=1" class="card-link" id="linkOrderEnquiries">Order Enquiries</a>
-      </div>
-
-      <div>
-        <a href="admin_feedback.html" class="card-link" id="linkOrderEnquiries">Feedbacks and Suggestions</a>
-      </div>
-
-      <div>
-        <a href="faq.html" class="card-link" id="linkfaq">FAQ Management</a>
-      </div>
-
-    
     </div>
-  </div>
-</div>
 
 
 
-  <!-- <div class = "container myBorder" id="divSellerInfo" style="width: 500px; height: 500px;">
+    <!-- <div class = "container myBorder" id="divSellerInfo" style="width: 500px; height: 500px;">
     <h3>My Account</h3>
 
   </div> -->
 
-</div>
+  </div>
 
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -344,26 +491,26 @@
     integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
     crossorigin="anonymous"></script>
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="/__/firebase/7.15.5/firebase-app.js"></script>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/7.15.5/firebase-app.js"></script>
 
-<script src="/__/firebase/7.15.5/firebase-auth.js"></script>
-<script src="/__/firebase/7.15.5/firebase-storage.js"></script>
-<script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
-<script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
-<script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
 
-<!-- TODO: Add SDKs for Firebase products that you want to use
+  <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-<script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+  <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
 
-<!-- Initialize Firebase -->
-<script src="/__/firebase/init.js"></script>
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
 
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-<script src="common.js"></script>
-<script src="admin_home.js"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script src="common.js"></script>
+  <script src="admin_home.js"></script>
 
 
 </body>

@@ -42,40 +42,43 @@ class SettleAccountProps {
 }
 
 var type = getQueryVariable("type");
+var mSellerType = getQueryVariable("sellerType");
 var query = "";
 
-cmbSearchBy.addEventListener("change", function(){
+cmbSearchBy.addEventListener("change", function () {
 
-    if(this.value == "None"){
+    if (this.value == "None") {
         loadOrdersAndProductForSellers(sellerList);
     }
 
-    if(this.value == "Seller Name"){
+    if (this.value == "Seller Name") {
         arrSearchBy = arrSellerName;
     }
 
-    if(this.value == "Seller City"){
+    if (this.value == "Seller City") {
         arrSearchBy = arrSellerCity;
     }
 
-    if(this.value == "Seller Category"){
+    if (this.value == "Seller Category") {
         arrSearchBy = arrSellerCategory;
     }
 
-    if(this.value == "Merchant Id"){
+    if (this.value == "Merchant Id") {
         arrSearchBy = arrMerchantId;
     }
 
-    if(this.value == "Area Pin"){
+    if (this.value == "Area Pin") {
         arrSearchBy = arrAreaPin;
     }
 
     autocomplete(txtSearch, arrSearchBy);
 
 })
+
+console.log(type);
 if (type == "all") {
-     query = firebase.firestore().collection("seller")
-            .where(sellerType, "==", "seller");
+    query = firebase.firestore().collection("seller")
+        .where("sellerType", "==", mSellerType);
 }
 
 if (type == "byseller") {
@@ -84,15 +87,22 @@ if (type == "byseller") {
 }
 
 if (type == "pending") {
-    query = firebase.firestore().collection("seller").where("status", "==", "pending");
+    query = firebase.firestore().collection("seller")
+        .where("status", "==", "pending")
+        .where("sellerType", "==", mSellerType);
 }
 
 if (type == "suspended") {
-    query = firebase.firestore().collection("seller").where("status", "==", "suspended");
+    query = firebase.firestore().collection("seller")
+        .where("status", "==", "suspended")
+        .where("sellerType", "==", mSellerType);
 }
 
 if (type == "approved") {
-    query = firebase.firestore().collection("seller").where("status", "==", "approved");
+    console.log(mSellerType);
+    query = firebase.firestore().collection("seller")
+        .where("status", "==", "approved")
+        .where("sellerType", "==", mSellerType);
 }
 
 if (type == null) {
@@ -106,58 +116,58 @@ loadSellers(query).then(() => {
             loadOrdersAndProductForSellers(sellerList);
         })
     }
-// query = firebase.firestore().collection("seller");
+    // query = firebase.firestore().collection("seller");
 })
 
 btnSearch.addEventListener("click", function () {
 
 
     var localSellerList = [];
-    if(cmbSearchBy.value == "Seller Name"){
+    if (cmbSearchBy.value == "Seller Name") {
         arrSearchBy = arrSellerName;
-        for(var i = 0; i < sellerList.length; i++){
+        for (var i = 0; i < sellerList.length; i++) {
             var seller = sellerList[i];
-            if(seller.company_name == txtSearch.value){
+            if (seller.company_name == txtSearch.value) {
                 localSellerList.push(seller);
             }
         }
     }
 
-    if(cmbSearchBy.value == "Seller City"){
+    if (cmbSearchBy.value == "Seller City") {
         arrSearchBy = arrSellerCity;
-        for(var i = 0; i < sellerList.length; i++){
+        for (var i = 0; i < sellerList.length; i++) {
             var seller = sellerList[i];
-            if(seller.city == txtSearch.value){
+            if (seller.city == txtSearch.value) {
                 localSellerList.push(seller);
             }
         }
     }
 
-    if(cmbSearchBy.value == "Seller Category"){
+    if (cmbSearchBy.value == "Seller Category") {
         arrSearchBy = arrSellerCategory;
-        for(var i = 0; i < sellerList.length; i++){
+        for (var i = 0; i < sellerList.length; i++) {
             var seller = sellerList[i];
-            if(seller.seller_category == txtSearch.value){
+            if (seller.seller_category == txtSearch.value) {
                 localSellerList.push(seller);
             }
         }
     }
 
-    if(cmbSearchBy.value == "Merchant Id"){
+    if (cmbSearchBy.value == "Merchant Id") {
         arrSearchBy = arrMerchantId;
-        for(var i = 0; i < sellerList.length; i++){
+        for (var i = 0; i < sellerList.length; i++) {
             var seller = sellerList[i];
-            if(seller.merchant_id == txtSearch.value){
+            if (seller.merchant_id == txtSearch.value) {
                 localSellerList.push(seller);
             }
         }
     }
 
-    if(cmbSearchBy.value == "Area Pin"){
+    if (cmbSearchBy.value == "Area Pin") {
         arrSearchBy = arrMerchantId;
-        for(var i = 0; i < sellerList.length; i++){
+        for (var i = 0; i < sellerList.length; i++) {
             var seller = sellerList[i];
-            if(seller.seller_area_pin == txtSearch.value){
+            if (seller.seller_area_pin == txtSearch.value) {
                 localSellerList.push(seller);
             }
         }
@@ -210,27 +220,27 @@ function loadSellers(query) {
                     var seller = doc.data();
                     sellerList.push(seller);
 
-                    if(!arrSellerCategory.includes(seller.seller_category)){
+                    if (!arrSellerCategory.includes(seller.seller_category)) {
                         arrSellerCategory.push(seller.seller_category);
                     }
 
-                    if(!arrSellerCity.includes(seller.city)){
+                    if (!arrSellerCity.includes(seller.city)) {
                         arrSellerCity.push(seller.city);
                     }
 
-                    if(!arrMerchantId.includes(seller.merchant_id)){
+                    if (!arrMerchantId.includes(seller.merchant_id)) {
                         arrMerchantId.push(seller.merchant_id);
                     }
 
-                    if(!arrSellerName.includes(seller.company_name)){
+                    if (!arrSellerName.includes(seller.company_name)) {
                         arrSellerName.push(seller.company_name);
                     }
 
-                    if(!arrAreaPin.includes(seller.seller_area_pin)){
+                    if (!arrAreaPin.includes(seller.seller_area_pin)) {
                         arrAreaPin.push(seller.seller_area_pin);
                     }
 
-                    
+
                 });
             }).then(function () {
                 console.log("loaded sellers.. resolving");
@@ -249,7 +259,7 @@ function loadAllSellers() {
     return new Promise((resolve, reject) => {
         pageHeader.textContent = "Seller Listing";
 
-            firebase.firestore().collection("seller")
+        firebase.firestore().collection("seller")
             .get()
             .then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
@@ -259,7 +269,7 @@ function loadAllSellers() {
 
 
 
-                   
+
                 });
             }).then(function () {
                 resolve();
@@ -359,6 +369,7 @@ function loadComissionMap() {
 function createTableHeaders() {
     var tr = document.createElement('tr');
 
+    var docImage = document.createElement('th');
     var sellerDetailsHeader = document.createElement("th");
     var sellerAddressHeader = document.createElement("th");
     var bankDetailsHeader = document.createElement("th");
@@ -370,6 +381,7 @@ function createTableHeaders() {
     var actionHeader = document.createElement('th');
 
 
+    docImage.innerHTML = "Image";
     sellerDetailsHeader.innerHTML = "Seller Details";
     sellerAddressHeader.innerHTML = "Address";
     bankDetailsHeader.innerHTML = "Bank Details";
@@ -380,6 +392,10 @@ function createTableHeaders() {
     statusHeader.innerHTML = "Status";
     actionHeader.innerHTML = "Action";
 
+    if (mSellerType == "doctor") {
+        tr.appendChild(docImage);
+        sellerDetailsHeader.innerHTML = "Doctor Details";
+    }
     tr.appendChild(sellerDetailsHeader);
     tr.appendChild(sellerAddressHeader);
     tr.appendChild(bankDetailsHeader);
@@ -410,6 +426,7 @@ function drawTable(sellerList) {
 
         var tr = document.createElement("tr");
 
+        var tdDocImage = document.createElement('td');
         var tdSellerDetails = document.createElement("td");
         var tdSellerAddress = document.createElement("td");
         var tdBankDetails = document.createElement("td");
@@ -421,8 +438,18 @@ function drawTable(sellerList) {
         var tdAction = document.createElement("td");
 
         var seller = sellerList[i];
-        if(seller.merchant_id == "texpedia"){
+        if (seller.sellerType == "admin") {
             continue;
+        }
+
+        var divDocImage = document.createElement('div');
+        if (mSellerType == "doctor") {
+            var imgDoc = document.createElement('img');
+            imgDoc.style.width = "100px";
+            imgDoc.style.height = "100px";
+            imgDoc.src = seller.doctor_img_url;
+            divDocImage.appendChild(imgDoc);
+            tdDocImage.appendChild(divDocImage);
         }
 
         //ADD SELLER DETAILS
@@ -431,42 +458,48 @@ function drawTable(sellerList) {
 
         var subscriptionStatus = "<b>Subscription Status:</b> Not Subscribed";
 
-        if(seller.subscription_end_date != null)
-        {
-        var ord = seller.subscription_end_date.toDate();
-        var dd = ord.getDate();
-        var mm = ord.getMonth() + 1;
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        var yyyy = ord.getFullYear();
-        var formattedDay = dd + "-" + getMonthNmae(mm) + "-" + yyyy;
+        if (seller.subscription_end_date != null) {
+            var ord = seller.subscription_end_date.toDate();
+            var dd = ord.getDate();
+            var mm = ord.getMonth() + 1;
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            var yyyy = ord.getFullYear();
+            var formattedDay = dd + "-" + getMonthNmae(mm) + "-" + yyyy;
 
-        var today = new Date();
-        today.setHours(0);
-        today.setMinutes(0);
-        today.setMilliseconds(0);
-        today.setSeconds(0);
+            var today = new Date();
+            today.setHours(0);
+            today.setMinutes(0);
+            today.setMilliseconds(0);
+            today.setSeconds(0);
 
-        if(today > seller.subscription_end_date.toDate()){
-            subscriptionStatus = "<b>Subscription Status:</b> Expired <br/> <b>Subscription Expired On:</b>" + formattedDay
-        }
+            if (today > seller.subscription_end_date.toDate()) {
+                subscriptionStatus = "<b>Subscription Status:</b> Expired <br/> <b>Subscription Expired On:</b>" + formattedDay
+            }
 
-        else{
-            subscriptionStatus = "<b>Subscription Status:</b> Active <br/> <b>Subscription Valid Till:</b>" + formattedDay
+            else {
+                subscriptionStatus = "<b>Subscription Status:</b> Active <br/> <b>Subscription Valid Till:</b>" + formattedDay
+            }
         }
-    }
 
 
 
         var details = "<b> Company Name: " + seller.company_name + "</b><br />"
-            + "Seller Name: " + seller.seller_name + "<br/> <br />"
+            + "Name: " + seller.seller_name + "<br/> <br />"
 
             + "<b>Contact No. </b>" + seller.mobile + "<br />"
             + "Email: " + seller.email + "<br />"
             + "Merchant id: " + seller.merchant_id + "<br/>"
             + "Seller id: " + seller.seller_id + "<br/>"
             + "GST: " + seller.gstin + "<br /><br />" + subscriptionStatus;
+
+
+        if(mSellerType == "doctor"){
+            details += "<br /> <br /><b>Consultation Charges: </b>" + rupeeSymbol +  seller.charges
+                        + "<br /><b>Speciality: </b>" + seller.speciality
+                        + "<br /><b>Degrees: </b> " + seller.degrees;
+        }
 
 
 
@@ -523,7 +556,7 @@ function drawTable(sellerList) {
             var order = orderList[orderNumber];
             //if order was a cancelled one.. no need to process it
             if (order.cancelled == true) {
-               // ordersTobeSettled.set(seller.seller_id, order);
+                // ordersTobeSettled.set(seller.seller_id, order);
                 continue;
             }
             var deliveryDate = order.delivery_date;
@@ -540,14 +573,14 @@ function drawTable(sellerList) {
                     amtToReduce = product.return_amount;
                 }
 
-                if(product.cancelled_by_seller){
-                    product.Offer_Price= 0;
+                if (product.cancelled_by_seller) {
+                    product.Offer_Price = 0;
                 }
 
-            var commission = commision_map.get(product.Category);
-            var offer_price = product.Offer_Price * product.Qty;
-            offer_price = offer_price - amtToReduce;
-            var commission_value = (offer_price * commission) / 100;
+                var commission = commision_map.get(product.Category);
+                var offer_price = product.Offer_Price * product.Qty;
+                offer_price = offer_price - amtToReduce;
+                var commission_value = (offer_price * commission) / 100;
 
                 //If product is not delivered yet.. it will fall in freezed category
                 if (deliveryDate == null) {
@@ -590,7 +623,7 @@ function drawTable(sellerList) {
                         disbursableAmountTemp += offer_price;
                         availableCommissionTemp += commission_value;
                         arrOrders.push(order);
-                      
+
                     }
                     else {
                         freezedAmountTemp += offer_price;
@@ -602,29 +635,29 @@ function drawTable(sellerList) {
 
             }
 
-        var tradeChargesFreezed = 28;
-        var tradeChargesAvailable = 28;
+            var tradeChargesFreezed = 28;
+            var tradeChargesAvailable = 28;
 
-        if(freezedAmountTemp == 0){
-            tradeChargesFreezed = 0;
-        }
+            if (freezedAmountTemp == 0) {
+                tradeChargesFreezed = 0;
+            }
 
-        if(disbursableAmountTemp == 0){
-            tradeChargesAvailable = 0;
-        }
-       
-        var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
-        var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
-        var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
-        freezedAmount += freezedAmountTemp - freezedDeductions;
-        freezedCommission += freezedDeductions;
+            if (disbursableAmountTemp == 0) {
+                tradeChargesAvailable = 0;
+            }
 
-        var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
-        var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
-        var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
-        disbursableAmount += disbursableAmountTemp - disbursableDeductions;
-        availableCommission += disbursableDeductions;
-        
+            var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
+            var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
+            var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
+            freezedAmount += freezedAmountTemp - freezedDeductions;
+            freezedCommission += freezedDeductions;
+
+            var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
+            var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
+            var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
+            disbursableAmount += disbursableAmountTemp - disbursableDeductions;
+            availableCommission += disbursableDeductions;
+
 
         }
 
@@ -680,8 +713,19 @@ function drawTable(sellerList) {
         divReject.appendChild(btnReject);
         divApprove.appendChild(divReject);
 
+        var divDoctorDegrees = document.createElement('div');
+        var btnViewDocDegree = document.createElement("button");
+        btnViewDocDegree.textContent = "View Degree";
+        btnViewDocDegree.style.width = "150px";
+        btnViewDocDegree.setAttribute("id", i.toString());
+        btnViewDocDegree.style.marginBottom = "10px";
+        divDoctorDegrees.appendChild(btnViewDocDegree);
+        divDoctorDegrees.style.display = "none";
+        divApprove.appendChild(divDoctorDegrees);
 
-
+        if (mSellerType == "doctor") {
+            divDoctorDegrees.style.display = "block";
+        }
 
         divAction.appendChild(divApprove);
 
@@ -790,6 +834,9 @@ function drawTable(sellerList) {
         tdStatus.appendChild(divStatus);
         tdAction.appendChild(divAction);
 
+        if (mSellerType == "doctor") {
+            tr.appendChild(tdDocImage);
+        }
         tr.appendChild(tdSellerDetails);
         tr.appendChild(tdSellerAddress);
         tr.appendChild(tdBankDetails);
@@ -804,19 +851,19 @@ function drawTable(sellerList) {
 
         //Click Handlers
 
-        btnOfflineInvoices.addEventListener("click", function(){
+        btnOfflineInvoices.addEventListener("click", function () {
             var index = parseInt(this.id);
             var seller = sellerList[index];
             var href = "admin_view_offline_invoice.html?sellerid=" + seller.seller_id;
-            window.open(href, "_blank"); 
+            window.open(href, "_blank");
             //window.location.href = href;
         })
 
-        btnOnlineOrders.addEventListener("click", function(){
+        btnOnlineOrders.addEventListener("click", function () {
             var index = parseInt(this.id);
             var seller = sellerList[index];
             var href = "admin_orders.html?type=all&sellerid=" + seller.seller_id;
-            window.open(href, "_blank"); 
+            window.open(href, "_blank");
             //window.location.href = href;
         })
 
@@ -960,15 +1007,35 @@ function drawTable(sellerList) {
             var seller = sellerList[index];
 
             var link = document.createElement("a");
-                if (link.download !== undefined) {
-                    link.setAttribute("href", seller.gst_url);
-                    link.setAttribute("target", "_blank");
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
+            if (link.download !== undefined) {
+                link.setAttribute("href", seller.gst_url);
+                link.setAttribute("target", "_blank");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         })
+
+        btnViewDocDegree.addEventListener("click", function () {
+
+            var index = parseInt(this.id);
+            var seller = sellerList[index];
+
+            var link = document.createElement("a");
+
+            if (link.download !== undefined) {
+                link.setAttribute("href", seller.degree_url);
+                link.setAttribute("target", "_blank");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+
+        })
+
 
         btnDownloadCheque.addEventListener("click", function () {
 
@@ -992,7 +1059,7 @@ function drawTable(sellerList) {
             var index = parseInt(this.id);
             var seller = sellerList[index];
             var href = "admin_orders.html?type=unsettled&sellerid=" + seller.seller_id;
-            window.open(href, "_blank"); 
+            window.open(href, "_blank");
         })
 
         btnSettleAccount.addEventListener("click", function () {

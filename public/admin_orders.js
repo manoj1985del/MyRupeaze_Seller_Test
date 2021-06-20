@@ -44,7 +44,7 @@ var divErrorMsg = document.getElementById("divErrorMsg");
 
 var btnNext = document.getElementById("next");
 var btnPrevious = document.getElementById("previous");
-var btnHome = document.getElementById("btnHome");
+//var btnHome = document.getElementById("btnHome");
 //var divContent = document.getElementById("content");
 var btnSearch = document.getElementById("btnSearch");
 var txtSearch = document.getElementById("txtSearch");
@@ -59,7 +59,7 @@ var divDateFilter = document.getElementById("divDateFilter");
 var divSearchBy = document.getElementById("divSearchBy");
 
 var nextQuery;
-var sellerid = getQueryVariable("sellerid");
+var sellerid = localStorage.getItem('sellerid');
 
 
 errMsg.textContent = "";

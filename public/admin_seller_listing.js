@@ -24,6 +24,7 @@ var doctorConsultationMap = new Map();
 var ordersProductMap = new Map();
 var ordersTobeSettled = new Map();
 var amountTobeSettled = new Map();
+var amoutnTobeSettledWithDocs = new Map();
 var freezeStartDate;
 var freezeEndDate;
 var dtFreezeWindowStart = null;
@@ -218,7 +219,6 @@ function loadOrdersAndProductForSellers(sellerList) {
             drawTable(sellerList);
         }
         else {
-            alert("going to create table for doctors");
             createDoctorsTable(sellerList);
         }
 
@@ -1167,6 +1167,33 @@ function settleOrders(order) {
 
 }
 
+
+function settleConsultation(consultation) {
+
+
+    return new Promise((resolve, reject) => {
+
+        var washingtonRef = firebase.firestore().collection("consultations").doc(consultation.consultation_id);
+        washingtonRef.update({
+            settlement_done: true,
+            settlement_date: firebase.firestore.FieldValue.serverTimestamp()
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log(error);
+                reject();
+                // The document probably doesn't exist.
+
+            });
+
+    })
+
+
+
+}
+
 function getSellerProducts(seller) {
 
     return new Promise((resolve, reject) => {
@@ -1358,6 +1385,20 @@ function sendAccountSettlementEmail(seller, dtStart, amount) {
 
 }
 
+function sendDocsSettlementEmail(seller, amount) {
+
+    var msg = "<h3>Hello " + seller.company_name + "</h3>"
+        + "<p>Greetings from My Rupeaze!!</p>"
+        + "<p>We are pleased to inform you that we have deposited the amount of <b>" + amount + "</b> in your bank account against your consultations"
+        + "<p>For any queries call us on our toll free number - <b> 1800 212 1484 </b></p>"
+        + "<p>With Kind Regards,<br/>"
+        + "My Rupeaze Team </p>";
+
+    console.log("going to send email");
+    sendEmail(seller.email, "My Rupeaze Account Settlement", msg);
+
+}
+
 function createTableHeadersForDoctors() {
     var tr = document.createElement('tr');
 
@@ -1538,6 +1579,7 @@ function createDoctorsTable() {
         
         var commission = amount * (mAppInfo.doctor_commission / 100);
         disbursableAmount = amount - commission;
+        amoutnTobeSettledWithDocs.set(seller.seller_id, disbursableAmount);
 
 
 
@@ -1634,6 +1676,8 @@ function createDoctorsTable() {
         divUnsettledOrders.appendChild(divSettleAccount);
         divAction.appendChild(divUnsettledOrders);
 
+        
+
       
 
      
@@ -1672,6 +1716,7 @@ function createDoctorsTable() {
 
         if (disbursableAmount == 0) {
             btnSettleAccount.disabled = true;
+            divUnsettledOrders.style.display = "none";
         }
 
 
@@ -1705,22 +1750,7 @@ function createDoctorsTable() {
 
         //Click Handlers
 
-        btnOfflineInvoices.addEventListener("click", function () {
-            var index = parseInt(this.id);
-            var seller = sellerList[index];
-            var href = "admin_view_offline_invoice.html?sellerid=" + seller.seller_id;
-            window.open(href, "_blank");
-            //window.location.href = href;
-        })
-
-        btnOnlineOrders.addEventListener("click", function () {
-            var index = parseInt(this.id);
-            var seller = sellerList[index];
-            var href = "admin_orders.html?type=all&sellerid=" + seller.seller_id;
-            window.open(href, "_blank");
-            //window.location.href = href;
-        })
-
+       
         btnSuspendAccount.addEventListener("click", function () {
 
             var index = parseInt(this.id);
@@ -1924,10 +1954,10 @@ function createDoctorsTable() {
 
             var index = parseInt(this.id);
             var seller = sellerList[index];
-            var amount = amountTobeSettled.get(seller.seller_id);
+            var amount = amoutnTobeSettledWithDocs.get(seller.seller_id);
             var amt = amount.toFixed(2);
 
-            var msg = "You are about to settle the amount of - " + amt + " with seller - " + seller.company_name + ".\nDo you wish to continue?";
+            var msg = "You are about to settle the amount of - " + amt + " with doctor - " + seller.company_name + ".\nDo you wish to continue?";
 
             if (!confirm(msg)) {
                 return;
@@ -1937,16 +1967,16 @@ function createDoctorsTable() {
             divContent.style.display = "none";
 
             //var orderList = map
-            var orderList = ordersTobeSettled.get(seller.seller_id);
+            var consultationList = doctorConsultationMap.get(seller.seller_id);
             var promiseList = [];
-            for (var i = 0; i < orderList.length; i++) {
-                var order = orderList[i];
-                promiseList.push(settleOrders(order));
+            for (var i = 0; i < consultationList.length; i++) {
+                var consultation = consultationList[i];
+                promiseList.push(settleConsultation(consultation));
             }
             Promise.all(promiseList).then(() => {
-                var formattedDate = formatDate(dtFreezeWindowStart);
-                sendAccountSettlementEmail(seller, formattedDate, amt);
-                window.location.href = "admin_seller_listing.html?type=all";
+               
+                sendDocsSettlementEmail(seller, amt);
+                window.location.href = "admin_seller_listing.html?type=approved&sellerType=doctor";
 
             })
 

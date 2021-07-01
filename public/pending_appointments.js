@@ -86,6 +86,16 @@ function getEnquiries() {
                 .orderBy('timestamp', 'desc');
         }
 
+        if (mType == "unsettled") {
+            alert(sellerId);
+            query = firebase.firestore()
+                .collection('consultations')
+                .where("status", "==", "completed")
+                .where("seller_id", "==", sellerId)
+                .where("settlement_done", "==", false)
+                .orderBy('timestamp', 'desc');
+        }
+
 
         if (mType == "all") {
             query = firebase.firestore().collection("consultations")

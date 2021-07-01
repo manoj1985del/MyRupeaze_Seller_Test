@@ -64,14 +64,14 @@ function getEnquiries() {
         }
 
         if (mType == "today") {
-            var query = firebase.firestore()
+            query = firebase.firestore()
                 .collection('consultations')
                 .where("seller_id", "==", sellerId)
                 .where("consultation_date", "==", todayDate)
         }
 
         if (mType == "receivedToday") {
-            var query = firebase.firestore()
+            query = firebase.firestore()
                 .collection('consultations')
                 .where("seller_id", "==", sellerId)
                 .where("timestamp", ">=", today)
@@ -79,7 +79,7 @@ function getEnquiries() {
         }
 
         if (mType == "approved") {
-            var query = firebase.firestore()
+            query = firebase.firestore()
                 .collection('consultations')
                 .where("seller_id", "==", sellerId)
                 .where("status", "==", "approved")
@@ -112,23 +112,38 @@ function getEnquiries() {
         }
 
         if (mType == "today") {
-            var query = firebase.firestore()
+            query = firebase.firestore()
                 .collection('consultations')
                 .where("consultation_date", "==", todayDate)
         }
 
         if (mType == "receivedToday") {
-            var query = firebase.firestore()
+            query = firebase.firestore()
                 .collection('consultations')
-                .where("seller_id", "==", sellerId)
                 .where("timestamp", ">=", today)
                 .orderBy('timestamp', 'desc');
         }
 
         if (mType == "approved") {
-            var query = firebase.firestore()
+            query = firebase.firestore()
                 .collection('consultations')
                 .where("status", "==", "approved")
+                .orderBy('timestamp', 'desc');
+        }
+
+        if (mType == "unsettled") {
+            query = firebase.firestore()
+                .collection('consultations')
+                .where("status", "==", "completed")
+                .where("settlement_done", "==", false)
+                .orderBy('timestamp', 'desc');
+        }
+
+        if (mType == "pending_refund") {
+            query = firebase.firestore()
+                .collection('consultations')
+                .where("cancelled", "==", true)
+                .where("refund_issued", "==", false)
                 .orderBy('timestamp', 'desc');
         }
 
@@ -255,7 +270,7 @@ function createTable() {
         //Patient Details
         var divPatientDetails = document.createElement('div');
         var spanPatientDetails = document.createElement('span');
-        spanPatientDetails.innerHTML = consultation.customer_name + "<br />Phone No. " + mCustomer.Phone
+        spanPatientDetails.innerHTML = consultation.customer_name + "<br />Phone No. " + consultation.customer_phone
             + "<br />" + consultation.customer_address_line_1 + "<br />" + consultation.customer_address_line_2 + "<br/>" + consultation.customer_address_line_3
             + "<br />" + consultation.customer_city + " - (" + consultation.customer_state + ")" + "<br />"
             + "Pincode: " + consultation.customer_pincode;
@@ -294,17 +309,30 @@ function createTable() {
         var divTimeSlot = document.createElement('div');
         var spanTimeSlot = document.createElement('span');
         spanTimeSlot.innerHTML = "<b>Consultation Date:</b> " + consultation.consultation_date + "<br /><b>Slot: </b>" + consultation.slot;
-      //  spanTimeSlot.textContent = consultation.slot;
+        //  spanTimeSlot.textContent = consultation.slot;
         divTimeSlot.appendChild(spanTimeSlot);
         tdConsultationSlot.appendChild(divTimeSlot);
 
 
         // Status
         var divStatus = document.createElement('div');
+        var divStatus1 = document.createElement('div');
         var spanStatus = document.createElement('span');
-        spanStatus.textContent = consultation.status;
-        divStatus.appendChild(spanStatus);
+        var divRefund = document.createElement('div');
+        var spanRefund = document.createElement("span");
+        spanStatus.innerHTML = consultation.status;
+        if(consultation.refund_issued){
+         
+            spanRefund.marginTop = "10px";
+            spanRefund.style.color = "#ff0000";
+            spanRefund.innerHTML += "Refund Issued";
+        }
+        divStatus1.appendChild(spanStatus);
+        divRefund.appendChild(spanRefund);
+        divStatus.appendChild(divStatus1);
+        divStatus.appendChild(divRefund);
         tdStatus.appendChild(divStatus);
+        
 
 
         var divAction = document.createElement('div');
@@ -330,6 +358,18 @@ function createTable() {
         btnCancelAppointment.setAttribute("type", "button");
         divRejectConsultation.appendChild(btnCancelAppointment);
         divAction.appendChild(divRejectConsultation);
+
+        //admin Issue Refund
+        var divIssueRefund = document.createElement('div');
+        var btnIssueRefund = document.createElement("button");
+        divIssueRefund.style.marginTop = "10px";
+        btnIssueRefund.style.width = "150px";
+        btnIssueRefund.textContent = "Issue Refund";
+        btnIssueRefund.setAttribute("id", consultation.consultation_id);
+        btnIssueRefund.setAttribute("type", "button");
+        divIssueRefund.style.display = "none";
+        divIssueRefund.appendChild(btnIssueRefund);
+        divAction.appendChild(divIssueRefund);
 
         //completed
         var divViewPrescription = document.createElement('div');
@@ -387,6 +427,21 @@ function createTable() {
             divAcceptConsultation.style.display = "none";
             divRejectConsultation.style.display = "none";
             divViewPrescription.style.display = "none";
+
+            if (consultation.status == "cancelled") {
+                if(consultation.refund_issued){
+                    divIssueRefund.style.display = "none";
+                }
+                else{
+
+                    divIssueRefund.style.display = "block";
+                }
+              
+            }
+
+            if (consultation.status == "pending") {
+                divRejectConsultation.style.display = "block";
+            }
         }
 
         tr.appendChild(tdConsultationId);
@@ -420,6 +475,30 @@ function createTable() {
 
             var consultation_id = this.id;
             window.location.href = "prescription_pdf.html?consultation_id=" + consultation_id;
+        })
+
+        btnIssueRefund.addEventListener("click", function () {
+            var consultation_id = this.id;
+            getConsultationDetail(consultation_id).then(() => {
+                var walletMoneyUsed = mConsultation.charges - mConsultation.paid_by_card;
+                var htmlData = "Consultation Charges: " + mConsultation.charges + "\n"
+                    + "Wallet Money Used / Offers Used: " + walletMoneyUsed + "\n"
+                    + "Amount Being Refunded: " + mConsultation.paid_by_card;
+
+                alert(htmlData);
+
+                //will be enabled with my rupeaze integration
+                var points = walletMoneyUsed * mNumberOfPointsInOneRupee;
+
+                creditPoints(points, mConsultation.customer_id).then(() => {
+                    updateRefundStatus(consultation_id).then(() => {
+                        // refundPrepaidOrder(mConsultation.paid_by_card, mConsultation.consultation_id);
+                    })
+
+                })
+
+            })
+
         })
 
 
@@ -471,7 +550,8 @@ function cancelAppointment(docId) {
     var consultationRef = firebase.firestore().collection("consultations").doc(docId);
     consultationRef.update({
         status: "cancelled",
-        cancelled: true
+        cancelled: true,
+        refund_issued: false,
     })
         .then(function () {
             alert("Appointment has ben cancelled by you!!");
@@ -504,6 +584,116 @@ function getSellerDetails() {
             console.log("Error getting document:", error);
             reject();
         });
+
+    })
+
+}
+
+var mConsultation = null;
+function getConsultationDetail(consultation_id) {
+
+    return new Promise((resolve, reject) => {
+        var docRef = firebase.firestore().collection("consultations").doc(consultation_id);
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mConsultation = doc.data();
+                resolve();
+            } else {
+                mConsultation = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                reject();
+
+            }
+        }).catch(function (error) {
+            mConsultation = null;
+            console.log("Error getting document:", error);
+            reject();
+        });
+
+    })
+
+}
+
+function refundPrepaidOrder(amtTobeRefunded, paymentId) {
+    console.log("going to refund amount");
+
+    return new Promise((resolve, reject) => {
+
+
+        var url = '/payments/' + paymentId + "/refund";
+        var params = {
+            amount: amtTobeRefunded * 100
+        };
+
+        var xmlHttp = new XMLHttpRequest();
+
+        xmlHttp.onreadystatechange = function (res) {
+            if (xmlHttp.readyState == 4) {
+                console.log("response text = " + xmlHttp.responseText);
+
+                res = JSON.parse(xmlHttp.responseText);
+                if (res.status == "success") {
+                    resolve();
+                    //sendRefundMail(refundMailProps);
+                }
+                else {
+                    setErrorHeader(res.status);
+                    reject();
+                }
+            }
+        }
+        xmlHttp.open("POST", url, true);
+        xmlHttp.setRequestHeader("Content-type", "application/json");
+        xmlHttp.send(JSON.stringify(params));
+
+    })
+
+}
+
+
+function creditPoints(points, customer_id) {
+
+    return new Promise((resolve, reject) => {
+
+        var washingtonRef = firebase.firestore().collection("users").doc(customer_id);
+
+        // Set the "capital" field of the city 'DC'
+        return washingtonRef.update({
+            points: firebase.firestore.FieldValue.increment(points)
+        })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                reject();
+            });
+
+    })
+
+
+}
+
+
+function updateRefundStatus(docId) {
+
+
+    return new Promise((resolve, reject) => {
+
+        var consultationRef = firebase.firestore().collection("consultations").doc(docId);
+        consultationRef.update({
+            refund_issued: true,
+        })
+            .then(function () {
+                resolve();
+
+            })
+            .catch(function (error) {
+                // The document probably doesn't exist.
+                reject();
+
+            });
 
     })
 

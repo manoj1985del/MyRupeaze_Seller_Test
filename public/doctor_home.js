@@ -444,10 +444,10 @@ function loadLast7DaysPharmacyEnquiries() {
 
 
         for (var i = 0; i < ordersLast7Days.length; i++) {
-            var order = ordersLast7Days[i];
+            var consultation = ordersLast7Days[i];
           
 
-            var orderDate = order.timestamp.toDate();
+            var orderDate = consultation.timestamp.toDate();
             var dd = orderDate.getDate();
             var mm = orderDate.getMonth() + 1;
             if (dd < 10) {
@@ -456,7 +456,7 @@ function loadLast7DaysPharmacyEnquiries() {
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
             qty += 1;
-            sales += mSeller.charges;
+            sales += consultation.charges;
 
             // for (var i = 0; i < order.product_names.length; i++) {
             //     qty += order.product_qty[i];
@@ -725,7 +725,7 @@ function loadConsultationReceivedToday() {
                 console.log(consultation);
 
                
-                totalSales += parseFloat(mSeller.charges);
+                totalSales += parseFloat(consultation.charges);
                 console.log('sales = ' + totalSales);
                 totalOrders += 1;
                

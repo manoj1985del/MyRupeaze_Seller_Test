@@ -10,8 +10,12 @@ var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 var arrLast7Days = [];
 var mapUnits7Days = new Map();
 var mapSales7Days = new Map();
+var mapSales7DaysDoc = new Map();
+var mapSales7DaysPharma = new Map();
 var last7DaySales = [];
 var last7DayUnits = [];
+var last7DaySalesDoc = [];
+var last7DaySalesPharma = [];
 var commision_map = new Map();
 var unsettledOrdersProductMap = new Map();
 
@@ -87,6 +91,12 @@ var hAppointmentsScheduledToday = document.getElementById('hAppointmentsSchedule
 var hPendingAppointments = document.getElementById('hPendingAppointments');
 var cardPendingAppointments = document.getElementById('cardPendingAppointments');
 
+var hDoctorSalesToday = document.getElementById('hDoctorSalesToday');
+var cardDoctorSalesToday = document.getElementById('cardDoctorSalesToday');
+
+var hConsultationsPendingForRefund = document.getElementById('hConsultationsPendingForRefund');
+var cardConsultationPendingForRefund = document.getElementById('cardConsultationPendingForRefund');
+
 
 
 localStorage.setItem("adminLogin", "true");
@@ -127,6 +137,8 @@ loadEnquiries(0, hPendingPharmaEnquiries);
 loadEnquiries(6, hPharmaOrdersToPickup);
 loadTodayAppointments();
 loadPendingAppointments();
+loadConsultationsToRefund();
+loadConsultationReceivedToday();
 
 loadTotalUsers();
 
@@ -144,6 +156,14 @@ loadLast7DaysOrder().then(() => {
 
 });
 
+loadLast7DaysOrderForDoc().then(()=>{
+    loadLast7DaysDoctorConsultation();
+})
+
+loadLast7DaysOrderPharma().then(()=>{
+    loadLast7DaysPharmacyEnquiries();
+})
+
 getThisMonthOrders().then(()=>{
     console.log(currentMonthOrders);
     var promiseList = [];
@@ -158,10 +178,10 @@ getThisMonthOrders().then(()=>{
 
 loadSalesChart();
 loadUnitsChart();
+loadPharmaChart();
+loadDocChart();
 generatePayouts();
-//getUnSettledOrders();
-//loadFreeChart();
-//loadUnitsChart();
+
 
 cardPendingOrder.addEventListener("mouseenter", function () {
     cardPendingOrder.classList.add("cardHover");
@@ -379,6 +399,34 @@ cardPendingAppointments.addEventListener("click", function () {
     window.location.href = "pending_appointments.html?type=pending&sellerType=admin";
 });
 
+//
+
+//pending pharma enquireis
+cardDoctorSalesToday.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardDoctorSalesToday.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardDoctorSalesToday.addEventListener("click", function () {
+    window.location.href = "pending_appointments.html?type=receivedToday&sellerType=admin";
+});
+
+//consultations to be refunded
+cardConsultationPendingForRefund.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardConsultationPendingForRefund.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardConsultationPendingForRefund.addEventListener("click", function () {
+    window.location.href = "pending_appointments.html?type=pending_refund&sellerType=admin";
+});
+
 
 
 
@@ -452,6 +500,8 @@ function Last7Days() {
         var day = dd + "-" + getMonthNmae(mm);
         mapUnits7Days.set(day, 0);
         mapSales7Days.set(day, 0);
+        mapSales7DaysDoc.set(day, 0);
+        mapSales7DaysPharma.set(day, 0);
         arrLast7Days.push(day);
         if (mm < 10) {
             mm = '0' + mm;
@@ -544,6 +594,98 @@ function loadUnitsChart() {
             datasets: [{
                 label: 'Weekly Units',
                 data: last7DayUnits,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(125, 212, 20, 1)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(125, 212, 20, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            legend: {
+                onClick: (e) => e.stopPropagation()
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function loadPharmaChart() {
+    var ctx = document.getElementById('myChartPharma').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: arrLast7Days,
+            datasets: [{
+                label: 'Weekly Pharma Sales',
+                data: last7DaySalesPharma,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(125, 212, 20, 1)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(125, 212, 20, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            legend: {
+                onClick: (e) => e.stopPropagation()
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function loadDocChart() {
+    var ctx = document.getElementById('myChartDoctor').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: arrLast7Days,
+            datasets: [{
+                label: 'Weekly Doctor Sales',
+                data: last7DaySalesDoc,
                 backgroundColor: [
                     'rgba(255, 99, 132, 1)',
                     'rgba(54, 162, 235, 1)',
@@ -1386,6 +1528,257 @@ query.get()
         console.log("Error getting documents: ", error);
     });
 }
+
+
+function loadConsultationsToRefund(){ 
+    var query = firebase.firestore()
+    .collection('consultations')
+    .where("cancelled", "==", true)
+    .where("refund_issued", "==", false);
+
+query.get()
+    .then(function (snapshot) {
+        hConsultationsPendingForRefund.textContent = snapshot.docs.length.toString();
+    }).catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+}
+
+function loadConsultationReceivedToday() {
+
+    console.log("inside method");
+
+    var totalOrders = 0;
+    var totalSales = 0;
+
+    var today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setMilliseconds(0);
+    today.setSeconds(0);
+
+        var query = firebase.firestore()
+        .collection('consultations')
+        .where("timestamp", ">=", today)
+        .orderBy('timestamp', 'desc');
+
+        console.log(today);
+
+    query.get()
+        .then(function (snapshot) {
+            if (snapshot.docs.length == 0 || snapshot.docs.length == undefined) {
+               // txtTodayUnits.textContent = totalOrders.toString();
+                console.log("empty list");
+                hDoctorSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+
+            }
+            snapshot.forEach(function (doc) {
+                var consultation = doc.data();
+                console.log(consultation);
+
+               
+                totalSales += parseFloat(consultation.charges);
+                console.log('sales = ' + totalSales);
+                totalOrders += 1;
+               
+
+            })
+
+            hDoctorSalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
+            //txtConsultationReceivedToday.textContent = totalOrders;
+        })
+        .catch(function (error) {
+            console.log("Error getting documents: ", error);
+        });
+
+}
+
+var consultationsLast7Days = [];
+function loadLast7DaysOrderForDoc() {
+
+    return new Promise((resolve, reject) => {
+
+        var tomorrow = new Date();
+        var initialDate = new Date();
+        var today = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        initialDate.setDate(today.getDate() - 6);
+
+        initialDate.setHours(0);
+        initialDate.setMinutes(0);
+        initialDate.setMilliseconds(0);
+        initialDate.setSeconds(0);
+
+
+        var query = firebase.firestore()
+            .collection('consultations')
+            .where("timestamp", ">=", initialDate)
+            .where("timestamp", "<", tomorrow)
+            .where("cancelled", "==", false);
+
+        query.get()
+            .then(function (snapshot) {
+                snapshot.forEach(function (doc) {
+
+                    var consultation = doc.data();
+                    consultationsLast7Days.push(consultation);
+
+                })
+            }).then(function () {
+                resolve();
+
+            })
+
+    })
+
+
+
+}
+
+function loadLast7DaysDoctorConsultation() {
+    return new Promise((resolve, reject) => {
+        var index = 0;
+        var qty = 0;
+        var sales = 0;
+
+
+        for (var i = 0; i < consultationsLast7Days.length; i++) {
+            var consultation = consultationsLast7Days[i];
+          
+
+            var orderDate = consultation.timestamp.toDate();
+            var dd = orderDate.getDate();
+            var mm = orderDate.getMonth() + 1;
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            var formattedDay = dd + "-" + getMonthNmae(mm);
+
+            qty += 1;
+            sales += consultation.charges;
+
+          
+
+            var mapSales = mapSales7DaysDoc.get(formattedDay);
+            mapSales += sales;
+           // mapUnits7Days.set(formattedDay, mapQty);
+            mapSales7DaysDoc.set(formattedDay, mapSales);
+        }
+
+
+
+        for (var sale of mapSales7DaysDoc.values()) {
+            last7DaySalesDoc.push(sale);
+
+        }
+
+        loadDocChart();
+
+        // loadSalesChart();
+        // loadUnitsChart();
+        resolve();
+
+
+    })
+
+
+}
+
+
+var pharmaOrdersLast7Days = [];
+function loadLast7DaysOrderPharma() {
+
+    return new Promise((resolve, reject) => {
+
+        var tomorrow = new Date();
+        var initialDate = new Date();
+        var today = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        initialDate.setDate(today.getDate() - 6);
+
+        initialDate.setHours(0);
+        initialDate.setMinutes(0);
+        initialDate.setMilliseconds(0);
+        initialDate.setSeconds(0);
+
+
+        var query = firebase.firestore()
+            .collection('pharmacist_requests')
+            .where("invoice_timestamp", ">=", initialDate)
+            .where("invoice_timestamp", "<", tomorrow)
+            .where("cancelled", "==", false);
+
+        query.get()
+            .then(function (snapshot) {
+                snapshot.forEach(function (doc) {
+
+                    var order = doc.data();
+                    pharmaOrdersLast7Days.push(order);
+
+                })
+            }).then(function () {
+                resolve();
+
+            })
+
+    })
+
+}
+
+function loadLast7DaysPharmacyEnquiries() {
+    return new Promise((resolve, reject) => {
+        var index = 0;
+        var qty = 0;
+        var sales = 0;
+
+
+        for (var i = 0; i < pharmaOrdersLast7Days.length; i++) {
+            var order = pharmaOrdersLast7Days[i];
+            console.log(order);
+
+            var orderDate = order.invoice_timestamp.toDate();
+            var dd = orderDate.getDate();
+            var mm = orderDate.getMonth() + 1;
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            var formattedDay = dd + "-" + getMonthNmae(mm);
+
+            for (var i = 0; i < order.product_names.length; i++) {
+                qty += order.product_qty[i];
+                sales += order.product_prices_total[i];
+
+            }
+
+            // var mapQty = mapUnits7Days.get(formattedDay);
+            // mapQty += qty;
+
+            var mapSales = mapSales7DaysPharma.get(formattedDay);
+            mapSales += sales;
+          //  mapUnits7Days.set(formattedDay, mapQty);
+            mapSales7DaysPharma.set(formattedDay, mapSales);
+        }
+
+
+
+
+        for (var sale of mapSales7DaysPharma.values()) {
+            last7DaySalesPharma.push(sale);
+
+        }
+
+        loadPharmaChart();
+
+        resolve();
+
+
+    })
+
+
+}
+
+
+
 
 
 

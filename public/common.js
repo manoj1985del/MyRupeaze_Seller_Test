@@ -4,6 +4,7 @@ var btnHome = document.getElementById("btnHome");
 var btnLogout = document.getElementById("btnLogout");
 var sellerid = localStorage.getItem("sellerid");
 var adminLogin = localStorage.getItem("adminLogin");
+
 //var userType = localStorage.getItem("userType");
 
 var mNumberOfPointsInOneRupee = 8;
@@ -12,6 +13,8 @@ var mPercentOfAmountCreditedIntoPoints = 1.25;
 
 console.log(adminLogin);
 var mSeller = null;
+
+
 
 function getLoggedInSellerDetails() {
     return new Promise((resolve, reject) => {
@@ -350,3 +353,4 @@ function creditAndDebitPoints(customerId, points, debit) {
 
 
 }
+

@@ -300,22 +300,6 @@
         </div>
 
 
-        
-
-       
-
-   
-        <!-- 
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center">0</h5>
-          <p class="card-text d-flex justify-content-center">Sales This Month</p>
-        </div>
-      </div>
-    </div> -->
-
-
       </div>
 
       <div class="row mt-2">
@@ -357,10 +341,10 @@
         </div>
 
         <div class="col-md-2">
-          <div class="card" id="cardPendingDoctorsRequest">
+          <div class="card" id="cardConsultationPendingForRefund">
             <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingDoctorsRequest">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Doctors Requests</p>
+              <h5 class="card-title d-flex justify-content-center" id="hConsultationsPendingForRefund">0</h5>
+              <p class="card-text d-flex justify-content-center">Consultations: Pending for Refund</p>
             </div>
           </div>
         </div>
@@ -396,12 +380,20 @@
     </div>
 
     <div class="row ml-2">
-      <div class="col-md-4">
-        <canvas id="myChart" width="500" height="500"></canvas>
+      <div class="col-md-3">
+        <canvas id="myChart" width="300" height="300"></canvas>
       </div>
 
-      <div class="col-md-4">
-        <canvas id="myChart1" width="500" height="500"></canvas>
+      <div class="col-md-3">
+        <canvas id="myChart1" width="300" height="300"></canvas>
+      </div>
+
+      <div class="col-md-3">
+        <canvas id="myChartPharma" width="300" height="300"></canvas>
+      </div>
+
+      <div class="col-md-3">
+        <canvas id="myChartDoctor" width="300" height="300"></canvas>
       </div>
 
       <div class="card mt-4" style="width: 25rem;">
@@ -470,6 +462,20 @@
         </div>
       </div>
     </div>
+
+    <div class="row ml-2">
+      <div class="col-md-4">
+        <canvas id="myChartPharma" width="500" height="500"></canvas>
+      </div>
+
+      <div class="col-md-4">
+        <canvas id="myChartDoctor" width="500" height="500"></canvas>
+      </div>
+
+
+    </div>
+
+    
 
 
 

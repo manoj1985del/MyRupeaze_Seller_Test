@@ -101,10 +101,22 @@ var uploadFileUrl = null;
 var gstURL = null;
 var chequeURL = null;
 
-firebase.firestore().collection("pharma_categories").doc("MnXW2bLt04WDFOnQFx5k").get().then(queryResult =>{
-   var document = queryResult.data();
-   arrSubCategories = document.categories;
-});
+getAppInfo().then(()=>{
+   arrSubCategories = mAppInfo.pharma_categories;
+   createSubCategoryCheckBoxes();
+
+   loadSellerDetails(sellerId).then(() => {
+      //seller exists.. we are at this form for updation
+      if (mSeller != null) {
+         bUpdate = true;
+         loadShopDetails(sellerId).then(() => {
+            loadUI();
+         })
+      }
+   })
+
+})
+
 
 
 
@@ -197,19 +209,9 @@ function saveImageAtFirebase(file, groupname) {
    });
 }
 
-loadSubCategories().then(() => {
 
-   loadSellerDetails(sellerId).then(() => {
-      //seller exists.. we are at this form for updation
-      if (mSeller != null) {
-         bUpdate = true;
-         loadShopDetails(sellerId).then(() => {
-            loadUI();
-         })
-      }
-   })
 
-});
+
 
 
 btnUplaodGST.addEventListener("click", function () {
@@ -1050,11 +1052,6 @@ btnViewCancelledCheque.addEventListener("click", function () {
    }
 })
 
-firebase.firestore().collection("pharma_categories").doc("MnXW2bLt04WDFOnQFx5k").get().then(queryResult =>{
-   var document = queryResult.data();
-   arrSubCategories = document.categories;
-   createSubCategoryCheckBoxes();
-});
 
 
 
@@ -1119,28 +1116,7 @@ function createSubCategoryCheckBoxes(sCategory) {
    }
 }
 
-function loadSubCategories() {
-   return new Promise((resolve, reject) => {
-      firebase.firestore().collection("pharma_categories")
-         .get()
-         .then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-               // doc.data() is never undefined for query doc snapshots
-               var objCategory = doc.data();
-               arrSubCategories = objCategory;
-            });
-         })
-         .then(function () {
-            resolve();
-         })
-         .catch(function (error) {
-            console.log("Error getting documents: ", error);
-            reject();
-         });
 
-
-   })
-}
 
 function logOut() {
    firebase.auth().signOut().then(function () {
@@ -1151,6 +1127,33 @@ function logOut() {
 
 
 }
+
+var mAppInfo = null;
+function getAppInfo() {
+
+   return new Promise((resolve, reject) => {
+      var docRef = firebase.firestore().collection("AppInfo").doc("AppInfo");
+      docRef.get().then(function (doc) {
+         if (doc.exists) {
+            mAppInfo = doc.data();
+            resolve();
+         } else {
+            mAppInfo = null;
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            reject();
+
+         }
+      }).catch(function (error) {
+         mAppInfo = null;
+         console.log("Error getting document:", error);
+         reject();
+      });
+
+   })
+
+}
+
 
 
 

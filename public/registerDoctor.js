@@ -150,18 +150,26 @@ var chequeURL = null;
 // var selectedDegrees = new Array();
 // var selectedSpecialities = new Array();
 
-// var checkedDegrees = 0;  
+// var checkedDegrees = 0; 
 
-firebase.firestore().collection("doctor_degrees").doc("anUVt5alS2ZMpFMjFiVX").get().then(queryResult =>{
-   var document = queryResult.data();
-   arrDoctorDegree = document.doc_degrees;
-});
+getAppInfo().then(() => {
+   arrDoctorDegree = mAppInfo.doctor_degrees;
+   arrDoctorSpeciality = mAppInfo.doctor_specialities;
 
-firebase.firestore().collection("doctor_specialities").doc("l1Lgq8cbgOjWtvT5E37b").get().then(queryResult =>{
-   var document = queryResult.data();
-   arrDoctorSpeciality = document.doc_specialities;
-});
-   
+   createDegreeCheckBoxes(arrDoctorDegree);
+   createSpecialityCheckBoxes(arrDoctorSpeciality);
+
+   loadSellerDetails(sellerId).then(() => {
+      //seller exists.. we are at this form for updation
+      if (mSeller != null) {
+         bUpdate = true;
+         loadUI();
+      }
+   })
+})
+
+
+
 
 setImage(inpFile_CarouselImage1, previewImage_CarouselImage1, previewText_CarouselImage1, "fileCarousel_Img1");
 setImage(inpFile_CarouselImage2, previewImage_CarouselImage2, previewText_CarouselImage2, "fileCarousel_Img2");
@@ -181,45 +189,45 @@ btnUploadCarouselImage3.addEventListener("click", function () {
    uploadFile(fileCarousel_Img3, imgProgressCarouselImage3, uploadMsgCarouselImage3, url_Carousel_Img3, sellerId, "img");
 });
 
-btnLogout.addEventListener("click", function(){
+btnLogout.addEventListener("click", function () {
    logOut();
 })
 
 function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
 
    inpFile.addEventListener("change", function () {
-       var file = this.files[0];
-       if (file) {
-           var reader = new FileReader();
-           previewImage.style.display = "block";
-           previewImageDeraultText.style.display = "none";
+      var file = this.files[0];
+      if (file) {
+         var reader = new FileReader();
+         previewImage.style.display = "block";
+         previewImageDeraultText.style.display = "none";
 
-           reader.addEventListener("load", function () {
-               previewImage.setAttribute("src", this.result);
+         reader.addEventListener("load", function () {
+            previewImage.setAttribute("src", this.result);
 
-           });
-           reader.readAsDataURL(file);
-           switch (imgNmae) {
+         });
+         reader.readAsDataURL(file);
+         switch (imgNmae) {
 
-               case "fileCarousel_Img1":
-                   fileCarousel_Img1 = file;
-                   break;
+            case "fileCarousel_Img1":
+               fileCarousel_Img1 = file;
+               break;
 
-               case "fileCarousel_Img2":
-                   fileCarousel_Img2 = file;
-                   break;
+            case "fileCarousel_Img2":
+               fileCarousel_Img2 = file;
+               break;
 
-               case "fileCarousel_Img3":
-                   fileCarousel_Img3 = file;
-                   break;
-           }
+            case "fileCarousel_Img3":
+               fileCarousel_Img3 = file;
+               break;
+         }
 
-       }
-       else {
-           previewImage.style.display = null;
-           previewImageDeraultText.style.display = null;
+      }
+      else {
+         previewImage.style.display = null;
+         previewImageDeraultText.style.display = null;
 
-       }
+      }
    });
 
 
@@ -228,20 +236,20 @@ function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
 function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
 
    if (file == null) {
-       alert("Please select file to upload");
-       return;
+      alert("Please select file to upload");
+      return;
    }
 
    console.log(file.size);
 
    if (file.size > 102400) {
-       alert("File cannot be more than 100 KB");
-       return;
+      alert("File cannot be more than 100 KB");
+      return;
    }
 
    if (!(file.type == "image/png" || file.type == "image/jpeg" || file.type == "image/jpg")) {
-       alert("Only png or jpeg files are allowed to upload");
-       return;
+      alert("Only png or jpeg files are allowed to upload");
+      return;
    }
 
 
@@ -249,18 +257,18 @@ function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
    imgProgress.style.display = "block";
 
    saveImageAtFirebase(file, groupName).then(() => {
-       imgProgress.style.display = "none";
-       msgUpload.style.display = "block";
-       if(url == url_Carousel_Img1){
+      imgProgress.style.display = "none";
+      msgUpload.style.display = "block";
+      if (url == url_Carousel_Img1) {
          url_Carousel_Img1 = imgUrl;
-       }
-       else if(url == url_Carousel_Img2){
+      }
+      else if (url == url_Carousel_Img2) {
          url_Carousel_Img2 = imgUrl;
-       }
-       else if(url == url_Carousel_Img3){
+      }
+      else if (url == url_Carousel_Img3) {
          url_Carousel_Img3 = imgUrl;
-       }
-       
+      }
+
    })
 }
 
@@ -269,33 +277,23 @@ function saveImageAtFirebase(file, groupname) {
    var imagePath = "seller_images" + '/' + groupname + '/' + file.name;
    console.log(imagePath);
    return new Promise((resolve, reject) => {
-       firebase.storage().ref(imagePath).put(file).then(function () {
-           firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
-               imgUrl = url;
-               
-               console.log("resolving");
-               resolve();
-           });
-       });
+      firebase.storage().ref(imagePath).put(file).then(function () {
+         firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
+            imgUrl = url;
+
+            console.log("resolving");
+            resolve();
+         });
+      });
    });
 }
 
-loadDoctorDegree().then(() => {
 
-   loadDoctorspeciality().then(()=>{
 
-      loadSellerDetails(sellerId).then(() => {
-         //seller exists.. we are at this form for updation
-         if (mSeller != null) {
-            bUpdate = true;
-            loadUI();
-         }
-      })
 
-   })
-  
 
-});
+
+
 
 
 
@@ -342,92 +340,92 @@ btnUploadCancelCheque.addEventListener("click", function () {
 })
 
 
-btnAddSlot.addEventListener("click", function(){
-   if(!txtConsultationSlots.value == ""){
+btnAddSlot.addEventListener("click", function () {
+   if (!txtConsultationSlots.value == "") {
       consultationSlots.push(txtConsultationSlots.value);
       txtConsultationSlots.value = "";
-  }
+   }
    showSlotsTable();
 })
 
-function showSlotsTable(){
-   if(!consultationSlots.length == 0){
+function showSlotsTable() {
+   if (!consultationSlots.length == 0) {
 
-   deleteSlotsRow();
-   
-   var tHead = document.createElement("thead");
-   var tr = document.createElement("tr");
+      deleteSlotsRow();
 
-   var thSNo = document.createElement("th");
-   thSNo.textContent = "S.No.";
+      var tHead = document.createElement("thead");
+      var tr = document.createElement("tr");
 
-   var thSlot = document.createElement("th");
-   thSlot.textContent = "Time Slot";
+      var thSNo = document.createElement("th");
+      thSNo.textContent = "S.No.";
 
-   var thAction = document.createElement("th");
-   thAction.textContent = "Action";
- 
-   tr.appendChild(thSNo);
-   tr.appendChild(thSlot);
-   tr.appendChild(thAction);
+      var thSlot = document.createElement("th");
+      thSlot.textContent = "Time Slot";
 
-   tHead.appendChild(tr);
-   slotTable.appendChild(tHead);
+      var thAction = document.createElement("th");
+      thAction.textContent = "Action";
 
-   for (var i = 0; i < consultationSlots.length; i++) {
+      tr.appendChild(thSNo);
+      tr.appendChild(thSlot);
+      tr.appendChild(thAction);
 
-       var tr = document.createElement('tr');
-       tr.setAttribute("id", "tr" + i.toString());
-       var tdSNo = document.createElement('td');
-       var tdSlot = document.createElement('td');
-       var tdAction = document.createElement('td');
-     
+      tHead.appendChild(tr);
+      slotTable.appendChild(tHead);
 
-       var divSNo = document.createElement('div');
-       var rowNum = i + 1;
-       var spanSNo = document.createElement('span');
-       spanSNo.textContent = rowNum.toString();
-       divSNo.appendChild(spanSNo);
-       tdSNo.appendChild(divSNo);
+      for (var i = 0; i < consultationSlots.length; i++) {
 
-       var divSlot = document.createElement('div');
-       var spainSlot = document.createElement('span');
-       spainSlot.textContent = consultationSlots[i];
-       divSlot.appendChild(spainSlot);
-       tdSlot.appendChild(divSlot);
-
-       
-       var divAction = document.createElement('div');
-
-       var divDelete = document.createElement('div');
-       var btnDelete = document.createElement("button");
-       btnDelete.style.width = "150px";
-       btnDelete.setAttribute("id", i.toString());
-       btnDelete.textContent = "Delete Slot";
-       btnDelete.setAttribute("type", "button");
-       divDelete.appendChild(btnDelete);
-       divAction.appendChild(divDelete);
-
-       tdAction.appendChild(divAction);
-
-       console.log(i);
+         var tr = document.createElement('tr');
+         tr.setAttribute("id", "tr" + i.toString());
+         var tdSNo = document.createElement('td');
+         var tdSlot = document.createElement('td');
+         var tdAction = document.createElement('td');
 
 
-       tr.appendChild(tdSNo);
-       tr.appendChild(tdSlot);
-       tr.appendChild(tdAction);
+         var divSNo = document.createElement('div');
+         var rowNum = i + 1;
+         var spanSNo = document.createElement('span');
+         spanSNo.textContent = rowNum.toString();
+         divSNo.appendChild(spanSNo);
+         tdSNo.appendChild(divSNo);
 
-       slotTable.appendChild(tr);
+         var divSlot = document.createElement('div');
+         var spainSlot = document.createElement('span');
+         spainSlot.textContent = consultationSlots[i];
+         divSlot.appendChild(spainSlot);
+         tdSlot.appendChild(divSlot);
 
-       btnDelete.addEventListener("click", function () {
-           var index = parseInt(this.id);
-           consultationSlots.splice(index, 1);
-           alert("Item removed successfully");
-           showSlotsTable();
-   })
-       
-}
-}
+
+         var divAction = document.createElement('div');
+
+         var divDelete = document.createElement('div');
+         var btnDelete = document.createElement("button");
+         btnDelete.style.width = "150px";
+         btnDelete.setAttribute("id", i.toString());
+         btnDelete.textContent = "Delete Slot";
+         btnDelete.setAttribute("type", "button");
+         divDelete.appendChild(btnDelete);
+         divAction.appendChild(divDelete);
+
+         tdAction.appendChild(divAction);
+
+         console.log(i);
+
+
+         tr.appendChild(tdSNo);
+         tr.appendChild(tdSlot);
+         tr.appendChild(tdAction);
+
+         slotTable.appendChild(tr);
+
+         btnDelete.addEventListener("click", function () {
+            var index = parseInt(this.id);
+            consultationSlots.splice(index, 1);
+            alert("Item removed successfully");
+            showSlotsTable();
+         })
+
+      }
+   }
 }
 
 
@@ -483,8 +481,8 @@ function loadUI() {
    txtCompanyName.value = mSeller.company_name;
    txtEmail.value = mSeller.email;
    txtConsultationCharges = mSeller.charges,
-   consultationSlots = mSeller.slots,
-   txtAddressLine1.value = mSeller.address_line1;
+      consultationSlots = mSeller.slots,
+      txtAddressLine1.value = mSeller.address_line1;
    txtAddressLine2.value = mSeller.address_line2;
    txtAddressLine3.value = mSeller.address_line3;
    txtCity.value = mSeller.city;
@@ -658,8 +656,8 @@ function deleteSlotsRow() {
    //e.firstElementChild can be used. 
    var child = slotTable.lastElementChild;
    while (child) {
-       slotTable.removeChild(child);
-       child = slotTable.lastElementChild;
+      slotTable.removeChild(child);
+      child = slotTable.lastElementChild;
    }
 }
 
@@ -699,12 +697,12 @@ function validateFormDetails() {
       errorFound = true;
    }
 
-   if (txtConsultationCharges.value == ""){
+   if (txtConsultationCharges.value == "") {
       errorMsg += "Please Enter Consultation Charges<br/>"
       errorFound = true;
    }
 
-   if (consultationSlots.length == 0){
+   if (consultationSlots.length == 0) {
       errorMsg += "Please Enter Consultation Slots<br/>"
       errorFound = true;
    }
@@ -747,12 +745,12 @@ function validateFormDetails() {
       }
    }
 
-   if(txtEducationCollege.value == ""){
+   if (txtEducationCollege.value == "") {
       errorMsg += "Please Enter your Education Details<br/>"
       errorFound = true;
    }
 
-   if(txtHospitalServing.value == ""){
+   if (txtHospitalServing.value == "") {
       errorMsg += "Please Enter Hospitals you are serving for<br/>"
       errorFound = true;
    }
@@ -792,10 +790,10 @@ function validateFormDetails() {
 
 
 
-      if (txtOpeningTime.value == "") {
-         errorMsg += "Please Enter Shop Opening Time <br/>";
-         errorFound = true;
-      
+   if (txtOpeningTime.value == "") {
+      errorMsg += "Please Enter Shop Opening Time <br/>";
+      errorFound = true;
+
 
       if (txtClosingTime.value == "") {
          errorMsg += "Please Enter Shop Closing Time <br/>";
@@ -818,28 +816,28 @@ function validateFormDetails() {
          errorFound = true;
       }
 
-      if(url_Carousel_Img1 == null){
+      if (url_Carousel_Img1 == null) {
          errorMsg += "Please upload your passport size photo";
          errorFound = true;
       }
 
-      if(url_Carousel_Img2 == null){
+      if (url_Carousel_Img2 == null) {
          errorMsg += "Please upload your logo";
          errorFound = true;
       }
 
-      if(url_Carousel_Img3 == null){
+      if (url_Carousel_Img3 == null) {
          errorMsg += "Please upload your degree";
          errorFound = true;
       }
    }
 
-   if(arrSelectedDoctorDegree.length == 0){
+   if (arrSelectedDoctorDegree.length == 0) {
       errorMsg += "Please Select your degree. <br/>";
       errorFound = true;
    }
 
-   if(arrSelectedDocSpeciality.length == 0){
+   if (arrSelectedDocSpeciality.length == 0) {
       errorMsg += "Please Select your speciality. <br/>";
       errorFound = true;
    }
@@ -913,13 +911,13 @@ function registerSeller() {
    if (citySeller) {
       shop_opening_time = txtOpeningTime.value;
       shop_closing_time = txtClosingTime.value;
-     
+
    }
    else {
 
       shop_opening_time = null;
       shop_closing_time = null;
-    
+
 
    }
 
@@ -1006,22 +1004,20 @@ function updateSellerDetails() {
       return;
    }
 
-   for(var i = 0; i < degreeCheckboxes.length; i++)  
-   {  
-       if (degreeCheckboxes[i].checked) {
-           console.log(degreeCheckboxes[i].value);
-           selectedDegrees.push(degreeCheckboxes[i].value);
-       }
-   }  
+   for (var i = 0; i < degreeCheckboxes.length; i++) {
+      if (degreeCheckboxes[i].checked) {
+         console.log(degreeCheckboxes[i].value);
+         selectedDegrees.push(degreeCheckboxes[i].value);
+      }
+   }
 
-   var checkedSpecialities = 0;  
-   for(var i = 0; i < specialityCheckboxes.length; i++)  
-   {  
-       if (specialityCheckboxes[i].checked) {
-           console.log(specialityCheckboxes[i].value);
-           selectedSpecialities.push(specialityCheckboxes[i].value);
-       }
-   }      
+   var checkedSpecialities = 0;
+   for (var i = 0; i < specialityCheckboxes.length; i++) {
+      if (specialityCheckboxes[i].checked) {
+         console.log(specialityCheckboxes[i].value);
+         selectedSpecialities.push(specialityCheckboxes[i].value);
+      }
+   }
 
    mAreaPin = txtPincode.value.substring(0, 3);
    console.log(mAreaPin);
@@ -1035,14 +1031,14 @@ function updateSellerDetails() {
    if (citySeller) {
       shop_opening_time = txtOpeningTime.value;
       shop_closing_time = txtClosingTime.value;
-     
+
    }
    else {
 
       shop_opening_time = null;
       shop_closing_time = null;
-     
-   
+
+
 
    }
    var status;
@@ -1062,7 +1058,7 @@ function updateSellerDetails() {
    return washingtonRef.update({
       seller_name: txtNmae.value,
       mobile: txtMobile.value,
-      charges:  parseFloat(txtConsultationCharges.value),
+      charges: parseFloat(txtConsultationCharges.value),
       consultation_id: txtConsultationId,
       slots: consultationSlots,
       company_name: txtCompanyName.value,
@@ -1200,7 +1196,7 @@ function saveSellerDetails() {
          shop_opening_time: shop_opening_time,
          shop_closing_time: shop_closing_time,
          sellerType: "doctor",
-      
+
          doctor_img_url: url_Carousel_Img1,
          logo_url: url_Carousel_Img2,
          degree_url: url_Carousel_Img3,
@@ -1298,18 +1294,7 @@ btnViewCancelledCheque.addEventListener("click", function () {
    }
 })
 
-firebase.firestore().collection("doctor_degrees").doc("anUVt5alS2ZMpFMjFiVX").get().then(queryResult =>{
-   var document = queryResult.data();
-   arrDoctorDegree = document.doc_degrees;
-   createDegreeCheckBoxes(arrDoctorDegree);
-});
 
-firebase.firestore().collection("doctor_specialities").doc("l1Lgq8cbgOjWtvT5E37b").get().then(queryResult =>{
-   var document = queryResult.data();
-   arrDoctorSpeciality = document.doc_specialities;
-   createSpecialityCheckBoxes(arrDoctorSpeciality);
-});
-   
 
 
 
@@ -1323,9 +1308,9 @@ function deleteElements(parentElement) {
 }
 
 
-function createDegreeCheckBoxes(degree){
+function createDegreeCheckBoxes(degree) {
    deleteElements(degree);
-   
+
 
    for (var i = 0; i < degree.length; i++) {
       var subCategory = degree[i];
@@ -1349,7 +1334,7 @@ function createDegreeCheckBoxes(degree){
       divCheckbox.appendChild(inputElement);
       divCheckbox.appendChild(labelElemet);
       divDoctorDegree.appendChild(divCheckbox);
-     
+
 
       inputElement.addEventListener("change", function () {
 
@@ -1364,14 +1349,14 @@ function createDegreeCheckBoxes(degree){
                   break;
                }
             }
-               arrSelectedDoctorDegree.push(le.textContent);
-               console.log(arrSelectedDoctorDegree);
+            arrSelectedDoctorDegree.push(le.textContent);
+            console.log(arrSelectedDoctorDegree);
          }
       })
    }
 }
 
-function createSpecialityCheckBoxes(specialities){
+function createSpecialityCheckBoxes(specialities) {
 
    deleteElements(specialities);
 
@@ -1397,7 +1382,7 @@ function createSpecialityCheckBoxes(specialities){
       divSpecialityBox.appendChild(inputSpeciality);
       divSpecialityBox.appendChild(elementLabel);
       divDoctorSpeciality.appendChild(divSpecialityBox);
-     
+
 
       inputSpeciality.addEventListener("change", function () {
 
@@ -1419,7 +1404,7 @@ function createSpecialityCheckBoxes(specialities){
 
 
 
-    
+
    }
 }
 
@@ -1428,7 +1413,7 @@ function createSpecialityCheckBoxes(specialities){
 //    arrLabels = [];
 //    checkBoxes = [];
 //    deleteElements(arrSubCategories);
-   
+
 
 //    for (var i = 0; i < arrSubCategories.length; i++) {
 //       var subCategory = arrSubCategories[i];
@@ -1458,7 +1443,7 @@ function createSpecialityCheckBoxes(specialities){
 //       else if(type == "speciality"){
 //          divDoctorSpeciality.appendChild(divCheckbox);
 //       }
-     
+
 
 
 //       inputElement2.addEventListener("change", function () {
@@ -1478,60 +1463,46 @@ function createSpecialityCheckBoxes(specialities){
 //       })
 //    }
 // }
-   
 
 
-function loadDoctorDegree() {
-   return new Promise((resolve, reject) => {
-      firebase.firestore().collection("doctor_degrees")
-         .get()
-         .then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-               // doc.data() is never undefined for query doc snapshots
-               arrDoctorDegree = doc.data();
-            });
-         })
-         .then(function () {
-            resolve();
-         })
-         .catch(function (error) {
-            console.log("Error getting documents: ", error);
-            reject();
-         });
 
 
-   })
-}
 
-function loadDoctorspeciality() {
-   return new Promise((resolve, reject) => {
-      firebase.firestore().collection("doctor_specialities")
-         .get()
-         .then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-               // doc.data() is never undefined for query doc snapshots
-               arrDoctorSpeciality = doc.data();
-            });
-         })
-         .then(function () {
-            resolve();
-         })
-         .catch(function (error) {
-            console.log("Error getting documents: ", error);
-            reject();
-         });
-
-
-   })
-}
 
 function logOut() {
    firebase.auth().signOut().then(function () {
-       window.location.href = "seller_login.html";
+      window.location.href = "seller_login.html";
    }).catch(function (error) {
-       // An error happened.
+      // An error happened.
    });
 
+
+}
+
+
+var mAppInfo = null;
+function getAppInfo() {
+
+   return new Promise((resolve, reject) => {
+      var docRef = firebase.firestore().collection("AppInfo").doc("AppInfo");
+      docRef.get().then(function (doc) {
+         if (doc.exists) {
+            mAppInfo = doc.data();
+            resolve();
+         } else {
+            mAppInfo = null;
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+            reject();
+
+         }
+      }).catch(function (error) {
+         mAppInfo = null;
+         console.log("Error getting document:", error);
+         reject();
+      });
+
+   })
 
 }
 

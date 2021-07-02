@@ -7,9 +7,9 @@ var cmbForceUpdate = document.getElementById('cmbForceUpdate');
 var txtDoctorCommision = document.getElementById('txtDoctorCommision');
 var txtPharmaCommision = document.getElementById('txtPharmaCommision');
 
-var txtAddNewSlot = document.getElementById('txtAddNewSlot');
-var btnAddNewSlot = document.getElementById('btnAddNewSlot');
-var tblSlots = document.getElementById('tblSlots');
+//var txtAddNewSlot = document.getElementById('txtAddNewSlot');
+//var btnAddNewSlot = document.getElementById('btnAddNewSlot');
+//var tblSlots = document.getElementById('tblSlots');
 
 var txtDoctorDegree = document.getElementById('txtDoctorDegree');
 var btnAddDegree = document.getElementById('btnAddDegree');
@@ -44,12 +44,12 @@ getSettings().then(() => {
 
 setImage(inpFile_Speciality_image, previewImage_Speciality_image, previewText_Speciality_image, "fileSpecialityImage");
 
-btnAddNewSlot.addEventListener("click", function () {
-    mSettings.slot_timings.push(txtAddNewSlot.value);
-    mSettings.availability.push("A");
-    createSlotTable();
-    txtAddNewSlot.value = "";
-})
+// btnAddNewSlot.addEventListener("click", function () {
+//     mSettings.slot_timings.push(txtAddNewSlot.value);
+//     mSettings.availability.push("A");
+//     createSlotTable();
+//     txtAddNewSlot.value = "";
+// })
 
 btnAddDegree.addEventListener("click", function () {
     mSettings.doctor_degrees.push(txtDoctorDegree.value);
@@ -472,9 +472,9 @@ function updateUI() {
 
     arrSpecialityImages = mSettings.doctor_speciality_img;
 
-    if (mSettings.slot_timings.length != 0) {
-        createSlotTable();
-    }
+    // if (mSettings.slot_timings.length != 0) {
+    //     createSlotTable();
+    // }
 
     if (mSettings.doctor_degrees.length != 0) {
         createDegreeTable();
@@ -528,8 +528,8 @@ function updateDetails() {
         doctor_degrees: mSettings.doctor_degrees,
         medical_force_update: forceUpdate,
         medical_version: txtVersionCode.value,
-        slot_timings: mSettings.slot_timings,
-        availability: mSettings.availability,
+        //slot_timings: mSettings.slot_timings,
+        //availability: mSettings.availability,
         doctor_specialities: mSettings.doctor_specialities,
         doctor_speciality_img: arrSpecialityImages,
         pharma_commission: parseFloat(txtPharmaCommision.value),

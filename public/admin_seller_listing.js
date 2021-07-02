@@ -1634,6 +1634,15 @@ function createDoctorsTable() {
         divDownloadCheque.appendChild(btnDownloadCheque);
         divApprove.appendChild(divDownloadCheque);
 
+        var divDoctorDegrees = document.createElement('div');
+        var btnViewDocDegree = document.createElement("button");
+        btnViewDocDegree.textContent = "View Degree";
+        btnViewDocDegree.style.width = "150px";
+        btnViewDocDegree.setAttribute("id", i.toString());
+        btnViewDocDegree.style.marginBottom = "10px";
+        divDoctorDegrees.appendChild(btnViewDocDegree);
+        divApprove.appendChild(divDoctorDegrees);
+
         var divReject = document.createElement("div");
         var btnReject = document.createElement("button");
         btnReject.textContent = "Reject Application";
@@ -1643,15 +1652,7 @@ function createDoctorsTable() {
         divReject.appendChild(btnReject);
         divApprove.appendChild(divReject);
 
-        var divDoctorDegrees = document.createElement('div');
-        var btnViewDocDegree = document.createElement("button");
-        btnViewDocDegree.textContent = "View Degree";
-        btnViewDocDegree.style.width = "150px";
-        btnViewDocDegree.setAttribute("id", i.toString());
-        btnViewDocDegree.style.marginBottom = "10px";
-        divDoctorDegrees.appendChild(btnViewDocDegree);
-        divDoctorDegrees.style.display = "none";
-        divApprove.appendChild(divDoctorDegrees);
+       
 
 
         divAction.appendChild(divApprove);

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miscellenous Settings</title>
+
+    <link rel="icon" href="img_logo.png">
+
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+        integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+        integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .myBorder {
+            border: 1px lightgray solid;
+        }
+    </style>
+
+    <!-- CSS only -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;900&display=swap" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="myStyle.css">
+    <link rel="stylesheet" href="table.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #020001;">
+        <a class="navbar-brand" href="#"><img src="img_logo.png" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="ml-auto">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <ul class="navbar-nav">
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Orders
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting
+                                for Pickup</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sellers
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For
+                                Approval</a>
+                            <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
+                            <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
+                            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended
+                                Sellers</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Products
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
+                            <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and
+                                Commission</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Videos
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
+                            <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
+
+                        </div>
+                    </li>
+
+                    <button type="submit" id="btnHome" value="Home" class="btn mr-3"
+                        style="width: 100px; background-color: #e95807; color:white">Home</button>
+                    <button type="submit" id="btnLogout" value="Logout" class="btn"
+                        style="width: 100px; background-color: #e95807; color:white">
+
+                        Logout
+                    </button>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="divProgress" style="display: none;">
+        <div class="d-flex justify-content-center">
+            <h3 class="d-flex justify-content-center text-muted" id="errorMsg"></h3>
+            <!-- <br />
+    <img class="d-flex justify-content-center myBorder" id="loading-image" src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..." /> -->
+
+        </div>
+
+        <div id="divErrorMsg" class="container d-flex justify-content-center align-items-center "
+            style="width: 100%; height: 500px;">
+            <!-- <div class=" d-flex justify-content-center flex-column align-items-center" style="width: 500px; height: 500px;"> -->
+            <img id="loading" src="img_please_wiat.gif" style="width: 200px; height: 200px;">
+            <!-- </div> -->
+        </div>
+    </div>
+
+    <div id="divContent" class="d-flex justify-content-center mt-3">
+        <div class="container myBorder">
+            <div>
+                <h1 class="d-flex justify-content-center" id="pageHeading">Miscellenous Settings</h1>
+                <hr />
+            </div>
+
+            <form>
+
+                <div class="form-group">
+                    <label for="txtVersionCode">Version Code</label>
+                    <input type="text" class="form-control" id="txtVersionCode">
+                </div>
+
+                <div class="form-group">
+                    <label for="cmbForceUpdate">Medical Force Update</label>
+                    <!-- <input type="text" class="form-control" id="txtState"> -->
+                    <select name="cmbForceUpdate" id="cmbForceUpdate" class="form-control">
+                        <option selected disabled hidden value=null>Selct Option</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtDeliveryCharges">Doctor Commision</label>
+                    <input type="number" class="form-control" id="txtDoctorCommision">
+                </div>
+
+                <div class="form-group">
+                    <label for="txtWalletMoneyPerHundred">Pharma Commision</label>
+                    <input type="text" class="form-control" id="txtPharmaCommision">
+                </div>
+
+                <div class="form-group">
+                    <label for="txtAddNewSlot">Add Doctor Degree</label>
+                    <input type="text" class="form-control" id="txtDoctorDegree">
+                    <button type="button" class="btn btn-primary mt-2" id="btnAddDegree">Add Doctor Degree</button>
+                </div>
+
+                <div class="form-group">
+                    <table id="tblDegree"></table>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtAddDoctorSpeciality">Add Doctor Speciality</label>
+                    <input type="text" class="form-control" id="txtAddDoctorSpeciality">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="file" name="inpFile" id="inpFile_Speciality_image">
+                        <br />
+
+                        <div class="image-preview" id="imagePreview_Speciality_image">
+                            <img src="" alt="Image Preview" class="image-preview_image" />
+                            <span class="image-preview_default-text">Speciality Image</span>
+                        </div>
+                        <button type="button" class="mt-2" id="btnUploadSpecialityImage">Upload</button>
+                        <img id="imgProgressSpecialityImage" style="width: 75px; height: auto; display: none"
+                            src="img_progress.gif" />
+                        <span id="uploadMsgSpecialityImg" style="display: none;">Upload
+                            Successful</span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary mt-2" id="btnAddSpeciality">Add Doctor Speciality</button>
+                <div class="form-group">
+                    <table id="tblSpeciality"></table>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtAddNewSlot">Add New Slot</label>
+                    <input type="text" class="form-control" id="txtAddNewSlot">
+                    <button type="button" class="btn btn-primary mt-2" id="btnAddNewSlot">Add New Slot</button>
+                </div>
+
+                <div class="form-group">
+                    <table id="tblSlots"></table>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="txtAddPharmaCategory">Add Pharma Category</label>
+                    <input type="text" class="form-control" id="txtAddPharmaCategory">
+                    <button type="button" class="btn btn-primary mt-2" id="btnAddPharmaCategory">Add Pharma
+                        Category</button>
+                </div>
+
+                <div class="form-group">
+                    <table id="tblPharmaCategories"></table>
+                </div>
+
+                <div class="mt-2 mb-5">
+
+                    <button type="button" class="btn btn-success" id="btnUpdate" style="width: 150px;">Update
+                        Listing</button>
+
+                    <image id="imgSaving" src="img_progress.gif" style="width: 70px; height: 70px; display: none;" />
+
+                </div>
+            </form>
+
+            <div style="width: 100%; height: auto; display: none;" class="msgBorder mt-2 mb-3" id="msgHeader">
+                <image src="img_ok.png" style="width: 20px; height: 20px;" class="ml-2" id="imgHeader" />
+                <span id="actionMsg">Message</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="/__/firebase/7.15.5/firebase-app.js"></script>
+
+    <script src="/__/firebase/7.15.5/firebase-auth.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-storage.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-messaging.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-firestore.js"></script>
+    <script src="/__/firebase/7.15.5/firebase-performance.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script src="/__/firebase/init.js"></script>
+
+    <script type="text/javascript" src="common.js"></script>
+    <script type="text/javascript" src="misc_settings.js"></script>
+
+</body>
+
+</html>

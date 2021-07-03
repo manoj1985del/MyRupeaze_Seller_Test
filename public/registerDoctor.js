@@ -19,6 +19,12 @@ var specialityCheckboxes = [];
 
 var consultationSlots = [];
 
+var checkBoxes = [];
+var tags = [];
+var localTagList = [];
+var globalTagList = [];
+var activeTagDocId;
+
 
 var txtNmae = document.getElementById("txtName");
 var txtMobile = document.getElementById("txtMobile");
@@ -27,6 +33,7 @@ var txtAddressLine1 = document.getElementById("txtAddressLine1");
 var txtAddressLine2 = document.getElementById("txtAddressLine2");
 var txtAddressLine3 = document.getElementById("txtAddressLine3");
 var txtCity = document.getElementById("txtCity");
+var txtTags = document.getElementById("txtTags");
 
 var txtConsultationSlots = document.getElementById("txtConsultationSlots");
 var txtConsultationCharges = document.getElementById("txtConsultationCharges");
@@ -151,6 +158,8 @@ var chequeURL = null;
 // var selectedSpecialities = new Array();
 
 // var checkedDegrees = 0; 
+
+loadTags();
 
 getAppInfo().then(() => {
    arrDoctorDegree = mAppInfo.doctor_degrees;
@@ -480,11 +489,20 @@ function loadUI() {
    btnCheckAvailability.style.display = "none";
    txtCompanyName.value = mSeller.company_name;
    txtEmail.value = mSeller.email;
-   txtConsultationCharges = mSeller.charges,
-      consultationSlots = mSeller.slots,
-      txtAddressLine1.value = mSeller.address_line1;
+   txtAddressLine1.value = mSeller.address_line1;
    txtAddressLine2.value = mSeller.address_line2;
    txtAddressLine3.value = mSeller.address_line3;
+   txtNmae.value = mSeller.seller_name;
+   txtEducationCollege.value = mSeller.educationCollege;
+   txtHospitalServing.value = mSeller.hospitalsServing;
+   txtConsultationCharges.value = mSeller.charges;
+   txtAccountHolderName.value = mSeller.account_holder_name;
+   txtOpeningTime.value = mSeller.shop_opening_time;
+   txtClosingTime.value = mSeller.shop_closing_time;
+   txtTags.value = mSeller.tags;
+   txtAboutShop.value = mSeller.about_doctor;
+   txtBankName.value = mSeller.bank_name;
+   txtIFSCCode.value = mSeller.ifsc;
    txtCity.value = mSeller.city;
    cmbState.value = mSeller.state;
    txtPANCardNo.value = mSeller.pan_no;
@@ -493,52 +511,87 @@ function loadUI() {
    txtMobile.value = mSeller.mobile;
    txtMerchantId.value = mSeller.merchant_id;
    txtAccountNumber.value = mSeller.account_no;
-   txtAboutShop.value = mSeller.about_shop;
-   url_Carousel_Img1 = mSeller.img_url;
+
+   url_Carousel_Img1 = mSeller.doctor_img_url;
    previewImage_CarouselImage1.src = url_Carousel_Img1;
    previewImage_CarouselImage1.style.display = "block";
    previewText_CarouselImage1.style.display = "none";
-   // createDegreeCheckBoxes();
-   // createSubCategoryCheckBoxes();
-   // createSubCategoryCheckBoxes(cmbSellerCategory.value);
-   // if (mSeller.seller_subcategories != null) {
-   //    for (var i = 0; i < mSeller.seller_subcategories.length; i++) {
-   //       var subCategory = mSeller.seller_subcategories[i];
-   //       for(var j = 0; j < arrLabels.length; j++){
-   //          if(arrLabels[j].textContent == subCategory){
-   //             var inputElement = checkBoxes[j];
-   //             inputElement.checked = true;
-   //             arrSelectedSubCategories.push(arrLabels[j].textContent);
-   //             break;
-   //          }
-   //       }
-   //    }
+
+   url_Carousel_Img2 = mSeller.logo_url;
+   previewImage_CarouselImage2.src = url_Carousel_Img2;
+   previewImage_CarouselImage2.style.display = "block";
+   previewText_CarouselImage2.style.display = "none";
+
+   url_Carousel_Img3 = mSeller.degree_url;
+   previewImage_CarouselImage3.src = url_Carousel_Img3;
+   previewImage_CarouselImage3.style.display = "block";
+   previewText_CarouselImage3.style.display = "none";
+
+   consultationSlots = mSeller.slots;
+   showSlotsTable();
+
+   createDegreeCheckBoxes(arrDoctorDegree);
+
+   if (arrDoctorDegree != null) {
+      for (var i = 0; i < arrDoctorDegree.length; i++) {
+         var doctorDegree = arrDoctorDegree[i];
+         if (mSeller.degrees.includes(doctorDegree)) {
+            var selectedIndex = -1;
+            for (var j = 0; j < arrDoctorDegree.length; j++) {
+               if(arrDoctorDegree[j] == doctorDegree){
+                  selectedIndex = j;
+                  break;
+               }
+               
+            }
+            if(selectedIndex >= 0){
+                  var inputElement = degreeCheckboxes[selectedIndex];
+                  inputElement.checked = true;
+                  arrSelectedDoctorDegree.push(arrDegreeLabels[selectedIndex].textContent);
+            }
+         }
+      }
+   }
+
+   createSpecialityCheckBoxes(arrDoctorSpeciality);
+   if (arrDoctorSpeciality != null) {
+      for (var i = 0; i < arrDoctorSpeciality.length; i++) {
+         var speciality = arrDoctorSpeciality[i];
+         if (mSeller.speciality.includes(speciality)) {
+            var selectedIndex = -1;
+            for (var j = 0; j < arrDoctorSpeciality.length; j++) {
+               if(arrDoctorSpeciality[j] == speciality){
+                  selectedIndex = j;
+                  break;
+               }
+               
+            }
+            if(selectedIndex >= 0){
+                  var inputElement = specialityCheckboxes[selectedIndex];
+                  inputElement.checked = true;
+                  arrSelectedDocSpeciality.push(arrSpecialityLabels[selectedIndex].textContent);
+            }
+         }
+      }
+   }
+
+   // if (mSeller.city_seller == true) {
+   //    rbCityYes.checked = true;
+   //    rbCityNo.checked = false;
+   //    divCity.style.display = "block";
+   // }
+   // else {
+   //    rbCityYes.checked = false;
+   //    rbCityNo.checked = true;
+   //    divCity.style.display = "none";
+
+
    // }
 
-   txtIFSCCode.value = mSeller.ifsc;
-   txtBankName.value = mSeller.bank_name;
-   txtNmae.value = mSeller.seller_name;
-   cmbSellerCategory.value = mSeller.seller_category;
-
-   txtAccountHolderName.value = mSeller.account_holder_name;
-   if (mSeller.city_seller == true) {
-      rbCityYes.checked = true;
-      rbCityNo.checked = false;
-      divCity.style.display = "block";
-   }
-   else {
-
-      rbCityYes.checked = false;
-      rbCityNo.checked = true;
-      divCity.style.display = "none";
-
-
-   }
-
-   if (mSeller.city_seller) {
-      txtOpeningTime.value = mSeller.shop_opening_time;
-      txtClosingTime.value = mSeller.shop_closing_time;
-   }
+   // if (mSeller.city_seller) {
+   //    txtOpeningTime.value = mSeller.shop_opening_time;
+   //    txtClosingTime.value = mSeller.shop_closing_time;
+   // }
 
 
    if (mSeller.accountType == "current") {
@@ -877,6 +930,18 @@ function setErrorHeader(msg) {
 btnSubmit.addEventListener("click", function () {
    console.log("clicked update");
 
+   var tmpTags = [];
+   tags = [];
+
+   tmpTags = txtTags.value.split(',');
+   for (var i = 0; i < tmpTags.length; i++) {
+      var tag = tmpTags[i].trim().toLowerCase();
+      tags.push(tag);
+      if (!globalTagList.includes(tag)) {
+         localTagList.push(tag);
+      }
+   }
+
    if (!bUpdate) {
       registerSeller();
    }
@@ -921,8 +986,11 @@ function registerSeller() {
 
    }
 
-   saveSellerDetails().then(() => {
-      sendWelcomeEmail();
+   addTags().then(() => {
+      saveSellerDetails().then(() => {
+         sendWelcomeEmail();
+      })
+
    })
 
    // if (rbCityNo.checked) {
@@ -1007,7 +1075,7 @@ function updateSellerDetails() {
    for (var i = 0; i < degreeCheckboxes.length; i++) {
       if (degreeCheckboxes[i].checked) {
          console.log(degreeCheckboxes[i].value);
-         selectedDegrees.push(degreeCheckboxes[i].value);
+         arrSelectedDoctorDegree.push(degreeCheckboxes[i].value);
       }
    }
 
@@ -1015,7 +1083,7 @@ function updateSellerDetails() {
    for (var i = 0; i < specialityCheckboxes.length; i++) {
       if (specialityCheckboxes[i].checked) {
          console.log(specialityCheckboxes[i].value);
-         selectedSpecialities.push(specialityCheckboxes[i].value);
+         arrSelectedDocSpeciality.push(specialityCheckboxes[i].value);
       }
    }
 
@@ -1037,81 +1105,83 @@ function updateSellerDetails() {
 
       shop_opening_time = null;
       shop_closing_time = null;
-
-
-
-   }
-   var status;
-   if (mSeller.status == "approved") {
-      status = "approved";
-   } else {
-      status = "pending";
    }
 
-   divProgress.style.display = "block";
-   divContent.style.display = "none";
-
-
-   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
-
-   // Set the "capital" field of the city 'DC'
-   return washingtonRef.update({
-      seller_name: txtNmae.value,
-      mobile: txtMobile.value,
-      charges: parseFloat(txtConsultationCharges.value),
-      consultation_id: txtConsultationId,
-      slots: consultationSlots,
-      company_name: txtCompanyName.value,
-      address_line1: txtAddressLine1.value,
-      address_line2: txtAddressLine2.value,
-      address_line3: txtAddressLine3.value,
-      city: txtCity.value,
-      state: cmbState.value,
-      pincode: txtPincode.value,
-      seller_area_pin: mAreaPin,
-      gstin: txtGST.value,
-      pan_no: txtPANCardNo.value,
-      degrees: arrSelectedDoctorDegree,
-      speciality: arrSelectedDocSpeciality,
-      educationCollege: txtEducationCollege.value,
-      hospitalsServing: txtHospitalServing.value,
-      account_holder_name: txtAccountHolderName.value,
-      account_no: txtAccountNumber.value,
-      bank_name: txtBankName.value,
-      ifsc: txtIFSCCode.value,
-      accountType: accountType,
-      merchant_id: txtMerchantId.value,
-      shop_opening_time: shop_opening_time,
-      shop_closing_time: shop_closing_time,
-      selelrType: "doctor",
-      status: status,
-      doctor_img_url: url_Carousel_Img1,
-      logo_url: url_Carousel_Img2,
-      degree_url: url_Carousel_Img3,
-      about_doctor: txtAboutShop.value,
-      suspension_reason: null,
-   })
-      .then(function () {
-
-         divProgress.style.display = "none";
-         divContent.style.display = "block";
-
-         if (mSeller.status != "approved") {
-            window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
-               + "&name=" + mSeller.company_name + "&status=pending"
-               + "&rejection_reason=null";
-         }
-         else {
-            window.location.href = "home.html?sellerid=" + sellerId;
-         }
-
-         console.log("Document successfully updated!");
-
+   addTags().then(() => {
+      var status;
+      if (mSeller.status == "approved") {
+         status = "approved";
+      } else {
+         status = "pending";
+      }
+   
+      divProgress.style.display = "block";
+      divContent.style.display = "none";
+   
+   
+      var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
+   
+      // Set the "capital" field of the city 'DC'
+      return washingtonRef.update({
+         seller_name: txtNmae.value,
+         mobile: txtMobile.value,
+         charges: parseFloat(txtConsultationCharges.value),
+         consultation_id: parseFloat(txtConsultationCharges.value),
+         slots: consultationSlots,
+         company_name: txtCompanyName.value,
+         address_line1: txtAddressLine1.value,
+         address_line2: txtAddressLine2.value,
+         address_line3: txtAddressLine3.value,
+         city: txtCity.value,
+         state: cmbState.value,
+         pincode: txtPincode.value,
+         seller_area_pin: mAreaPin,
+         gstin: txtGST.value,
+         pan_no: txtPANCardNo.value,
+         degrees: arrSelectedDoctorDegree,
+         speciality: arrSelectedDocSpeciality,
+         educationCollege: txtEducationCollege.value,
+         hospitalsServing: txtHospitalServing.value,
+         account_holder_name: txtAccountHolderName.value,
+         account_no: txtAccountNumber.value,
+         bank_name: txtBankName.value,
+         ifsc: txtIFSCCode.value,
+         accountType: accountType,
+         merchant_id: txtMerchantId.value,
+         shop_opening_time: shop_opening_time,
+         shop_closing_time: shop_closing_time,
+         selelrType: "doctor",
+         status: status,
+         tags: tags,
+         doctor_img_url: url_Carousel_Img1,
+         logo_url: url_Carousel_Img2,
+         degree_url: url_Carousel_Img3,
+         about_doctor: txtAboutShop.value,
+         suspension_reason: null,
       })
-      .catch(function (error) {
-         // The document probably doesn't exist.
-         console.error("Error updating document: ", error);
-      });
+         .then(function () {
+   
+            divProgress.style.display = "none";
+            divContent.style.display = "block";
+   
+            if (mSeller.status != "approved") {
+               window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
+                  + "&name=" + mSeller.company_name + "&status=pending"
+                  + "&rejection_reason=null";
+            }
+            else {
+               window.location.href = "doctor_home.html?sellerid=" + sellerId;
+            }
+   
+            console.log("Document successfully updated!");
+   
+         })
+         .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+         });
+   })
+  
 
 }
 
@@ -1185,6 +1255,7 @@ function saveSellerDetails() {
          educationCollege: txtEducationCollege.value,
          hospitalsServing: txtHospitalServing.value,
          status: "pending",
+         tags: tags,
          suspension_reason: null,
          gst_url: gstURL,
          cheque_url: chequeURL,
@@ -1506,5 +1577,71 @@ function getAppInfo() {
 
 }
 
+function loadTags() {
+   return new Promise((resolve, reject) => {
+      firebase.firestore().collection("medical_tags").doc("tags").collection("doctor_tags")
+         .get()
+         .then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+               var medical_tags = doc.data();
+               if (medical_tags.active == true) {
+                  activeTagDocId = medical_tags.tag_id;
+               }
+
+               var tags = medical_tags.tags;
+               for (var i = 0; i < tags.length; i++) {
+                  var tag = tags[i].toLowerCase();
+                  if (medical_tags.active == true) {
+                     localTagList.push(tag);
+                  }
+                  globalTagList.push(tag);
+
+               }
+            });
+         })
+         .then(function () {
+            resolve();
+         })
+         .catch(function (error) {
+            console.log("Error getting documents: ", error);
+            reject();
+         });
+
+
+   })
+}
+
+function addTags() {
+
+   return new Promise((resolve, reject) => {
+
+      var tagId = null;
+      if (activeTagDocId == null) {
+         tagId = generateUUID();
+      }
+      else {
+         tagId = activeTagDocId;
+      }
+      var active = true;
+      if (localTagList.length >= 10) {
+         active = false;
+      }
+
+      firebase.firestore().collection("medical_tags").doc("tags").collection("doctor_tags").doc(tagId).set({
+         tag_id: tagId,
+         active: active,
+         tags: localTagList
+      })
+         .then(function () {
+            resolve();
+         })
+         .catch(function (error) {
+            reject();
+         });
+
+   })
+
+
+}
 
 

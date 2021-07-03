@@ -109,7 +109,7 @@ var chequeURL = null;
 loadTags();
 
 
-getAppInfo().then(()=>{
+getAppInfo().then(() => {
    arrSubCategories = mAppInfo.pharma_categories;
    createSubCategoryCheckBoxes();
 
@@ -339,6 +339,11 @@ function loadUI() {
    txtAddressLine3.value = mSeller.address_line3;
    txtCity.value = mSeller.city;
    cmbState.value = mSeller.state;
+   txtAccountHolderName.value = mSeller.account_holder_name;
+   txtBankName.value = mSeller.bank_name;
+   txtIFSCCode.value = mSeller.ifsc;
+   txtOpeningTime.value = mSeller.shop_opening_time;
+   txtClosingTime.value = mSeller.shop_closing_time;
    txtPANCardNo.value = mSeller.pan_no;
    txtGST.value = mSeller.gstin;
    txtPincode.value = mSeller.pincode;
@@ -352,39 +357,49 @@ function loadUI() {
    previewImage_CarouselImage1.style.display = "block";
    previewText_CarouselImage1.style.display = "none";
 
-   createSubCategoryCheckBoxes();
+   createSubCategoryCheckBoxes()
    if (arrSubCategories != null) {
       for (var i = 0; i < arrSubCategories.length; i++) {
          var pharmaCategory = arrSubCategories[i];
-         for (var j = 0; j < arrLabels.length; j++) {
-            if (arrLabels[j].textContent == subCategory) {
-               var inputElement = checkBoxes[j];
-               inputElement.checked = true;
-               arrSelectedPharmaCategories.push(arrLabels[j].textContent);
-               break;
+         if (mSeller.pharma_categories.includes(pharmaCategory)) {
+            var selectedIndex = -1;
+            for (var j = 0; j < arrSubCategories.length; j++) {
+               if(arrSubCategories[j] == pharmaCategory){
+                  selectedIndex = j;
+                  break;
+               }
+               
+            }
+            if(selectedIndex >= 0){
+
+                  var inputElement = checkBoxes[selectedIndex];
+                  inputElement.checked = true;
+                  arrSelectedPharmaCategories.push(arrLabels[selectedIndex].textContent);
+                 
+               
             }
          }
+
+         // for (var j = 0; j < arrLabels.length; j++) {
+         //    if(mSeller.pharma_categories.includes(pharmaCategory)){
+         //       var inputElement = checkBoxes[j];
+         //       inputElement.checked = true;
+         //       arrSelectedPharmaCategories.push(arrLabels[j].textContent);
+         //    }
+         // }
       }
    }
 
-   txtIFSCCode.value = mSeller.ifsc;
-   txtBankName.value = mSeller.bank_name;
-   txtNmae.value = mSeller.seller_name;
-   cmbSellerCategory.value = mSeller.seller_category;
-
-   txtAccountHolderName.value = mSeller.account_holder_name;
+   
    if (mSeller.city_seller == true) {
       rbCityYes.checked = true;
       rbCityNo.checked = false;
       divCity.style.display = "block";
    }
    else {
-
       rbCityYes.checked = false;
       rbCityNo.checked = true;
       divCity.style.display = "none";
-
-
    }
 
    if (mSeller.city_seller) {
@@ -399,7 +414,7 @@ function loadUI() {
    } else {
       rbCurrent.checked = false;
    }
-
+   
    btnViewCancelledCheque.style.display = "block";
    btnViewGST.style.display = "block";
 
@@ -894,7 +909,7 @@ function updateSellerDetails() {
                   + "&rejection_reason=null";
             }
             else {
-               window.location.href = "home.html?sellerid=" + sellerId;
+               window.location.href = "pharmacist_home.html?sellerid=" + sellerId;
             }
 
             console.log("Document successfully updated!");

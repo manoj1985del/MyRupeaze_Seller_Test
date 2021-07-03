@@ -221,7 +221,7 @@ cardTodayAppointment.addEventListener("click", function () {
 });
 
 btnUpdate.addEventListener("click", function () {
-    window.location.href = "RegisterUser.html?sellerid=" + sellerId;
+    window.location.href = "registerDoctor.html?sellerid=" + sellerId;
 })
 
 function getMonthNmae(index) {

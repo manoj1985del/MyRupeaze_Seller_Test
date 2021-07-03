@@ -194,7 +194,7 @@ cardWaitingForPickup.addEventListener("click", function () {
 
 
 btnUpdate.addEventListener("click", function () {
-    window.location.href = "RegisterUser.html?sellerid=" + sellerId;
+    window.location.href = "registerPharmacist.html?sellerid=" + sellerId;
 })
 
 function getMonthNmae(index) {

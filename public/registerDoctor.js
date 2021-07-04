@@ -1126,7 +1126,7 @@ function updateSellerDetails() {
          seller_name: txtNmae.value,
          mobile: txtMobile.value,
          charges: parseFloat(txtConsultationCharges.value),
-         consultation_id: parseFloat(txtConsultationCharges.value),
+         consultation_id: consultationId,
          slots: consultationSlots,
          company_name: txtCompanyName.value,
          address_line1: txtAddressLine1.value,

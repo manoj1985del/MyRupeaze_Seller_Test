@@ -4,6 +4,12 @@ var btnHome = document.getElementById("btnHome");
 var btnLogout = document.getElementById("btnLogout");
 var sellerid = localStorage.getItem("sellerid");
 var adminLogin = localStorage.getItem("adminLogin");
+var adminId;
+if(adminLogin){
+
+    adminId = localStorage.getItem("adminId");
+    sellerid = adminId;
+}
 
 //var userType = localStorage.getItem("userType");
 
@@ -45,7 +51,12 @@ function getLoggedInSellerDetails() {
 if (btnHome != null) {
 
     btnHome.addEventListener("click", function () {
+        
 
+       if(adminLogin){
+        window.location.href = "admin_home.html?sellerid=" + adminId;
+        return;
+       }
 
         getLoggedInSellerDetails().then(() => {
 

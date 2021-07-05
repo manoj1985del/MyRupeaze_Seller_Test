@@ -98,14 +98,16 @@ var hConsultationsPendingForRefund = document.getElementById('hConsultationsPend
 var cardConsultationPendingForRefund = document.getElementById('cardConsultationPendingForRefund');
 
 
-
+var sellerId = getQueryVariable("sellerid");
 localStorage.setItem("adminLogin", "true");
+localStorage.setItem("adminId", sellerId);
+
 
 var todayOrdersMap = new Map();
 var last7DayOrderMap = new Map();
 
 
-var sellerId = getQueryVariable("sellerid");
+
 
 localStorage.setItem("sellerid", sellerId);
 

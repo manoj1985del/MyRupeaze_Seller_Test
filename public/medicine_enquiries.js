@@ -4,7 +4,7 @@ var divContent = document.getElementById("divContent");
 var table = document.getElementById("tblData");
 var rupeeSymbol = "₹ ";
 
-var sellerId = localStorage.getItem("sellerid");
+var sellerId = getQueryVariable("sellerid");
 
 var mSeller;
 var enquiryList = [];
@@ -61,8 +61,17 @@ function getEnquiries() {
 
         }
 
+        if (mType == "unsettled") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("seller_id", "==", sellerId)
+                .where("settlement_done", "==", false)
+                .where("status_code", "==", 5)
+                .orderBy('timestamp', 'desc');
+
+        }
+
         if (mType == "today_completed") {
-            var query = firebase.firestore()
+             query = firebase.firestore()
                 .collection('pharmacist_requests')
                 .where("seller_id", "==", sellerId)
                 .where("invoice_timestamp", ">=", today)
@@ -107,6 +116,15 @@ function getEnquiries() {
                 .where("status_code", "==", 6)
                 .orderBy('timestamp', 'desc');
 
+
+        }
+
+        if (mType == "unsettled") {
+            query = firebase.firestore().collection("pharmacist_requests")
+                .where("status_code", "==", 6)
+                .where("settlement_done", "==", false)
+                .where("status_code", "==", 5)
+                .orderBy('timestamp', 'desc');
 
         }
 
@@ -700,7 +718,22 @@ function rejectEnquiry(docId, reason) {
 
 function markDelivery(docId) {
 
-    updateStatusCode(5, docId);
+    var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
+    washingtonRef.update({
+        status_code: 5,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+
+    })
+        .then(function () {
+            alert("Product delivery marked!!");
+            // window.location.href = "medicine_enquiries.html";
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.log("doc does not exist");
+
+        });
+
 }
 
 function updateStatusCode(statusCode, docId) {

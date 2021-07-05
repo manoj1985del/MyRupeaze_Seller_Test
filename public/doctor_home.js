@@ -77,7 +77,6 @@ var last7DayOrderMap = new Map();
 var mSeller = null;
 
 var sellerId = getQueryVariable("sellerid");
-localStorage.setItem("sellerid", sellerId);
 
 localStorage.setItem("userType", "doctor");
 

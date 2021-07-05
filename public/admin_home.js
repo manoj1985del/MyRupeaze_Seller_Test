@@ -99,7 +99,7 @@ var cardConsultationPendingForRefund = document.getElementById('cardConsultation
 
 
 var sellerId = getQueryVariable("sellerid");
-localStorage.setItem("adminLogin", "true");
+localStorage.setItem("adminLogin", true);
 localStorage.setItem("adminId", sellerId);
 
 

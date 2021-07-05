@@ -2,14 +2,17 @@
 
 var rupeeSymbol = "₹ ";
 var tradeCharges = 28;
+var mAppInfo = null;
 
 var cardCity = document.getElementById("cardCity");
 var btnUpdate = document.getElementById("btnUpdate");
+var btnAllEnquiries = document.getElementById('btnAllEnquiries');
 var arrLast7Days = [];
 var mapUnits7Days = new Map();
 var mapSales7Days = new Map();
 var last7DaySales = [];
 var last7DayUnits = [];
+var pharmacyOrdersMap = new Map();
 
 
 
@@ -53,8 +56,8 @@ var spanType = document.getElementById("spanType");
 
 var imgProgress = document.getElementById("imgProgress");
 
-var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
-var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
+var hFreezedBalance = document.getElementById("hFreezedBalance");
+var hAvailableBalance = document.getElementById("hAvailableBalance");
 var hSalesThisMonth = document.getElementById("hSalesThisMonth");
 
 var hApprovedByBuyer = document.getElementById("hApprovedByBuyer");
@@ -72,6 +75,9 @@ var last7DayOrderMap = new Map();
 
 
 var sellerId = getQueryVariable("sellerid");
+localStorage.setItem("sellerid", sellerId);
+
+
 
 
 
@@ -107,17 +113,9 @@ getThisMonthOrders().then(()=>{
     getAmountForMonthForEnquiries();
 })
 
-// getThisMonthOrders().then(()=>{
-//     console.log(currentMonthOrders);
-//     var promiseList = [];
-//     for(var i = 0; i < currentMonthOrders.length; i++){
-//         promiseList.push(mapCurrentMonthsProductAgainstOrder(currentMonthOrders[i]));
-//     }
-//     Promise.all(promiseList).then(()=>{
-//         console.log("going to get amount for month");
-//         getAmountForMonth();
-//     })
-// })
+btnAllEnquiries.addEventListener("click", function(){
+    window.location.href = "medicine_enquiries.html?type=all&sellerid=" + sellerId;
+})
 
 
 //pending pharmacist enquiries
@@ -954,18 +952,9 @@ function generatePayouts() {
 
     var promiseList = [];
 
-    loadComissionMap().then(() => {
-        getUnSettledOrders().then(() => {
-            for (var i = 0; i < unsettledOrders.length; i++) {
-                promiseList.push(mapProductsAgainstOrder(unsettledOrders[i]));
-            }
-            Promise.all(promiseList).then(() => {
-                calculatePayout();
-                // calculateDisbursableAmount();
-            })
+    getAppInfo().then(() => {
+        getUnsettledPharmaOrders()
 
-
-        });
     })
 }
 
@@ -1380,3 +1369,180 @@ function getActiveEnquiries() {
 
 }
 
+
+function getAppInfo() {
+    return new Promise((resolve, reject)=>{
+
+        var docRef = firebase.firestore().collection("AppInfo").doc("AppInfo");
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mAppInfo = doc.data();
+                resolve();
+            } else {
+                mAppInfo = null;
+                reject();
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+    
+            }
+        }).catch(function (error) {
+            mAppInfo = null;
+            reject();
+            console.log("Error getting document:", error);
+        });
+
+    })
+   
+}
+
+
+function getUnsettledPharmaOrders() {
+
+    return new Promise((resolve, reject) => {
+        var orderList = [];
+        firebase.firestore().collection("pharmacist_requests")
+            .where("seller_id", "==", sellerId)
+            .where("settlement_done", "==", false)
+            .where("status_code", "==", 5)
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    var order = doc.data();
+                    orderList.push(order);
+                });
+            }).then(() => {
+                pharmacyOrdersMap.set(sellerId, orderList);
+                setAmounts();
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+    })
+}
+
+function setAmounts(){
+    var orderList = pharmacyOrdersMap.get(sellerId);
+    var freezedAmount = 0;
+    var disbursableAmount = 0;
+    var freezedCommission = 0;
+    var availableCommission = 0;
+    var arrOrders = [];
+
+    for (var orderNumber = 0; orderNumber < orderList.length; orderNumber++) {
+
+        var order = orderList[orderNumber];
+        //if order was a cancelled one.. no need to process it
+        if (order.cancelled == true) {
+            // ordersTobeSettled.set(seller.seller_id, order);
+            continue;
+        }
+        var deliveryDate = order.delivery_date;
+        var productList = order.product_names;
+
+        var freezedAmountTemp = 0;
+        var freezedCommissionTemp = 0;
+        var disbursableAmountTemp = 0;
+        var availableCommissionTemp = 0;
+        for (var productNumber = 0; productNumber < productList.length; productNumber++) {
+            var product = productList[productNumber];
+            var amtToReduce = 0;
+            var status = order.available_status[productNumber];
+
+            if (status != "Available") {
+               continue;
+            }
+
+          
+            var commission = mAppInfo.pharma_commission;
+
+            var offer_price =  order.product_prices_total[productNumber];
+            offer_price = offer_price - amtToReduce;
+            var commission_value = (offer_price * commission) / 100;
+
+            //If product is not delivered yet.. it will fall in freezed category
+            if (deliveryDate == null) {
+                freezedAmountTemp += offer_price;
+                freezedCommissionTemp += commission_value;
+            }
+            else {
+                var dtDelivery = deliveryDate.toDate();
+
+                var dtCurrent = new Date();
+                var day = dtCurrent.getDate();
+                var month = dtCurrent.getMonth();
+                var year = dtCurrent.getFullYear();
+                if (month == 12) {
+                    year = dtCurrent.getFullYear() - 1;
+                }
+
+                //var dtFreezeWindowStart;
+                if (day < 16) {
+                    month = dtCurrent.getMonth() - 1;
+
+                    dtFreezeWindowStart = new Date(year, month, 16);
+                    //   dtFreezeWindowEnd = new Date(year, month, numberofDays);
+                }
+                else {
+                    month = dtCurrent.getMonth();
+                    year = dtCurrent.getFullYear();
+                    //jaise hi 16 tarikh aayegi freezing window current month ki 1 tarikh se start ho jayegi
+                    //aur ussey pehle ke sabhi orders available me aa jayege
+                    dtFreezeWindowStart = new Date(year, month, 1);
+                    var numberofDays = getDaysInMonth(month, year);
+                    //if this is last day of the month move the orders from 1 to 15 in available range
+                    if (day == numberofDays) {
+                        dtFreezeWindowStart = new Date(year, month, 16);
+                    }
+                }
+
+                //All the orders that were delivered before freezing window started will be available for disbursement
+                if (dtDelivery < dtFreezeWindowStart) {
+                    disbursableAmountTemp += offer_price;
+                    availableCommissionTemp += commission_value;
+                    arrOrders.push(order);
+
+                }
+                else {
+                    freezedAmountTemp += offer_price;
+                    freezedCommissionTemp += commission_value;
+                }
+
+
+            }
+
+        }
+
+        // var tradeChargesFreezed = 28;
+        // var tradeChargesAvailable = 28;
+
+        var tradeChargesFreezed = 0;
+        var tradeChargesAvailable = 0;
+
+        if (freezedAmountTemp == 0) {
+            tradeChargesFreezed = 0;
+        }
+
+        if (disbursableAmountTemp == 0) {
+            tradeChargesAvailable = 0;
+        }
+
+        var freezedDeductionsTaxable = freezedCommissionTemp + tradeChargesFreezed;
+        var freezedTaxes = freezedDeductionsTaxable * 18 / 100;
+        var freezedDeductions = freezedDeductionsTaxable + freezedTaxes;
+        freezedAmount += freezedAmountTemp - freezedDeductions;
+        freezedCommission += freezedDeductions;
+        hFreezedBalance.textContent = rupeeSymbol + numberWithCommas(freezedAmount);
+
+        var disbursableDeductionsTaxable = availableCommissionTemp + tradeChargesAvailable;
+        var disbursableTaxes = disbursableDeductionsTaxable * 18 / 100;
+        var disbursableDeductions = disbursableDeductionsTaxable + disbursableTaxes;
+        disbursableAmount += disbursableAmountTemp - disbursableDeductions;
+        availableCommission += disbursableDeductions;
+
+        hAvailableBalance.textContent = rupeeSymbol + numberWithCommas(disbursableAmount);
+
+    }
+
+}

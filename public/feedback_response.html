@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback and Suggestions</title>
+    <title>Respond To Feedback</title>
 
     <link rel="icon" href="img_logo.png">
 
@@ -144,26 +144,22 @@
         <div>
 
             <div>
-                <h1 class="d-flex justify-content-center" id="pageHeader">Feedback and Suggestions</h1>
+                <h1 class="d-flex justify-content-center" id="pageHeader">Respond to the Feedback</h1>
                 <hr />
             </div>
 
+            <h4 id="txtFeedback"></h3>
+
+            <div class="form-group">
+                <label for="txtFeedbackResponse">Type a response to this feedback</label>
+                <textarea style="height: 200px;" class="form-control" id="txtFeedbackResponse"></textarea>
+              </div>
+
+              <button type="button" class="btn btn-primary" id="btnSubmitResponse">Submit Response</button>
+
 
         </div>
 
-        <div class="form-group">
-            <label for="cmbApptype">App Type</label>
-            <!-- <input type="text" class="form-control" id="txtState"> -->
-            <select name="cmbApptype" id="cmbApptype" class="form-control">
-                <option selected disabled hidden value=null>Select App Type</option>
-                <option value="My Rupeaze">My Rupeaze</option>
-                <option value="My Rupeaze - Swasthya">My Rupeaze - Swasthya</option>
-            </select>
-        </div>
-
-            <table id="tblData"></table>
-        
-        </table>
     </div>
 
         <div id="nextPreviousDiv" class=" d-flex justify-content-center">
@@ -198,7 +194,7 @@
         <!-- Initialize Firebase -->
         <script src="/__/firebase/init.js"></script>
         <script type="text/javascript" src="common.js"></script>
-        <script type="text/javascript" src="admin_feedback.js"></script>
+        <script type="text/javascript" src="feedback_response.js"></script>
 </body>
 
 </html>

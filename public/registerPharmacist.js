@@ -9,6 +9,10 @@ var arrSubCategories = [];
 var arrSelectedPharmaCategories = [];
 var arrLabels = [];
 var checkBoxes = [];
+var tags = [];
+var localTagList = [];
+var globalTagList = [];
+var activeTagDocId = null;
 
 var divPharmaCategories = document.getElementById("divPharmaCategories");
 var txtNmae = document.getElementById("txtName");
@@ -18,6 +22,7 @@ var txtAddressLine1 = document.getElementById("txtAddressLine1");
 var txtAddressLine2 = document.getElementById("txtAddressLine2");
 var txtAddressLine3 = document.getElementById("txtAddressLine3");
 var txtCity = document.getElementById("txtCity");
+var txtTags = document.getElementById("txtTags");
 
 var txtPincode = document.getElementById("txtPincode");
 var txtGST = document.getElementById("txtGSTNo");
@@ -101,7 +106,10 @@ var uploadFileUrl = null;
 var gstURL = null;
 var chequeURL = null;
 
-getAppInfo().then(()=>{
+loadTags();
+
+
+getAppInfo().then(() => {
    arrSubCategories = mAppInfo.pharma_categories;
    createSubCategoryCheckBoxes();
 
@@ -119,44 +127,43 @@ getAppInfo().then(()=>{
 
 
 
-
 setImage(inpFile_CarouselImage1, previewImage_CarouselImage1, previewText_CarouselImage1, "fileCarousel_Img1");
 
 btnUploadCarouselImage1.addEventListener("click", function () {
    uploadFile(fileCarousel_Img1, imgProgressCarouselImage1, uploadMsgCarouselImage1, url_Carousel_Img1, sellerId, "img");
 });
 
-btnLogout.addEventListener("click", function(){
+btnLogout.addEventListener("click", function () {
    logOut();
 })
 
 function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
 
    inpFile.addEventListener("change", function () {
-       var file = this.files[0];
-       if (file) {
-           var reader = new FileReader();
-           previewImage.style.display = "block";
-           previewImageDeraultText.style.display = "none";
+      var file = this.files[0];
+      if (file) {
+         var reader = new FileReader();
+         previewImage.style.display = "block";
+         previewImageDeraultText.style.display = "none";
 
-           reader.addEventListener("load", function () {
-               previewImage.setAttribute("src", this.result);
+         reader.addEventListener("load", function () {
+            previewImage.setAttribute("src", this.result);
 
-           });
-           reader.readAsDataURL(file);
-           switch (imgNmae) {
+         });
+         reader.readAsDataURL(file);
+         switch (imgNmae) {
 
-               case "fileCarousel_Img1":
-                   fileCarousel_Img1 = file;
-                   break;
-           }
+            case "fileCarousel_Img1":
+               fileCarousel_Img1 = file;
+               break;
+         }
 
-       }
-       else {
-           previewImage.style.display = null;
-           previewImageDeraultText.style.display = null;
+      }
+      else {
+         previewImage.style.display = null;
+         previewImageDeraultText.style.display = null;
 
-       }
+      }
    });
 
 
@@ -165,20 +172,20 @@ function setImage(inpFile, previewImage, previewImageDeraultText, imgNmae) {
 function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
 
    if (file == null) {
-       alert("Please select file to upload");
-       return;
+      alert("Please select file to upload");
+      return;
    }
 
    console.log(file.size);
 
    if (file.size > 102400) {
-       alert("File cannot be more than 100 KB");
-       return;
+      alert("File cannot be more than 100 KB");
+      return;
    }
 
    if (!(file.type == "image/png" || file.type == "image/jpeg" || file.type == "image/jpg")) {
-       alert("Only png or jpeg files are allowed to upload");
-       return;
+      alert("Only png or jpeg files are allowed to upload");
+      return;
    }
 
 
@@ -186,10 +193,10 @@ function uploadFile(file, imgProgress, msgUpload, url, groupName, imageName) {
    imgProgress.style.display = "block";
 
    saveImageAtFirebase(file, groupName).then(() => {
-       imgProgress.style.display = "none";
-       msgUpload.style.display = "block";
-       url_Carousel_Img1 = imgUrl;
-       
+      imgProgress.style.display = "none";
+      msgUpload.style.display = "block";
+      url_Carousel_Img1 = imgUrl;
+
    })
 }
 
@@ -198,14 +205,14 @@ function saveImageAtFirebase(file, groupname) {
    var imagePath = "seller_images" + '/' + groupname + '/' + file.name;
    console.log(imagePath);
    return new Promise((resolve, reject) => {
-       firebase.storage().ref(imagePath).put(file).then(function () {
-           firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
-               imgUrl = url;
-               
-               console.log("resolving");
-               resolve();
-           });
-       });
+      firebase.storage().ref(imagePath).put(file).then(function () {
+         firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
+            imgUrl = url;
+
+            console.log("resolving");
+            resolve();
+         });
+      });
    });
 }
 
@@ -311,7 +318,7 @@ function saveFileToFirebase(file) {
 
 function loadUI() {
 
-   
+
    console.log(mSeller.seller_category);
 
    txtMerchantId.disabled = true;
@@ -325,57 +332,74 @@ function loadUI() {
 
    btnCheckAvailability.style.display = "none";
    txtCompanyName.value = mSeller.company_name;
+   txtNmae.value = mSeller.seller_name;
    txtEmail.value = mSeller.email;
    txtAddressLine1.value = mSeller.address_line1;
    txtAddressLine2.value = mSeller.address_line2;
    txtAddressLine3.value = mSeller.address_line3;
    txtCity.value = mSeller.city;
    cmbState.value = mSeller.state;
+   txtAccountHolderName.value = mSeller.account_holder_name;
+   txtBankName.value = mSeller.bank_name;
+   txtIFSCCode.value = mSeller.ifsc;
+   txtOpeningTime.value = mSeller.shop_opening_time;
+   txtClosingTime.value = mSeller.shop_closing_time;
    txtPANCardNo.value = mSeller.pan_no;
    txtGST.value = mSeller.gstin;
    txtPincode.value = mSeller.pincode;
    txtMobile.value = mSeller.mobile;
    txtMerchantId.value = mSeller.merchant_id;
    txtAccountNumber.value = mSeller.account_no;
-   cmbSellerCategory.value = mSeller.seller_category;
    txtAboutShop.value = mSeller.about_shop;
+   txtTags.value = mSeller.tags;
    url_Carousel_Img1 = mSeller.img_url;
    previewImage_CarouselImage1.src = url_Carousel_Img1;
    previewImage_CarouselImage1.style.display = "block";
    previewText_CarouselImage1.style.display = "none";
-   createSubCategoryCheckBoxes(cmbSellerCategory.value);
+
+   createSubCategoryCheckBoxes()
    if (arrSubCategories != null) {
       for (var i = 0; i < arrSubCategories.length; i++) {
          var pharmaCategory = arrSubCategories[i];
-         for(var j = 0; j < arrLabels.length; j++){
-            if(arrLabels[j].textContent == subCategory){
-               var inputElement = checkBoxes[j];
-               inputElement.checked = true;
-               arrSelectedPharmaCategories.push(arrLabels[j].textContent);
-               break;
+         if (mSeller.pharma_categories.includes(pharmaCategory)) {
+            var selectedIndex = -1;
+            for (var j = 0; j < arrSubCategories.length; j++) {
+               if(arrSubCategories[j] == pharmaCategory){
+                  selectedIndex = j;
+                  break;
+               }
+               
+            }
+            if(selectedIndex >= 0){
+
+                  var inputElement = checkBoxes[selectedIndex];
+                  inputElement.checked = true;
+                  arrSelectedPharmaCategories.push(arrLabels[selectedIndex].textContent);
+                 
+               
             }
          }
+
+         // for (var j = 0; j < arrLabels.length; j++) {
+         //    if(mSeller.pharma_categories.includes(pharmaCategory)){
+         //       var inputElement = checkBoxes[j];
+         //       inputElement.checked = true;
+         //       arrSelectedPharmaCategories.push(arrLabels[j].textContent);
+         //    }
+         // }
       }
    }
 
-   txtIFSCCode.value = mSeller.ifsc;
-   txtBankName.value = mSeller.bank_name;
-   txtNmae.value = mSeller.seller_name;
-   cmbSellerCategory.value = mSeller.seller_category;
-
-   txtAccountHolderName.value = mSeller.account_holder_name;
+   
    if (mSeller.city_seller == true) {
       rbCityYes.checked = true;
       rbCityNo.checked = false;
       divCity.style.display = "block";
    }
    else {
-
       rbCityYes.checked = false;
       rbCityNo.checked = true;
       divCity.style.display = "none";
-
-
    }
 
    if (mSeller.city_seller) {
@@ -390,7 +414,7 @@ function loadUI() {
    } else {
       rbCurrent.checked = false;
    }
-
+   
    btnViewCancelledCheque.style.display = "block";
    btnViewGST.style.display = "block";
 
@@ -666,14 +690,23 @@ function setErrorHeader(msg) {
 btnSubmit.addEventListener("click", function () {
    console.log("clicked update");
 
+   var tmpTags = [];
+   tags = [];
+
+   tmpTags = txtTags.value.split(',');
+   for (var i = 0; i < tmpTags.length; i++) {
+      var tag = tmpTags[i].trim().toLowerCase();
+      tags.push(tag);
+      if (!globalTagList.includes(tag)) {
+         localTagList.push(tag);
+      }
+   }
+
    if (!bUpdate) {
       registerSeller();
    }
    else {
-
-
       updateSellerDetails();
-
    }
 });
 
@@ -710,9 +743,13 @@ function registerSeller() {
 
    }
 
-   saveSellerDetails().then(() => {
-      sendWelcomeEmail();
+   addTags().then(() => {
+      saveSellerDetails().then(() => {
+         sendWelcomeEmail();
+      })
+
    })
+
 
    // if (rbCityNo.checked) {
    //    saveSellerDetails().then(() => {
@@ -814,72 +851,76 @@ function updateSellerDetails() {
       shop_offers = null;
 
    }
-   var status;
-   if (mSeller.status == "approved") {
-      status = "approved";
-   } else {
-      status = "pending";
-   }
 
-   divProgress.style.display = "block";
-   divContent.style.display = "none";
+   addTags().then(() => {
+
+      var status;
+      if (mSeller.status == "approved") {
+         status = "approved";
+      } else {
+         status = "pending";
+      }
+
+      divProgress.style.display = "block";
+      divContent.style.display = "none";
 
 
-   var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
+      var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);
 
-   // Set the "capital" field of the city 'DC'
-   return washingtonRef.update({
-      seller_name: txtNmae.value,
-      mobile: txtMobile.value,
-      company_name: txtCompanyName.value,
-      address_line1: txtAddressLine1.value,
-      address_line2: txtAddressLine2.value,
-      address_line3: txtAddressLine3.value,
-      city: txtCity.value,
-      state: cmbState.value,
-      pincode: txtPincode.value,
-      seller_area_pin: mAreaPin,
-      gstin: txtGST.value,
-      pan_no: txtPANCardNo.value,
-      account_holder_name: txtAccountHolderName.value,
-      account_no: txtAccountNumber.value,
-      bank_name: txtBankName.value,
-      ifsc: txtIFSCCode.value,
-      accountType: accountType,
-      merchant_id: txtMerchantId.value,
-      pharma_categories: arrSelectedPharmaCategories,
-      city_seller: citySeller,
-      shop_opening_time: shop_opening_time,
-      shop_closing_time: shop_closing_time,
-      shop_offers: shop_offers,
-      status: status,
-      img_url: url_Carousel_Img1,
-      about_shop: txtAboutShop.value,
-      suspension_reason: null,
-      sellerType: 'pharmacist'
-   })
-      .then(function () {
-
-         divProgress.style.display = "none";
-         divContent.style.display = "block";
-
-         if (mSeller.status != "approved") {
-            window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
-               + "&name=" + mSeller.company_name + "&status=pending"
-               + "&rejection_reason=null";
-         }
-         else {
-            window.location.href = "home.html?sellerid=" + sellerId;
-         }
-
-         console.log("Document successfully updated!");
-
+      // Set the "capital" field of the city 'DC'
+      return washingtonRef.update({
+         seller_name: txtNmae.value,
+         mobile: txtMobile.value,
+         company_name: txtCompanyName.value,
+         address_line1: txtAddressLine1.value,
+         address_line2: txtAddressLine2.value,
+         address_line3: txtAddressLine3.value,
+         city: txtCity.value,
+         state: cmbState.value,
+         pincode: txtPincode.value,
+         seller_area_pin: mAreaPin,
+         gstin: txtGST.value,
+         pan_no: txtPANCardNo.value,
+         account_holder_name: txtAccountHolderName.value,
+         account_no: txtAccountNumber.value,
+         bank_name: txtBankName.value,
+         ifsc: txtIFSCCode.value,
+         accountType: accountType,
+         merchant_id: txtMerchantId.value,
+         pharma_categories: arrSelectedPharmaCategories,
+         city_seller: citySeller,
+         shop_opening_time: shop_opening_time,
+         shop_closing_time: shop_closing_time,
+         shop_offers: shop_offers,
+         status: status,
+         img_url: url_Carousel_Img1,
+         about_shop: txtAboutShop.value,
+         suspension_reason: null,
+         sellerType: 'pharmacist'
       })
-      .catch(function (error) {
-         // The document probably doesn't exist.
-         console.error("Error updating document: ", error);
-      });
+         .then(function () {
 
+            divProgress.style.display = "none";
+            divContent.style.display = "block";
+
+            if (mSeller.status != "approved") {
+               window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
+                  + "&name=" + mSeller.company_name + "&status=pending"
+                  + "&rejection_reason=null";
+            }
+            else {
+               window.location.href = "pharmacist_home.html?sellerid=" + sellerId;
+            }
+
+            console.log("Document successfully updated!");
+
+         })
+         .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+         });
+
+   })
 }
 
 function loadShopDetails(sellerid) {
@@ -958,6 +999,7 @@ function saveSellerDetails() {
          shop_offers: shop_offers,
          img_url: url_Carousel_Img1,
          about_shop: txtAboutShop.value,
+         tags: tags,
          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
          sellerType: 'pharmacist'
       }).then(function () {
@@ -1065,11 +1107,11 @@ function deleteElements(parentElement) {
 }
 
 
-function createSubCategoryCheckBoxes(sCategory) {
+function createSubCategoryCheckBoxes() {
    arrLabels = [];
    checkBoxes = [];
    deleteElements(divPharmaCategories);
-  
+
 
    console.log(arrSubCategories);
    for (var i = 0; i < arrSubCategories.length; i++) {
@@ -1120,13 +1162,82 @@ function createSubCategoryCheckBoxes(sCategory) {
 
 function logOut() {
    firebase.auth().signOut().then(function () {
-       window.location.href = "seller_login.html";
+      window.location.href = "seller_login.html";
    }).catch(function (error) {
-       // An error happened.
+      // An error happened.
    });
 
 
 }
+
+
+function loadTags() {
+   return new Promise((resolve, reject) => {
+      firebase.firestore().collection("medical_tags").doc("tags").collection("pharmacy_tags")
+         .get()
+         .then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+               var medical_tags = doc.data();
+               if (medical_tags.active == true) {
+                  activeTagDocId = medical_tags.tag_id;
+               }
+
+               var tags = medical_tags.tags;
+               for (var i = 0; i < tags.length; i++) {
+                  var tag = tags[i].toLowerCase();
+                  if (medical_tags.active == true) {
+                     localTagList.push(tag);
+                  }
+                  globalTagList.push(tag);
+
+               }
+            });
+         })
+         .then(function () {
+            resolve();
+         })
+         .catch(function (error) {
+            console.log("Error getting documents: ", error);
+            reject();
+         });
+
+
+   })
+}
+
+function addTags() {
+
+   return new Promise((resolve, reject) => {
+
+      var tagId = null;
+      if (activeTagDocId == null) {
+         tagId = generateUUID();
+      }
+      else {
+         tagId = activeTagDocId;
+      }
+      var active = true;
+      if (localTagList.length >= 10) {
+         active = false;
+      }
+
+      firebase.firestore().collection("medical_tags").doc("tags").collection("pharmacy_tags").doc(tagId).set({
+         tag_id: tagId,
+         active: active,
+         tags: localTagList
+      })
+         .then(function () {
+            resolve();
+         })
+         .catch(function (error) {
+            reject();
+         });
+
+   })
+
+
+}
+
 
 var mAppInfo = null;
 function getAppInfo() {

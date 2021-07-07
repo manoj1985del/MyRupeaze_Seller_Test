@@ -1,5 +1,6 @@
 var divProgress = document.getElementById('divProgress');
 var divContent = document.getElementById('divContent');
+var cmbFaqType = document.getElementById('cmbFaqType');
 var btnSubmit = document.getElementById('btnSubmit');
 var txtQuestion = document.getElementById('txtQuestion');
 var txtAnswer = document.getElementById('txtAnswer');
@@ -15,10 +16,14 @@ var faqToBeUpdated;
 divProgress.style.display = "none";
 divContent.style.display = "block";
 
-loadFAQ().then(()=>{
-    createTable();
-
-})
+cmbFaqType.addEventListener("change", function () {
+    txtQuestion.value = "";
+    txtAnswer.value = "";
+    faqList = [];
+    loadFAQ(cmbFaqType.value).then(()=>{
+        createTable();
+    })
+});
 
 btnSubmit.addEventListener("click", function () {
     if(txtQuestion.value == ""){
@@ -37,7 +42,12 @@ btnSubmit.addEventListener("click", function () {
 
         updateData(txtQuestion.value, txtAnswer.value, faqToBeUpdated.docId).then(()=>{
             alert("FAQ Updated Successfully!!");
-            window.location.href = "faq.html";
+            txtQuestion.value = "";
+            txtAnswer.value = "";
+            faqList = [];
+            loadFAQ(cmbFaqType.value).then(()=>{
+                createTable();
+            })
         })
       
         updateFaq = false;
@@ -46,7 +56,12 @@ btnSubmit.addEventListener("click", function () {
         count = faqList.length;
         saveData(txtQuestion.value, txtAnswer.value, count).then(()=>{
             alert("FAQ Saved Successfully!!");
-            window.location.href = "faq.html";
+            txtQuestion.value = "";
+            txtAnswer.value = "";
+            faqList = [];
+            loadFAQ(cmbFaqType.value).then(()=>{
+                createTable();
+            })
         })
     }
 
@@ -64,7 +79,8 @@ function saveData(question, answer, count) {
         docId: docId,
         question: question,
         answer: answer,
-        index: count
+        index: count,
+        type: cmbFaqType.value
     })
         .then(() => {
             console.log("Document successfully written!");
@@ -120,7 +136,7 @@ function createTableHeaders() {
 }
 
 function createTable(){
-
+    deleteTableRows();
     createTableHeaders();
     console.log(faqList);
     for(var i = 0; i < faqList.length; i++){
@@ -208,6 +224,15 @@ function createTable(){
 
 }
 
+function deleteTableRows() {
+    //e.firstElementChild can be used. 
+    var child = table.lastElementChild;
+    while (child) {
+        table.removeChild(child);
+        child = table.lastElementChild;
+    }
+}
+
 function moveIndexUp(id){
 
     var docRef = firebase.firestore().collection("faq").doc(id);
@@ -244,7 +269,11 @@ function moveIndexUp(id){
            }).then(() => {
                console.log("Document successfully updated!");
                alert("FAQ moved up Successfully!!");
-               window.location.href = "faq.html";    
+               faqList = [];
+               loadFAQ(cmbFaqType.value).then(()=>{
+                   createTable();
+                   console.log("executed");
+               })
            })
            .catch((error) => {
                // The document probably doesn't exist.
@@ -295,7 +324,10 @@ function moveIndexDown(id){
            }).then(() => {
                console.log("Document successfully updated!");
                alert("FAQ moved down Successfully!!");
-               window.location.href = "faq.html";
+               faqList = [];
+               loadFAQ(cmbFaqType.value).then(()=>{
+                   createTable();
+               })
            })
            .catch((error) => {
                // The document probably doesn't exist.
@@ -359,8 +391,7 @@ function deleteFAQ(docId){
                index: faqIndex - 1
            }).then(() => {
                console.log("Document successfully updated!");
-               alert("FAQ moved down Successfully!!");
-               window.location.href = "faq.html";
+               //alert("FAQ moved down Successfully!!");
            })
            .catch((error) => {
                // The document probably doesn't exist.
@@ -369,7 +400,10 @@ function deleteFAQ(docId){
 
            firebase.firestore().collection("faq").doc(docId).delete().then(() => {
             alert("FAQ successfully deleted!");
-            window.location.href = "faq.html";
+            faqList = [];
+            loadFAQ(cmbFaqType.value).then(()=>{
+                createTable();
+            })
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
@@ -409,11 +443,12 @@ function editFaq(id){
 }
 
 
-function loadFAQ(){
+function loadFAQ(value){
 
+    console.log(value);
     return new Promise((resolve, reject)=>{
 
-        firebase.firestore().collection("faq").orderBy("index")
+    firebase.firestore().collection("faq").where("type", "==", value).orderBy("index")
     .get()
     .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {

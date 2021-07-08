@@ -113,7 +113,7 @@ getThisMonthOrders().then(()=>{
 })
 
 btnAllEnquiries.addEventListener("click", function(){
-    window.location.href = "medicine_enquiries.html?type=all&sellerid=" + sellerId;
+    window.location.href = "medicine_enquiries.html?type=all";
 })
 
 
@@ -128,7 +128,7 @@ cardPendingEnquiries.addEventListener("mouseleave", function () {
 });
 
 cardPendingEnquiries.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=pending&sellerid=" + sellerId;
+    window.location.href = "medicine_enquiries.html?type=pending";
 })
 
 //Approved by customers enquiries
@@ -142,7 +142,7 @@ cardApprovedByBuyer.addEventListener("mouseleave", function () {
 });
 
 cardApprovedByBuyer.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=approved&sellerid=" + sellerId;
+    window.location.href = "medicine_enquiries.html?type=approved";
 })
 
 
@@ -159,7 +159,7 @@ cardSalesToday.addEventListener("mouseleave", function () {
 });
 
 cardSalesToday.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=today_completed&sellerid=" + sellerId;;
+    window.location.href = "medicine_enquiries.html?type=today_completed";;
 });
 
 
@@ -173,7 +173,7 @@ cardUnitsToday.addEventListener("mouseleave", function () {
 });
 
 cardUnitsToday.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=today_completed&sellerid=" + sellerId;
+    window.location.href = "medicine_enquiries.html?type=today_completed";
 });
 
 //today units
@@ -186,7 +186,7 @@ cardWaitingForPickup.addEventListener("mouseleave", function () {
 });
 
 cardWaitingForPickup.addEventListener("click", function () {
-    window.location.href = "medicine_enquiries.html?type=waiting_for_pickup&sellerid=" + sellerId;
+    window.location.href = "medicine_enquiries.html?type=waiting_for_pickup";
 });
 
 

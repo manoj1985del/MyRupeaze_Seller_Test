@@ -455,20 +455,30 @@ function createTable() {
 
         var divPayByCash = document.createElement('div');
         var spanPayByCash = document.createElement('span');
-        var payByCash = "No";
-        if (enquiry.pay_by_cash) {
-            payByCash = "Yes";
+        if(enquiry.status_code == 0){
+            spanPayByCash.textContent = "-";
         }
-        spanPayByCash.textContent = payByCash;
+        else{
+            var payByCash = "No";
+            if (enquiry.pay_by_cash) {
+                payByCash = "Yes";
+            }
+            spanPayByCash.textContent = payByCash;
+        }
+    
         divPayByCash.appendChild(spanPayByCash);
         tdPayByCash.appendChild(divPayByCash);
 
         var divRedeemPoints = document.createElement('div');
         var spanRedeemPoints = document.createElement('span');
-        spanRedeemPoints.textContent = "No";
-        if (enquiry.redeem_points) {
-            spanRedeemPoints.textContent = "Yes";
+        if(enquiry.status_code == 0){
+            spanRedeemPoints.textContent = "-";
+
         }
+        else{
+            spanRedeemPoints.textContent = enquiry.wallet_money_used;
+        }
+    
         divRedeemPoints.appendChild(spanRedeemPoints);
         tdRedeemPoints.appendChild(divRedeemPoints);
 

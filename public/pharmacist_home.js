@@ -26,7 +26,6 @@ var elec_payout_seller = 0;
 var cod_commission_admin = 0;
 var elec_commission_admin = 0;
 var commision_map = new Map();
-var unsettledOrdersAndProductMap = new Map();
 
 
 var pendingOrders = [];
@@ -1277,6 +1276,8 @@ function getThisMonthOrders() {
         lastDay.setMilliseconds(0);
         lastDay.setSeconds(50);
 
+        console.log(firstDay);
+        console.log(lastDay);
 
 
 
@@ -1292,6 +1293,7 @@ function getThisMonthOrders() {
                 snapshot.forEach(function (doc) {
 
                     var order = doc.data();
+                    console.log("order = " + order);
                     currentMonthOrders.push(order);
 
                 })

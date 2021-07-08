@@ -5,6 +5,9 @@ var table = document.getElementById("tblData");
 var rupeeSymbol = "₹ ";
 
 var sellerId = getQueryVariable("sellerid");
+if(sellerId == null){
+    sellerId = localStorage.getItem("sellerid");
+}
 
 var mSeller;
 var enquiryList = [];

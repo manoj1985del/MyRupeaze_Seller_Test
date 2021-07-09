@@ -278,6 +278,29 @@ function loadInvoice() {
     mRedeemAmount = 0;
   }
 
+  if (invoice.wallet_money_used != null) {
+
+    var trWalletMoneyUsed = document.createElement("tr");
+    var thWalletMoneyUsed = document.createElement("th");
+    thWalletMoneyUsed.classList.add("text-left");
+    thWalletMoneyUsed.textContent = "Wallet Money Used:"
+    trWalletMoneyUsed.appendChild(thWalletMoneyUsed);
+
+    var tdWalletMoney = document.createElement("td");
+    tdWalletMoney.classList.add("text-right");
+    //tdRedeemAmount.classList.add("text-primary");
+    var txtWalletMoney = document.createElement("span");
+    txtWalletMoney.textContent = rupeeSymbol + invoice.wallet_money_used;
+    //txtRedeemAmount.classList.add("font-weight-semibold");
+    tdWalletMoney.appendChild(txtWalletMoney);
+    trWalletMoneyUsed.appendChild(tdWalletMoney);
+    summaryBody.appendChild(trWalletMoneyUsed);
+    mRedeemAmount += invoice.wallet_money_used;
+
+  }
+  
+
+
 
 
 

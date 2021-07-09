@@ -216,7 +216,7 @@ function createTableHeaders() {
     thStatus.textContent = "Status";
 
     var thRedeemPoints = document.createElement('th');
-    thRedeemPoints.textContent = "Redeem Points";
+    thRedeemPoints.textContent = "Wallet Money Used";
 
     var thNoteToSeller = document.createElement('th');
     thNoteToSeller.textContent = "Buyer's Note";
@@ -269,7 +269,7 @@ function createTable() {
         var tdTotalPrice = document.createElement('td');
         var tdPickupFromStore = document.createElement('td');
         var tdPayByCash = document.createElement('td');
-        var tdRedeemPoints = document.createElement('td');
+        var tdWalletMoneyUsed = document.createElement('td');
         var tdNoteToSeller = document.createElement('td');
         var tdAction = document.createElement('td');
 
@@ -455,32 +455,34 @@ function createTable() {
 
         var divPayByCash = document.createElement('div');
         var spanPayByCash = document.createElement('span');
-        if(enquiry.status_code == 0){
-            spanPayByCash.textContent = "-";
-        }
-        else{
+        if(enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6){
             var payByCash = "No";
             if (enquiry.pay_by_cash) {
                 payByCash = "Yes";
             }
             spanPayByCash.textContent = payByCash;
+           
         }
+        else{
+            spanPayByCash.textContent = "-";
+        }
+       
     
         divPayByCash.appendChild(spanPayByCash);
         tdPayByCash.appendChild(divPayByCash);
 
-        var divRedeemPoints = document.createElement('div');
-        var spanRedeemPoints = document.createElement('span');
-        if(enquiry.status_code == 0){
-            spanRedeemPoints.textContent = "-";
-
+        var divWalletMoneyUsed = document.createElement('div');
+        var spanWalletMoneyUsed = document.createElement('span');
+        if(enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6){
+            spanWalletMoneyUsed.textContent = rupeeSymbol +  enquiry.wallet_money_used;
+          
         }
         else{
-            spanRedeemPoints.textContent = enquiry.wallet_money_used;
+            spanWalletMoneyUsed.textContent = "-";
         }
     
-        divRedeemPoints.appendChild(spanRedeemPoints);
-        tdRedeemPoints.appendChild(divRedeemPoints);
+        divWalletMoneyUsed.appendChild(spanWalletMoneyUsed);
+        tdWalletMoneyUsed.appendChild(divWalletMoneyUsed);
 
         var divNoteToSeller = document.createElement('div');
         var spanNoteToSeller = document.createElement('span');
@@ -632,7 +634,7 @@ function createTable() {
         tr.appendChild(tdStatus);
         tr.appendChild(tdPickupFromStore);
         tr.appendChild(tdPayByCash);
-        tr.appendChild(tdRedeemPoints);
+        tr.appendChild(tdWalletMoneyUsed);
         tr.appendChild(tdNoteToSeller);
         tr.appendChild(tdAction);
 
@@ -734,7 +736,7 @@ function markDelivery(docId) {
     var washingtonRef = firebase.firestore().collection("pharmacist_requests").doc(docId);
     washingtonRef.update({
         status_code: 5,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        delivery_date: firebase.firestore.FieldValue.serverTimestamp()
 
     })
         .then(function () {
@@ -873,6 +875,7 @@ function createInvoice(enquiry) {
             status_list: "success",
             amount_against_points: 0,
             points_used_for_purchase: 0,
+            wallet_money_used: enquiry.wallet_money_used,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })
             .then(function () {

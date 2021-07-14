@@ -6,6 +6,14 @@ var arrMerchantId = [];
 var arrSellerName = [];
 var arrAreaPin = [];
 
+var docLimit = 1;
+var queryList = [];
+var pageIndex = 0;
+var lastVisibleDoc;
+var paginationFinished = false;
+var nextQuery;
+
+
 var arrSearchBy = [];
 var mAppInfo = null;
 
@@ -17,6 +25,8 @@ var txtSearch = document.getElementById("txtSearch");
 var btnSearch = document.getElementById("btnSearch");
 var commision_map = new Map();
 var errorMsg = document.getElementById("errorMsg");
+var btnPrevious = document.getElementById("btnPrevious");
+var btnNext = document.getElementById('btnNext');
 var sellerProductMap = new Map();
 
 var sellerOrderMap = new Map();
@@ -48,6 +58,8 @@ var type = getQueryVariable("type");
 var mSellerType = getQueryVariable("sellerType");
 var query = "";
 
+loadSellerTags();
+
 cmbSearchBy.addEventListener("change", function () {
 
     if (this.value == "None") {
@@ -55,23 +67,23 @@ cmbSearchBy.addEventListener("change", function () {
     }
 
     if (this.value == "Seller Name") {
-        arrSearchBy = arrSellerName;
+        arrSearchBy = mSellerTags.seller_names;
     }
 
     if (this.value == "Seller City") {
-        arrSearchBy = arrSellerCity;
+        arrSearchBy = mSellerTags.seller_cities;
     }
 
     if (this.value == "Seller Category") {
-        arrSearchBy = arrSellerCategory;
+        arrSearchBy = mSellerTags.seller_categories;
     }
 
     if (this.value == "Merchant Id") {
-        arrSearchBy = arrMerchantId;
+        arrSearchBy = mSellerTags.seller_merchant_id_list;
     }
 
     if (this.value == "Area Pin") {
-        arrSearchBy = arrAreaPin;
+        arrSearchBy = mSellerTags.seller_area_pins;
     }
 
     autocomplete(txtSearch, arrSearchBy);
@@ -79,115 +91,101 @@ cmbSearchBy.addEventListener("change", function () {
 })
 
 console.log(type);
-if (type == "all") {
-    query = firebase.firestore().collection("seller")
-        .where("sellerType", "==", mSellerType);
-}
 
-if (type == "byseller") {
-    var merchantid = getQueryVariable("merchant_id");
-    query = firebase.firestore().collection("seller").where("merchant_id", "==", merchantid);
-}
-
-if (type == "pending") {
-    query = firebase.firestore().collection("seller")
-        .where("status", "==", "pending")
-        .where("sellerType", "==", mSellerType);
-}
-
-if (type == "suspended") {
-    query = firebase.firestore().collection("seller")
-        .where("status", "==", "suspended")
-        .where("sellerType", "==", mSellerType);
-}
-
-if (type == "approved") {
-    console.log(mSellerType);
-    query = firebase.firestore().collection("seller")
-        .where("status", "==", "approved")
-        .where("sellerType", "==", mSellerType);
-}
-
-if (type == null) {
-    query = firebase.firestore().collection("seller");
-}
+prepareQuery(type, true);
 
 loadSellers(query).then(() => {
 
     if (sellerList.length > 0) {
+        prepareQuery(type, false);
         if (mSellerType == "seller") {
             loadComissionMap().then(() => {
                 loadOrdersAndProductForSellers(sellerList);
             })
         }
-        else{
-            getAppInfo().then(()=>{
+        else {
+            getAppInfo().then(() => {
                 loadOrdersAndProductForSellers(sellerList);
             })
-          
+
         }
     }
     // query = firebase.firestore().collection("seller");
+});
+
+btnNext.addEventListener("click", function () {
+    sellerList = [];
+    deleteTableRows();
+    var nextQuery = queryList[pageIndex + 1];
+    pageIndex++;
+    loadSellers(nextQuery).then(() => {
+        prepareQuery(type, false);
+        loadOrdersAndProductForSellers(sellerList);
+
+
+
+        if (pageIndex > 0) {
+            btnPrevious.style.display = "block";
+        }
+        else {
+            btnPrevious.style.display = "none";
+        }
+
+    })
+
 })
+
+btnPrevious.addEventListener("click", function () {
+    sellerList = [];
+    deleteTableRows();
+
+    var prevQuery = queryList[pageIndex - 1];
+    loadSellers(prevQuery).then(() => {
+        loadOrdersAndProductForSellers(sellerList);
+        pageIndex--;
+
+        if (pageIndex == 0) {
+            btnPrevious.style.display = "none";
+        } else {
+            btnPrevious.style.display = "block";
+        }
+    })
+
+})
+
+
 
 btnSearch.addEventListener("click", function () {
 
 
-    var localSellerList = [];
+    sellerList = [];
+    deleteTableRows();
     if (cmbSearchBy.value == "Seller Name") {
-        arrSearchBy = arrSellerName;
-        for (var i = 0; i < sellerList.length; i++) {
-            var seller = sellerList[i];
-            if (seller.company_name == txtSearch.value) {
-                localSellerList.push(seller);
-            }
-        }
+        prepareSearchQuery(type, "company_name", txtSearch.value);
+       
     }
 
     if (cmbSearchBy.value == "Seller City") {
-        arrSearchBy = arrSellerCity;
-        for (var i = 0; i < sellerList.length; i++) {
-            var seller = sellerList[i];
-            if (seller.city == txtSearch.value) {
-                localSellerList.push(seller);
-            }
-        }
+        prepareSearchQuery(type, "city", txtSearch.value);
     }
 
     if (cmbSearchBy.value == "Seller Category") {
-        arrSearchBy = arrSellerCategory;
-        for (var i = 0; i < sellerList.length; i++) {
-            var seller = sellerList[i];
-            if (seller.seller_category == txtSearch.value) {
-                localSellerList.push(seller);
-            }
-        }
+        prepareSearchQuery(type, "seller_category", txtSearch.value);
     }
 
     if (cmbSearchBy.value == "Merchant Id") {
-        arrSearchBy = arrMerchantId;
-        for (var i = 0; i < sellerList.length; i++) {
-            var seller = sellerList[i];
-            if (seller.merchant_id == txtSearch.value) {
-                localSellerList.push(seller);
-            }
-        }
+        prepareSearchQuery(type, "merchant_id", txtSearch.value);
     }
 
     if (cmbSearchBy.value == "Area Pin") {
-        arrSearchBy = arrMerchantId;
-        for (var i = 0; i < sellerList.length; i++) {
-            var seller = sellerList[i];
-            if (seller.seller_area_pin == txtSearch.value) {
-                localSellerList.push(seller);
-            }
-        }
+        prepareSearchQuery(type, "seller_area_pin", txtSearch.value);
     }
 
-    loadOrdersAndProductForSellers(localSellerList);
+    loadSellers(query).then(() => {
+        loadOrdersAndProductForSellers(sellerList);
+    })
 
-    // var merchatId = txtSearch.value;
-    // window.location.href = "admin_seller_listing.html?type=byseller&merchant_id=" + merchatId;
+    //loadOrdersAndProductForSellers(localSellerList);
 
 })
 
@@ -207,7 +205,7 @@ function loadOrdersAndProductForSellers(sellerList) {
         if (seller.sellerType == "seller") {
             promiseList.push(getUnSettledOrders(seller));
         }
-        else if(seller.sellerType == "pharmacist"){
+        else if (seller.sellerType == "pharmacist") {
             promiseList.push(getUnsettledPharmaOrders(seller));
         }
         else if (seller.sellerType == "doctor") {
@@ -219,10 +217,11 @@ function loadOrdersAndProductForSellers(sellerList) {
     Promise.all(promiseList).then(() => {
         divProgress.style.display = "none";
         divContent.style.display = "block";
+        console.log(seller);
         if (seller.sellerType == "seller") {
             drawTable(sellerList);
         }
-        else if(seller.sellerType == "pharmacist"){
+        else if (seller.sellerType == "pharmacist") {
             createPharmacyTable(sellerList);
         }
         else {
@@ -235,18 +234,43 @@ function loadOrdersAndProductForSellers(sellerList) {
 function loadSellers(query) {
     return new Promise((resolve, reject) => {
         pageHeader.textContent = "Seller Listing";
+        divContent.style.display = "block";
+        divProgress.style.display = "block";
 
         query
             .get()
             .then(function (querySnapshot) {
+
+                if (querySnapshot.docs.length < docLimit) {
+                    btnNext.style.display = "none";
+                } else {
+                    btnNext.style.display = "block";
+                }
+
+                if (querySnapshot.length > 1 && querySnapshot.docs.length == 0) {
+                    divErrorMsg.style.display = "block";
+                    errMsg.textContent = "No further rows to display";
+
+                    //pageIndex++;
+                    //  console.log("increased page index to:" + pageIndex);
+                    btnNext.style.display = "none";
+                    return;
+                }
+
                 if (querySnapshot.docs.length == 0) {
                     divContent.style.display = "none";
                     divProgress.style.display = "none";
                     errorMsg.textContent = "No Record Found";
 
                 }
+                lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+
                 querySnapshot.forEach(function (doc) {
                     // doc.data() is never undefined for query doc snapshots
+                    errorMsg.style.display = "none";
+                    divContent.style.display = "none";
+                    divProgress.style.display = "none";
                     var seller = doc.data();
                     sellerList.push(seller);
 
@@ -1577,13 +1601,13 @@ function createDoctorsTable() {
         var consultationList = doctorConsultationMap.get(seller.seller_id);
         var amount = 0;
         disbursableAmount = 0;
-        
+
         for (var c = 0; c < consultationList.length; c++) {
             var consultation = consultationList[c];
             amount += consultation.charges;
         }
 
-        
+
         var commission = amount * (mAppInfo.doctor_commission / 100);
         disbursableAmount = amount - commission;
         amoutnTobeSettledWithDocs.set(seller.seller_id, disbursableAmount);
@@ -1659,7 +1683,7 @@ function createDoctorsTable() {
         divReject.appendChild(btnReject);
         divApprove.appendChild(divReject);
 
-       
+
 
 
         divAction.appendChild(divApprove);
@@ -1684,11 +1708,11 @@ function createDoctorsTable() {
         divUnsettledOrders.appendChild(divSettleAccount);
         divAction.appendChild(divUnsettledOrders);
 
-        
 
-      
 
-     
+
+
+
 
         if (seller.status == "pending" || seller.status == "suspended" || seller.status == "rejected") {
             divApprove.style.display = "block";
@@ -1731,7 +1755,7 @@ function createDoctorsTable() {
 
 
 
-       
+
 
         tdSellerDetails.appendChild(divSellerDetails);
         tdSellerAddress.appendChild(divSellerAddress);
@@ -1758,7 +1782,7 @@ function createDoctorsTable() {
 
         //Click Handlers
 
-       
+
         btnSuspendAccount.addEventListener("click", function () {
 
             var index = parseInt(this.id);
@@ -1982,7 +2006,7 @@ function createDoctorsTable() {
                 promiseList.push(settleConsultation(consultation));
             }
             Promise.all(promiseList).then(() => {
-               
+
                 sendDocsSettlementEmail(seller, amt);
                 window.location.href = "admin_seller_listing.html?type=approved&sellerType=doctor";
 
@@ -2019,7 +2043,7 @@ function getUnSettledConsultation(seller) {
 }
 
 function getAppInfo() {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
 
         var docRef = firebase.firestore().collection("AppInfo").doc("AppInfo");
         docRef.get().then(function (doc) {
@@ -2031,7 +2055,7 @@ function getAppInfo() {
                 reject();
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
-    
+
             }
         }).catch(function (error) {
             mAppInfo = null;
@@ -2040,7 +2064,7 @@ function getAppInfo() {
         });
 
     })
-   
+
 }
 
 function getUnsettledPharmaOrders(seller) {
@@ -2182,6 +2206,8 @@ function createPharmacyTable(sellerList) {
         var arrOrders = [];
 
         var orderList = pharmacyOrdersMap.get(seller.seller_id);
+        console.log("order list");
+        console.log(orderList);
         for (var orderNumber = 0; orderNumber < orderList.length; orderNumber++) {
 
             var order = orderList[orderNumber];
@@ -2203,13 +2229,13 @@ function createPharmacyTable(sellerList) {
                 var status = order.available_status[productNumber];
 
                 if (status != "Available") {
-                   continue;
+                    continue;
                 }
 
-              
+
                 var commission = mAppInfo.pharma_commission;
 
-                var offer_price =  order.product_prices_total[productNumber];
+                var offer_price = order.product_prices_total[productNumber];
                 offer_price = offer_price - amtToReduce;
                 var commission_value = (offer_price * commission) / 100;
 
@@ -2771,3 +2797,181 @@ function settlePharmaOrder(order) {
 
 
 }
+
+
+function prepareQuery(type, isFirst) {
+    if (isFirst) {
+
+        if (type == "all") {
+            query = firebase.firestore().collection("seller")
+                .where("sellerType", "==", mSellerType)
+                .limit(docLimit);;
+        }
+
+        if (type == "byseller") {
+            var merchantid = getQueryVariable("merchant_id");
+            query = firebase.firestore().collection("seller")
+                .where("merchant_id", "==", merchantid)
+                .limit(docLimit);;
+        }
+
+        if (type == "pending") {
+            query = firebase.firestore().collection("seller")
+                .where("status", "==", "pending")
+                .where("sellerType", "==", mSellerType)
+                .limit(docLimit);;
+        }
+
+        if (type == "suspended") {
+            query = firebase.firestore().collection("seller")
+                .where("status", "==", "suspended")
+                .where("sellerType", "==", mSellerType)
+                .limit(docLimit);;
+        }
+
+        if (type == "approved") {
+            console.log(mSellerType);
+            query = firebase.firestore().collection("seller")
+                .where("status", "==", "approved")
+                .where("sellerType", "==", mSellerType)
+                .limit(docLimit);;
+        }
+
+        if (type == null) {
+            query = firebase.firestore().collection("seller")
+                .limit(docLimit);;
+        }
+
+        queryList.push(query);
+    }
+    else {
+
+        if (type == "all") {
+            query = firebase.firestore().collection("seller")
+                .where("sellerType", "==", mSellerType)
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);;
+        }
+
+        if (type == "byseller") {
+            var merchantid = getQueryVariable("merchant_id");
+            query = firebase.firestore().collection("seller")
+                .where("merchant_id", "==", merchantid)
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);;
+        }
+
+        if (type == "pending") {
+            query = firebase.firestore().collection("seller")
+                .where("status", "==", "pending")
+                .where("sellerType", "==", mSellerType)
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);;
+        }
+
+        if (type == "suspended") {
+            query = firebase.firestore().collection("seller")
+                .where("status", "==", "suspended")
+                .where("sellerType", "==", mSellerType)
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);;
+        }
+
+        if (type == "approved") {
+            console.log(mSellerType);
+            query = firebase.firestore().collection("seller")
+                .where("status", "==", "approved")
+                .where("sellerType", "==", mSellerType)
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);;
+        }
+
+        if (type == null) {
+            query = firebase.firestore().collection("seller")
+                .startAfter(lastVisibleDoc)
+                .limit(docLimit);;
+        }
+        queryList.push(query);
+
+
+    }
+}
+
+function prepareSearchQuery(type, searchBy, searchValue) {
+
+    if (type == "all") {
+        query = firebase.firestore().collection("seller")
+            .where("sellerType", "==", mSellerType)
+            .where(searchBy, "==", searchValue);
+    }
+
+    if (type == "byseller") {
+        var merchantid = getQueryVariable("merchant_id");
+        query = firebase.firestore().collection("seller")
+            .where("merchant_id", "==", merchantid)
+            .where(searchBy, "==", searchValue);
+    }
+
+    if (type == "pending") {
+        query = firebase.firestore().collection("seller")
+            .where("status", "==", "pending")
+            .where("sellerType", "==", mSellerType)
+            .where(searchBy, "==", searchValue);
+    }
+
+    if (type == "suspended") {
+        query = firebase.firestore().collection("seller")
+            .where("status", "==", "suspended")
+            .where("sellerType", "==", mSellerType)
+            .where(searchBy, "==", searchValue);
+    }
+
+    if (type == "approved") {
+        query = firebase.firestore().collection("seller")
+            .where("status", "==", "approved")
+            .where("sellerType", "==", mSellerType)
+            .where(searchBy, "==", searchValue);
+    }
+
+    if (type == null) {
+        query = firebase.firestore().collection("seller")
+            .where(searchBy, "==", searchValue);
+    }
+
+}
+
+
+var mSellerTags = null;
+function loadSellerTags() {
+    var collectionName;
+    if(mSellerType == "seller"){
+        collectionName = "tags_seller";
+    }
+    else if(mSellerType == "pharmacist"){
+        collectionName = "tags_pharma"
+    }
+    else{
+        collectionName = "tags_doctor"
+    }
+    return new Promise((resolve, reject) => {
+        firebase.firestore().collection(collectionName)
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    mSellerTags = doc.data();
+                    console.log(mSellerTags);
+                });
+            })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                mSellerTags = null;
+                reject();
+            });
+
+
+    })
+}
+

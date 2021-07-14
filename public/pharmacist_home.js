@@ -426,6 +426,9 @@ function loadLast7DaysPharmacyEnquiries() {
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
             for (var i = 0; i < order.product_names.length; i++) {
+                if(order.available_status[i].toUpperCase() != "AVAILABLE"){
+                    continue;
+                }
                 qty += order.product_qty[i];
                 sales += order.product_prices_total[i];
 
@@ -654,6 +657,11 @@ function loadTodayOrders() {
                 var order = doc.data();
                 for (var i = 0; i < order.product_names.length; i++) {
                     if (order.status_code != 5) {
+                        continue;
+                    }
+
+                    console.log(order.available_status);
+                    if(order.available_status[i].toUpperCase() != "AVAILABLE"){
                         continue;
                     }
 
@@ -1318,7 +1326,12 @@ function getAmountForMonth() {
         var productList = currentMonthOrdersProductMap.get(order.order_id);
         console.log("product List = " + productList);
         for (var productIndex = 0; productIndex < productList.length; productIndex++) {
+            if(order.available_status[productIndex].toUpperCase() != "AVAILABLE"){
+                continue;
+            }
+
             var product = productList[productIndex];
+         
             console.log(product);
             var amount = product.Offer_Price * product.Qty;
 
@@ -1344,6 +1357,9 @@ function getAmountForMonthForEnquiries() {
         var order = currentMonthOrders[i];
 
         for (var productIndex = 0; productIndex < order.product_names.length; productIndex++) {
+            if(order.available_status[productIndex].toUpperCase() != "AVAILABLE"){
+                continue;
+            }
             finalAmount += order.product_prices_total[productIndex];
         }
     }

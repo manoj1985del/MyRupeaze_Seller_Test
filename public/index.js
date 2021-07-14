@@ -13,8 +13,104 @@ let qtyDiscountObjectMap = new Map();
 var newInvoiceId;
 
 
+var arrSellerNames = [];
+var arrSellerCategories = [];
+var arrSellerCities = [];
+var arrMerchantIds = [];
+var arrAreaPins = [];
+
+var arrSellerNamesPharma = [];
+var arrSellerCategoriesPharma = [];
+var arrSellerCitiesPharma = [];
+var arrMerchantIdsPharma = [];
+var arrAreaPinsPharma = [];
+
+var arrSellerNamesDoc = [];
+var arrSellerCategoriesDoc = [];
+var arrSellerCitiesDoc = [];
+var arrMerchantIdsDoc = [];
+var arrAreaPinsDoc = [];
+
+
+loadSellers().then(() => {
+  for (var i = 0; i < sellerList.length; i++) {
+    var seller = sellerList[i];
+    if (seller.sellerType == "seller") {
+      if (!arrSellerNames.includes(seller.company_name)) {
+        arrSellerNames.push(seller.company_name);
+      }
+
+      if (!arrSellerCategories.includes(seller.seller_category)) {
+        arrSellerCategories.push(seller.seller_category);
+      }
+
+      if (!arrSellerCities.includes(seller.city)) {
+        arrSellerCities.push(seller.city);
+      }
+
+      if (!arrMerchantIds.includes(seller.merchant_id)) {
+        arrMerchantIds.push(seller.merchant_id);
+      }
+
+      if (!arrAreaPins.includes(seller.seller_area_pin)) {
+        arrAreaPins.push(seller.seller_area_pin);
+      }
+    }
+
+
+    if (seller.sellerType == "pharmacist") {
+      if (!arrSellerNamesPharma.includes(seller.company_name)) {
+        arrSellerNamesPharma.push(seller.company_name);
+      }
+
+      if (!arrSellerCategoriesPharma.includes(seller.seller_category)) {
+        arrSellerCategoriesPharma.push(seller.seller_category);
+      }
+
+      if (!arrSellerCitiesPharma.includes(seller.city)) {
+        arrSellerCitiesPharma.push(seller.city);
+      }
+
+      if (!arrMerchantIdsPharma.includes(seller.merchant_id)) {
+        arrMerchantIdsPharma.push(seller.merchant_id);
+      }
+
+      if (!arrAreaPinsPharma.includes(seller.seller_area_pin)) {
+        arrAreaPinsPharma.push(seller.seller_area_pin);
+      }
+    }
+
+    if (seller.sellerType == "doctor") {
+      if (!arrSellerNamesDoc.includes(seller.company_name)) {
+        arrSellerNamesDoc.push(seller.company_name);
+      }
+
+      if (!arrSellerCategoriesDoc.includes(seller.seller_category)) {
+        arrSellerCategoriesDoc.push(seller.seller_category);
+      }
+
+      if (!arrSellerCitiesDoc.includes(seller.city)) {
+        arrSellerCitiesDoc.push(seller.city);
+      }
+
+      if (!arrMerchantIdsDoc.includes(seller.merchant_id)) {
+        arrMerchantIdsDoc.push(seller.merchant_id);
+      }
+
+      if (!arrAreaPinsDoc.includes(seller.seller_area_pin)) {
+        arrAreaPinsDoc.push(seller.seller_area_pin);
+      }
+    }
+
+  }
+
+  addSellerTags();
+  addPharmaTags();
+  addDocTags();
+})
+
 /************************************************************ */
-//Using this section to create brands collection
+//Using this section to create brands col3lection
 /**************************************************************/
 
 //makeBrandsLower();
@@ -31,13 +127,13 @@ var newInvoiceId;
 //     var user = mUserList[i];
 //     updateUserDetails(user);
 //   }
- 
+
 // })
 
 // console.log("going to fetch products");
 // loadSportsCategoryProducts().then(()=>{
 //   for(var i = 0; i < productList.length; i++){
-    
+
 //     var product = productList[i];
 //     //console.log(product.Product_Id);
 //     updateCategory(product.Product_Id);
@@ -274,7 +370,7 @@ function loadProducts() {
 function loadSportsCategoryProducts() {
   return new Promise((resolve, reject) => {
     firebase.firestore().collection("products")
-    .where("Category", "==", "Sports, Fitness, Bags & Luggage")
+      .where("Category", "==", "Sports, Fitness, Bags & Luggage")
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
@@ -484,7 +580,7 @@ function makeTagsLower() {
         querySnapshot.forEach(function (doc) {
           // doc.data() is never undefined for query doc snapshots
           var product = doc.data();
-         
+
           for (var i = 0; i < product.Tags.length; i++) {
             var tag = product.Tags[i];
             tag = tag.toLowerCase();
@@ -497,20 +593,20 @@ function makeTagsLower() {
         });
       })
       .then(function () {
-      
+
         var promiseList = [];
-        for(var i = 0; i < productList.length; i++){
-           promiseList.push(updateTagsLowercase(productList[i]));
+        for (var i = 0; i < productList.length; i++) {
+          promiseList.push(updateTagsLowercase(productList[i]));
         }
 
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
 
           resolve();
           console.log("updated all tags in lower case");
 
         })
-       
-      
+
+
       })
       .catch(function (error) {
         console.log("Error getting documents: ", error);
@@ -523,7 +619,7 @@ function makeTagsLower() {
 
 function updateTagsLowercase(product) {
 
-  return new Promise((resolve, reject) =>{
+  return new Promise((resolve, reject) => {
 
     var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
     //console.log("qty discount = " + qtyDiscounts);
@@ -532,12 +628,12 @@ function updateTagsLowercase(product) {
     })
       .then(function () {
         console.log("updated for product - " + product.Product_Id);
-         resolve();
+        resolve();
       })
       .catch(function (error) {
         // The document probably doesn't exist.
         reject();
-  
+
       });
 
   })
@@ -676,57 +772,56 @@ function getUserAddressDetails(order) {
 
 }
 
-function createInvoicesAgainstOrder()
-{
+function createInvoicesAgainstOrder() {
 
-    loadProducts().then(() => {
-  var promiseList = [];
-  for (var i = 0; i < productList.length; i++) {
-    var product = productList[i];
-    promiseList.push(loadSellerDetails(product));
-  }
+  loadProducts().then(() => {
+    var promiseList = [];
+    for (var i = 0; i < productList.length; i++) {
+      var product = productList[i];
+      promiseList.push(loadSellerDetails(product));
+    }
 
-  Promise.all(promiseList).then(() => {
-    loadOrders().then(() => {
-      var promiseList = [];
-      for (var i = 0; i < orderList.length; i++) {
-        var order = orderList[i];
-        promiseList.push(getProductListAgainstOrders(order));
-      }
-
-      Promise.all(promiseList).then(() => {
+    Promise.all(promiseList).then(() => {
+      loadOrders().then(() => {
         var promiseList = [];
         for (var i = 0; i < orderList.length; i++) {
           var order = orderList[i];
-          promiseList.push(getUserDetails(order));
+          promiseList.push(getProductListAgainstOrders(order));
         }
 
         Promise.all(promiseList).then(() => {
           var promiseList = [];
           for (var i = 0; i < orderList.length; i++) {
             var order = orderList[i];
-            promiseList.push(getUserAddressDetails(order));
+            promiseList.push(getUserDetails(order));
           }
 
           Promise.all(promiseList).then(() => {
-            console.log("everything retreived");
-            var newPromiseList = [];
+            var promiseList = [];
             for (var i = 0; i < orderList.length; i++) {
               var order = orderList[i];
-              var productList = ordersProductMap.get(order.order_id);
-              var seller = sellerProductMap.get(productList[0].Product_Id);
-              console.log("getting seller for product id - " + productList[0].Product_Id + " and merchant id - " + seller.merchant_id);
-
-              getNewInvoiceId(seller, order);
-
+              promiseList.push(getUserAddressDetails(order));
             }
 
+            Promise.all(promiseList).then(() => {
+              console.log("everything retreived");
+              var newPromiseList = [];
+              for (var i = 0; i < orderList.length; i++) {
+                var order = orderList[i];
+                var productList = ordersProductMap.get(order.order_id);
+                var seller = sellerProductMap.get(productList[0].Product_Id);
+                console.log("getting seller for product id - " + productList[0].Product_Id + " and merchant id - " + seller.merchant_id);
+
+                getNewInvoiceId(seller, order);
+
+              }
+
+            })
           })
         })
       })
     })
   })
-})
 
 }
 function createInvoice(order, seller, invoiceId) {
@@ -824,7 +919,7 @@ function getNewInvoiceId(seller, order) {
   var invoiceId = sellerInvoiceMap.get(seller.seller_id);
   if (invoiceId == null) {
     invoiceId = seller.merchant_id + "_INV001";
-    
+
   }
   else {
     var tmpInvoice = invoiceId.split('_');
@@ -836,7 +931,7 @@ function getNewInvoiceId(seller, order) {
   }
 
   sellerInvoiceMap.set(seller.seller_id, invoiceId);
-  updateOrderInvoiceId(order, invoiceId).then(()=>{
+  updateOrderInvoiceId(order, invoiceId).then(() => {
     createInvoice(order, seller, invoiceId);
   })
 
@@ -845,7 +940,7 @@ function getNewInvoiceId(seller, order) {
 
 function updateOrderInvoiceId(order, invoiceId) {
 
-  return new Promise((resolve, reject)=>{
+  return new Promise((resolve, reject) => {
 
     var washingtonRef = firebase.firestore().collection("orders").doc(order.order_id);
     washingtonRef.update({
@@ -859,7 +954,7 @@ function updateOrderInvoiceId(order, invoiceId) {
         console.log("doc does not exist");
         reject();
       });
-  
+
 
   })
 
@@ -947,7 +1042,7 @@ function loadOfflineInvoices() {
   })
 }
 
-function updateSellerDetailsInOfflineInvoice(seller, invoiceId){
+function updateSellerDetailsInOfflineInvoice(seller, invoiceId) {
 
   console.log("invoice id - " + invoiceId);
   var washingtonRef = firebase.firestore().collection("offline_invoices").doc(invoiceId);
@@ -969,7 +1064,7 @@ function updateSellerDetailsInOfflineInvoice(seller, invoiceId){
 
 }
 
-function updateUserDetailsInOfflineInvoice(user, invoiceId){
+function updateUserDetailsInOfflineInvoice(user, invoiceId) {
 
   console.log("invoice id - " + invoiceId);
   var washingtonRef = firebase.firestore().collection("offline_invoices").doc(invoiceId);
@@ -993,9 +1088,9 @@ function updateUserDetailsInOfflineInvoice(user, invoiceId){
 }
 
 
-function updateCategory(productId){
+function updateCategory(productId) {
 
-  
+
   var washingtonRef = firebase.firestore().collection("products").doc(productId);
   washingtonRef.update({
     Category: "Sports, Fitness, Bags And Luggage"
@@ -1038,9 +1133,9 @@ function loadAllUsers() {
   })
 }
 
-function updateUserDetails(user){
+function updateUserDetails(user) {
 
-  
+
   var washingtonRef = firebase.firestore().collection("users").doc(user.customer_id);
   washingtonRef.update({
     last_order_date: null,
@@ -1068,17 +1163,17 @@ function loadBrands() {
         querySnapshot.forEach(function (doc) {
           // doc.data() is never undefined for query doc snapshots
           var product = doc.data();
-            var brand = product.Brand;
-            if (!globalBrandList.includes(brand)) {
-              brandList.push(brand);
-              globalBrandList.push(brand);
-              console.log("pushing brand - " + brand);
-              if (brandList.length >= 2000) {
-                addBrands(brandList.length, 2000);
-                brandList = [];
-              }
+          var brand = product.Brand;
+          if (!globalBrandList.includes(brand)) {
+            brandList.push(brand);
+            globalBrandList.push(brand);
+            console.log("pushing brand - " + brand);
+            if (brandList.length >= 2000) {
+              addBrands(brandList.length, 2000);
+              brandList = [];
             }
-          
+          }
+
 
         });
       })
@@ -1135,21 +1230,21 @@ function makeBrandsLower() {
         });
       })
       .then(function () {
-      
+
         console.log("Total Products - " + productList.length);
         var promiseList = [];
-        for(var i = 0; i < productList.length; i++){
-           promiseList.push(updateBrandToLowerCase(productList[i]));
+        for (var i = 0; i < productList.length; i++) {
+          promiseList.push(updateBrandToLowerCase(productList[i]));
         }
 
-        Promise.all(promiseList).then(()=>{
+        Promise.all(promiseList).then(() => {
 
           resolve();
           console.log("updated all tags in lower case");
 
         })
-       
-      
+
+
       })
       .catch(function (error) {
         console.log("Error getting documents: ", error);
@@ -1162,7 +1257,7 @@ function makeBrandsLower() {
 
 function updateBrandToLowerCase(product) {
 
-  return new Promise((resolve, reject) =>{
+  return new Promise((resolve, reject) => {
 
     var washingtonRef = firebase.firestore().collection("products").doc(product.Product_Id);
     //console.log("qty discount = " + qtyDiscounts);
@@ -1171,16 +1266,100 @@ function updateBrandToLowerCase(product) {
     })
       .then(function () {
         console.log("updated Brand for product - " + product.Product_Id);
-         resolve();
+        resolve();
       })
       .catch(function (error) {
         // The document probably doesn't exist.
         reject();
-  
+
       });
 
   })
 
+
+}
+
+function addSellerTags() {
+
+  return new Promise((resolve, reject) => {
+
+
+    var tagId = generateUUID();
+    var active = true;
+    // Add a new document in collection "cities"
+    firebase.firestore().collection("tags_seller").doc(tagId).set({
+      tag_id: tagId,
+      active: active,
+      seller_names: arrSellerNames,
+      seller_cities: arrSellerCities,
+      seller_merchant_id_list: arrMerchantIds,
+      seller_categories: arrSellerCategories,
+      seller_area_pins: arrAreaPins
+    })
+      .then(function () {
+        resolve();
+      })
+      .catch(function (error) {
+        reject();
+      });
+
+  })
+
+}
+
+function addPharmaTags() {
+
+  return new Promise((resolve, reject) => {
+
+
+    var tagId = generateUUID();
+    var active = true;
+    // Add a new document in collection "cities"
+    firebase.firestore().collection("tags_pharma").doc(tagId).set({
+      tag_id: tagId,
+      active: active,
+      seller_names: arrSellerNamesPharma,
+      seller_cities: arrSellerCitiesPharma,
+      seller_merchant_id_list: arrMerchantIdsPharma,
+      seller_categories: arrSellerCategoriesPharma,
+      seller_area_pins: arrAreaPinsPharma
+    })
+      .then(function () {
+        resolve();
+      })
+      .catch(function (error) {
+        reject();
+      });
+
+  })
+
+}
+
+function addDocTags() {
+
+  return new Promise((resolve, reject) => {
+
+
+    var tagId = generateUUID();
+    var active = true;
+    // Add a new document in collection "cities"
+    firebase.firestore().collection("tags_doctor").doc(tagId).set({
+      tag_id: tagId,
+      active: active,
+      seller_names: arrSellerNamesDoc,
+      seller_cities: arrSellerCitiesDoc,
+      seller_merchant_id_list: arrMerchantIdsDoc,
+      seller_categories: arrSellerCategoriesDoc,
+      seller_area_pins: arrAreaPinsDoc
+    })
+      .then(function () {
+        resolve();
+      })
+      .catch(function (error) {
+        reject();
+      });
+
+  })
 
 }
 

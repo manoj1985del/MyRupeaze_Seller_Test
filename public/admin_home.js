@@ -1478,6 +1478,10 @@ function loadTodayPharmacyOrders() {
                         continue;
                     }
 
+                    if(order.available_status[i].toUpperCase() != "AVAILABLE"){
+                        continue;
+                    }
+
                    // totalOrders += parseFloat(order.product_qty[i]);
                     totalSales += parseFloat(order.product_prices_total[i]);
                 }
@@ -1747,6 +1751,9 @@ function loadLast7DaysPharmacyEnquiries() {
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
             for (var i = 0; i < order.product_names.length; i++) {
+                if(order.available_status[i].toUpperCase() != "AVAILABLE"){
+                    continue;
+                }
                 qty += order.product_qty[i];
                 sales += order.product_prices_total[i];
 

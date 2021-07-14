@@ -1001,6 +1001,7 @@ function saveSellerDetails() {
          about_shop: txtAboutShop.value,
          tags: tags,
          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+         seller_category: 'pharmacist',
          sellerType: 'pharmacist'
       }).then(function () {
          divProgress.style.display = "none";

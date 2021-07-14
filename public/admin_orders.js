@@ -2,16 +2,20 @@
 
 var promiseList = [];
 var docLimit = 25;
+var queryList = [];
+var pageIndex = 0;
+var lastVisibleDoc;
+var paginationFinished = false;
+
+
 var rupeeSymbol = "₹ ";
 var pendingOrders = [];
 //var users = [];
 //var addresses = [];
 var invoices = [];
-var lastVisibleDoc;
-var paginationFinished = false;
 
-var queryList = [];
-var pageIndex = 0;
+
+
 
 let ordersProductMap = new Map();
 let invoiceProductMap = new Map();

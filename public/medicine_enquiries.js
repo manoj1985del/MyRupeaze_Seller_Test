@@ -209,8 +209,11 @@ function createTableHeaders() {
     var thPickupFromStore = document.createElement("th");
     thPickupFromStore.textContent = "Pickup From Store";
 
-    var thPayByCash = document.createElement("th");
-    thPayByCash.textContent = "Pay By Cash";
+    var thCOD = document.createElement("th");
+    thCOD.textContent = "COD";
+
+    var thPaymentId = document.createElement("th");
+    thPaymentId.textContent = "Payment Id";
 
     var thStatus = document.createElement("th");
     thStatus.textContent = "Status";
@@ -234,7 +237,8 @@ function createTableHeaders() {
     tr.appendChild(thTotalPrice);
     tr.appendChild(thStatus);
     tr.appendChild(thPickupFromStore);
-    tr.appendChild(thPayByCash);
+    tr.appendChild(thCOD);
+    tr.appendChild(thPaymentId);
     tr.appendChild(thRedeemPoints);
     tr.appendChild(thNoteToSeller);
     tr.appendChild(thAction);
@@ -269,6 +273,7 @@ function createTable() {
         var tdTotalPrice = document.createElement('td');
         var tdPickupFromStore = document.createElement('td');
         var tdPayByCash = document.createElement('td');
+        var tdPaymentId = document.createElement('td');
         var tdWalletMoneyUsed = document.createElement('td');
         var tdNoteToSeller = document.createElement('td');
         var tdAction = document.createElement('td');
@@ -453,23 +458,33 @@ function createTable() {
         tdPickupFromStore.appendChild(divPickupFromStore);
 
 
-        var divPayByCash = document.createElement('div');
-        var spanPayByCash = document.createElement('span');
+        var divCOD = document.createElement('div');
+        var spanCOD = document.createElement('span');
         if(enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6){
             var payByCash = "No";
-            if (enquiry.pay_by_cash) {
+            if (enquiry.COD) {
                 payByCash = "Yes";
             }
-            spanPayByCash.textContent = payByCash;
+            spanCOD.textContent = payByCash;
            
         }
         else{
-            spanPayByCash.textContent = "-";
+            spanCOD.textContent = "-";
         }
-       
+        divCOD.appendChild(spanCOD);
+        tdPayByCash.appendChild(divCOD);
+
+        var divPaymentId = document.createElement('div');
+        var spanPaymentId = document.createElement('span');
+        if(enquiry.payment_id == null){
+            spanPaymentId.textContent = "null";
+        }else{
+            spanPaymentId.textContent = enquiry.payment_id;
+        }
     
-        divPayByCash.appendChild(spanPayByCash);
-        tdPayByCash.appendChild(divPayByCash);
+    
+        divPaymentId.appendChild(spanPaymentId);
+        tdPaymentId.appendChild(divPaymentId);
 
         var divWalletMoneyUsed = document.createElement('div');
         var spanWalletMoneyUsed = document.createElement('span');
@@ -529,9 +544,14 @@ function createTable() {
         btnReject.setAttribute("id", enquiry.doc_id);
         btnReject.setAttribute("type", "button");
         divRejectEnquiry.appendChild(btnReject);
+        divRejectEnquiry.style.display = "none";
         divAction.appendChild(divRejectEnquiry);
         if(admin){
             divAction.style.display = "none";
+        }
+
+        if(enquiry.status_code == 0){
+            divRejectEnquiry.style.display = "block";
         }
         tdAction.appendChild(divAction);
 
@@ -634,6 +654,7 @@ function createTable() {
         tr.appendChild(tdStatus);
         tr.appendChild(tdPickupFromStore);
         tr.appendChild(tdPayByCash);
+        tr.appendChild(tdPaymentId);
         tr.appendChild(tdWalletMoneyUsed);
         tr.appendChild(tdNoteToSeller);
         tr.appendChild(tdAction);
@@ -674,7 +695,19 @@ function createTable() {
                     total += enquiry.product_prices_total[tp];
                 }
 
-                common_CreditAndDebitPoints(total, enquiry.customer_id, false);
+                var bDebit = false;
+                //if wallet moeny has been used, debit the points instead of credit
+                if(enquiry.wallet_money_used > 0){
+                    bDebit = true;
+                    total = enquiry.wallet_money_used;
+                    var pointsToDebit =  Math.ceil(enquiry.wallet_money_used * mNumberOfPointsInOneRupee);
+                    creditAndDebitPoints(enquiry.customer_id, pointsToDebit, bDebit)
+
+                }
+                else{
+                    common_CreditAndDebitPoints(total, enquiry.customer_id, bDebit);
+                }
+               
                 markDelivery(enquiry.doc_id);
                 addProductsToDb(enquiry)
 
@@ -830,17 +863,25 @@ function addProductsToDb(enquiry) {
 
 function createInvoice(enquiry) {
 
+    var statusList = [];
     return new Promise((resolve, reject) => {
 
-        // for (var i = 0; i < enquiry.product_names.length; i++) {
-        //     var product = productList[i];
-        //     productNames.push(product.productName);
-        //     gstlist.push(parseInt(product.gst));
-        //     priceList.push(parseInt(product.price));
-        //     qtyList.push(parseInt(product.qty));
-        //     statusList.push("success");
-        // }
+        for (var i = 0; i < enquiry.product_names.length; i++) {
+            // var product = productList[i];
+            // productNames.push(product.productName);
+            // gstlist.push(parseInt(product.gst));
+            // priceList.push(parseInt(product.price));
+            // qtyList.push(parseInt(product.qty));
+            if(enquiry.available_status[i] == "Available"){
+                statusList.push("success");
+            }
+            else{
+                statusList.push(enquiry.available_status[i]);
+            }
+        }
+        
 
+        var pointsUsedForPurchase = enquiry.wallet_money_used * mNumberOfPointsInOneRupee;
         firebase.firestore().collection('offline_invoices').doc(newInvoiceId).set({
             invoice_id: newInvoiceId,
             customer_id: mCustomer.customer_id,
@@ -872,9 +913,9 @@ function createInvoice(enquiry) {
             product_qty: enquiry.product_qty,
             gst_list: enquiry.gst_list,
             price_list: enquiry.product_prices,
-            status_list: "success",
+            status_list: statusList,
             amount_against_points: 0,
-            points_used_for_purchase: 0,
+            points_used_for_purchase: pointsUsedForPurchase,
             wallet_money_used: enquiry.wallet_money_used,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })

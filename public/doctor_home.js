@@ -79,6 +79,7 @@ var mSeller = null;
 var sellerId = getQueryVariable("sellerid");
 
 localStorage.setItem("userType", "doctor");
+localStorage.setItem("sellerid", sellerId);
 
 getSellerDetails().then(()=>{
 

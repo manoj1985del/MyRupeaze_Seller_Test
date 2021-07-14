@@ -1266,8 +1266,8 @@ function saveSellerDetails() {
          subscription_type: null,
          shop_opening_time: shop_opening_time,
          shop_closing_time: shop_closing_time,
+         seller_category: 'doctor',
          sellerType: "doctor",
-
          doctor_img_url: url_Carousel_Img1,
          logo_url: url_Carousel_Img2,
          degree_url: url_Carousel_Img3,

@@ -22,10 +22,12 @@ var pointList = [];
 var mPointsUsedForPurchase = false;
 
 var status_list;
+var mPharmaEnquiry = null;
 var invoiceId = getQueryVariable("invoiceid");
 if (invoiceId != null) {
     txtInvoice.value = invoiceId;
     getInvoiceDetails(invoiceId);
+    getPharmaEnquiry(invoiceId);
 }
 
 
@@ -60,6 +62,7 @@ function getInvoiceDetails(invoiceId) {
     console.log("fetching invoice details -" + invoiceId);
 
     getInvoice(invoiceId).then(() => {
+        console.log(invoice);
         divCustomerDetails.style.display = "block";
         if (invoice != null) {
             invoiceExist = true;
@@ -84,6 +87,7 @@ function getInvoiceDetails(invoiceId) {
 btnMobile.addEventListener("click", function () {
     console.log("before getting invoice detail for invoice " + txtInvoice.value);
     getInvoiceDetails(txtInvoice.value);
+    getPharmaEnquiry(txtInvoice.value);
 
 });
 
@@ -195,7 +199,7 @@ function createTable() {
 
         var divPrice = document.createElement("div");
         var productPriceSpan = document.createElement("span");
-        productPriceSpan.textContent = price.toString();
+        productPriceSpan.textContent = price_list[i].toString();
         divPrice.appendChild(productPriceSpan);
 
         var divQty = document.createElement("div");
@@ -205,7 +209,7 @@ function createTable() {
 
         var divFinalPrice = document.createElement("div");
         var finalPriceSpan = document.createElement("span");
-        finalPriceSpan.textContent = qty * price;
+        finalPriceSpan.textContent = qty * price_list[i];
         divFinalPrice.appendChild(finalPriceSpan);
 
         var divPoints = document.createElement("div");
@@ -251,7 +255,7 @@ function createTable() {
             var index = parseInt(this.id);
             var pointsToReduce = pointList[index];
             status_list[index] = "Returned";
-            creditAndDebitPoints(pointsToReduce).then(() => {
+            creditAndDebitPoints(pointsToReduce, true).then(() => {
                 returnItem(status_list);
             })
 
@@ -277,12 +281,15 @@ btnReturnAll.addEventListener("click", function(){
         status_list[i] = "Returned";
     }
 
-    creditAndDebitPoints(invoice.points_used_for_purchase).then(()=>{
+    creditAndDebitPoints(invoice.points_used_for_purchase, true).then(()=>{
+        
         returnItem(status_list);
     })
     
     
 })
+
+
 
 
 function creditAndDebitPoints(points, debit) {
@@ -317,6 +324,11 @@ function creditAndDebitPoints(points, debit) {
 function returnItem(status_list) {
 
     var invoiceRef = firebase.firestore().collection("offline_invoices").doc(txtInvoice.value);
+    if(mPharmaEnquiry != null){
+
+        updatePharmaStatus(status_list);
+    }
+    
 
     // Set the "capital" field of the city 'DC'
     return invoiceRef.update({
@@ -332,14 +344,29 @@ function returnItem(status_list) {
 
 }
 
+function updatePharmaStatus(status_list) {
 
+    if(mPharmaEnquiry != null){
+        for(var i = 0; i < status_list.length; i++){
+            if(status_list[i].toUpperCase() != "SUCCESS"){
+                mPharmaEnquiry.available_status[i] = status_list[i];
+            }
+        }
+    }
+    var invoiceRef = firebase.firestore().collection("pharmacist_requests").doc(mPharmaEnquiry.doc_id);
 
+    // Set the "capital" field of the city 'DC'
+    return invoiceRef.update({
+        available_status: mPharmaEnquiry.available_status
+    })
+        .then(function () {
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
 
-
-
-
-
-
+}
 
 
 function appendNumber(number, digits) {
@@ -378,3 +405,29 @@ function deleteTableRows() {
     }
 }
 
+
+function getPharmaEnquiry(invoiceId) {
+    return new Promise((resolve, reject) => {
+        firebase.firestore().collection("pharmacist_requests")
+            .where("invoice_id", "==", invoiceId)
+            .limit(1)
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    // doc.data() is never undefined for query doc snapshots
+                    mPharmaEnquiry = doc.data();
+                   console.log("pharma enquiry found");
+                   console.log(mPharmaEnquiry);
+                });
+            })
+            .then(function () {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+
+
+    })
+}

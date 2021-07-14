@@ -345,9 +345,13 @@ btnAddToList.addEventListener("click", ()=>{
     enquiry.product_prices.push(parseFloat(txtUnitPrice.value));
     enquiry.product_prices_total.push(parseFloat(txtTotalPrice.value));
     enquiry.gst_list.push(parseFloat(txtGST.value));
+    var productLen = enquiry.product_names.length;
     enquiry.available_status.push(cmbStatus.value);
 
+    console.log(enquiry);
+
     console.log("before creating table : " + enquiry.gst_list);
+    console.log("before creating table : " + enquiry.available_status);
     createTable();
 })
 

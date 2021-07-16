@@ -46,71 +46,105 @@
 
                 <ul class="navbar-nav">
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Orders
-                        </a>
-                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
-                            <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
-                            <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
-                            <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
-                            <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
-                            <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting
-                                for Pickup</a>
-                        </div>
-                    </li>
+
+          
+         
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Sellers
-                        </a>
-                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For
-                                Approval</a>
-                            <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
-                            <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
-                            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended
-                                Sellers</a>
-
-                        </div>
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Orders
+                      </a>
+                      <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
+                        <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
+                        <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
+                        <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
+                        <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
+                        <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
+                      </div>
                     </li>
-
+          
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Products
-                        </a>
-                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
-                            <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and
-                                Commission</a>
-
-                        </div>
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Consultations
+                      </a>
+                      <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="pending_appointments.html?type=pending&sellerType=admin">Pending Appointments</a>
+                        <a class="dropdown-item" href="pending_appointments.html?type=today&sellerType=admin">Appointments Scheduled Today</a>
+                        <a class="dropdown-item" href="pending_appointments.html?type=receivedToday&sellerType=admin">Appointments Received Today</a>
+                        <a class="dropdown-item" href="pending_appointments.html?type=unsettled&sellerType=admin">Unsettled Appointments</a>
+                        <a class="dropdown-item" href="pending_appointments.html?type=pending_refund&sellerType=admin">Consultations: Pending for Refund</a>
+                        <a class="dropdown-item" href="pending_appointments.html?type=all&sellerType=admin">All Appointments</a>
+                      </div>
                     </li>
-
+          
+                    
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Videos
-                        </a>
-                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
-                            <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
-
-                        </div>
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Pharmacy Orders
+                      </a>
+                      <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="medicine_enquiries.html?type=pending&sellerType=admin">Pending Enquiries</a>
+                        <a class="dropdown-item" href="medicine_enquiries.html?type=today_completed&sellerType=admin">Today's Orders</a>
+                        <a class="dropdown-item" href="medicine_enquiries.html?type=approved&sellerType=admin">Enquiries Approved by Customer</a>
+                        <a class="dropdown-item" href="medicine_enquiries.html?type=waiting_for_pickup&sellerType=admin">Ready to Pickup Orders</a>
+                        <a class="dropdown-item" href="medicine_enquiries.html?type=all&sellerType=admin">All Orders</a>
+                      </div>
                     </li>
-
+          
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Sellers
+                      </a>
+                      <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="admin_seller_listing.html?type=pending&sellerType=seller">Sellers - Pending
+                          For Approval</a>
+                        <a class="dropdown-item" href="admin_seller_listing.html?type=approved&sellerType=seller">Approved
+                          Sellers</a>
+                        <a class="dropdown-item" href="admin_seller_listing.html?type=all&sellerType=seller">All Sellers</a>
+                        <a class="dropdown-item" href="admin_seller_listing.html?type=suspended&sellerType=seller">Suspended
+                          Sellers</a>
+          
+                      </div>
+                    </li>
+          
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Products
+                      </a>
+                      <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
+                        <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
+          
+                      </div>
+                    </li>
+          
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Videos
+                      </a>
+                      <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
+                        <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
+          
+                      </div>
+                    </li>
+          
+          
                     <button type="submit" id="btnHome" value="Home" class="btn mr-3"
-                        style="width: 100px; background-color: #e95807; color:white">Home</button>
+                      style="width: 100px; background-color: #e95807; color:white">Home</button>
                     <button type="submit" id="btnLogout" value="Logout" class="btn"
-                        style="width: 100px; background-color: #e95807; color:white">
-
-                        Logout
+                      style="width: 100px; background-color: #e95807; color:white">
+          
+                      Logout
                     </button>
-                </ul>
+                  </ul>
             </div>
         </div>
     </nav>
@@ -141,7 +175,22 @@
             <form>
 
                 <div class="form-group">
-                    <label for="txtVersionCode">Version Code</label>
+                    <label for="txtVersionCodeMyRupeaze">MyRupeaze Version Code</label>
+                    <input type="text" class="form-control" id="txtVersionCodeMyRupeaze">
+                </div>
+
+                <div class="form-group">
+                    <label for="cmbForceUpdateMyRupeaze">MyRupeaze Force Update</label>
+                    <!-- <input type="text" class="form-control" id="txtState"> -->
+                    <select name="cmbForceUpdate" id="cmbForceUpdateMyRupeaze" class="form-control">
+                        <option selected disabled hidden value=null>Selct Option</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="txtVersionCode">Medical Version Code</label>
                     <input type="text" class="form-control" id="txtVersionCode">
                 </div>
 
@@ -227,7 +276,7 @@
                 <div class="mt-2 mb-5">
 
                     <button type="button" class="btn btn-success" id="btnUpdate" style="width: 150px;">Update
-                        Listing</button>
+                        Details</button>
 
                     <image id="imgSaving" src="img_progress.gif" style="width: 70px; height: 70px; display: none;" />
 
@@ -268,7 +317,7 @@
     <script src="/__/firebase/init.js"></script>
 
     <script type="text/javascript" src="common.js"></script>
-    <script type="text/javascript" src="misc_settings.js"></script>
+    <script type="text/javascript" src="admin_misc_settings.js"></script>
 
 </body>
 

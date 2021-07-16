@@ -1,6 +1,8 @@
 var divProgress = document.getElementById('divProgress');
 var divContent = document.getElementById('divContent');
 
+var txtVersionCodeMyRupeaze = document.getElementById('txtVersionCodeMyRupeaze');
+var cmbForceUpdateMyRupeaze= document.getElementById('cmbForceUpdateMyRupeaze');
 var txtVersionCode = document.getElementById('txtVersionCode');
 var cmbForceUpdate = document.getElementById('cmbForceUpdate');
 
@@ -459,9 +461,17 @@ function updateUI() {
 
     console.log(arrSpecialityImages);
 
+    txtVersionCodeMyRupeaze.value = mSettings.Version;
     txtVersionCode.value = mSettings.medical_version;
     txtDoctorCommision.value = parseFloat(mSettings.doctor_commission);
     txtPharmaCommision.value = parseFloat(mSettings.pharma_commission);
+
+    if (mSettings.force_update) {
+        cmbForceUpdateMyRupeaze.value = "Yes";
+    }
+    else {
+        cmbForceUpdateMyRupeaze.value = "No";
+    }
 
     if (mSettings.medical_force_update) {
         cmbForceUpdate.value = "Yes";
@@ -523,7 +533,14 @@ function updateDetails() {
         forceUpdate = true;
     }
 
+    var forceUpdateMR = false;
+    if (cmbForceUpdateMyRupeaze.value.toUpperCase() == "YES") {
+        forceUpdateMR = true;
+    }
+
     return docRef.update({
+        Version: txtVersionCodeMyRupeaze.value,
+        force_update: forceUpdateMR,
         doctor_commission: parseFloat(txtDoctorCommision.value),
         doctor_degrees: mSettings.doctor_degrees,
         medical_force_update: forceUpdate,

@@ -82,7 +82,20 @@ function loadConsultation(){
     txtDoctorAddress.textContent = seller.address_line1 + ", " + seller.address_line2 + ", " + seller.address_line3 + ", " + seller.city + ", "
     + seller.state;
     txtPatientName.textContent = "Patient Name: " +  consultation.customer_name;
-    txtPatientDetails.textContent = consultation.customer_age + " years, " + consultation.customer_gender;
+    var customerAge = "undefined";
+    if(consultation.customer_dob != null)
+    {
+      var arrDob = consultation.customer_dob.split('/');
+      var birthYear = parseInt(arrDob[2]);
+
+      var dtCurrent = new Date();
+      var currentYear = dtCurrent.getFullYear();
+
+      var age = currentYear - birthYear;
+      customerAge = age.toString();
+    }
+
+    txtPatientDetails.textContent = customerAge + " years, " + consultation.customer_gender;
     txtConsultationDate.textContent = "Date: " + consultation.consultation_date;
     txtConsultationId.textContent = "Consultation Id: " + consultation.consultation_id;
     var arrComplaints = consultation.chief_complaints;

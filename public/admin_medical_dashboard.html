@@ -35,84 +35,145 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #020001;">
-        <a class="navbar-brand" href="#"><img src ="img_logo.png" alt="">
+        <a class="navbar-brand" href="#"><img src="img_logo.png" alt="">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
-    
+
         <div class="ml-auto">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    
-    
-          <ul class="navbar-nav">
-    
-    
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Orders
-              </a>
-              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
-                <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
-                <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
-                <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
-                <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
-                <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
-              </div>
-            </li>
-    
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Sellers
-              </a>
-              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For Approval</a>
-                <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
-                <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
-                <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended Sellers</a>
-               
-              </div>
-            </li>
-    
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Products
-              </a>
-              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
-                <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
-               
-              </div>
-            </li>
-    
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Videos
-              </a>
-              <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
-                <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
-               
-              </div>
-            </li>
-    
-    
-            <button type="submit" id="btnHome" value="Home" class="btn mr-3" style="width: 100px; background-color: #e95807; color:white">Home</button>
-            <button type="submit" id="btnLogout" value="Logout" class="btn" style="width: 100px; background-color: #e95807; color:white">
-             
-              Logout
-            </button> 
-          </ul>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+                <ul class="navbar-nav">
+
+
+
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Orders
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_orders.html?type=pending">Pending Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=today">Today Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=all">Order History</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
+                            <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting
+                                for Pickup</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Consultations
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                                href="pending_appointments.html?type=pending&sellerType=admin">Pending Appointments</a>
+                            <a class="dropdown-item"
+                                href="pending_appointments.html?type=today&sellerType=admin">Appointments Scheduled
+                                Today</a>
+                            <a class="dropdown-item"
+                                href="pending_appointments.html?type=receivedToday&sellerType=admin">Appointments
+                                Received Today</a>
+                            <a class="dropdown-item"
+                                href="pending_appointments.html?type=unsettled&sellerType=admin">Unsettled
+                                Appointments</a>
+                            <a class="dropdown-item"
+                                href="pending_appointments.html?type=pending_refund&sellerType=admin">Consultations:
+                                Pending for Refund</a>
+                            <a class="dropdown-item" href="pending_appointments.html?type=all&sellerType=admin">All
+                                Appointments</a>
+                        </div>
+                    </li>
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Pharmacy Orders
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                                href="medicine_enquiries.html?type=pending&sellerType=admin">Pending Enquiries</a>
+                            <a class="dropdown-item"
+                                href="medicine_enquiries.html?type=today_completed&sellerType=admin">Today's Orders</a>
+                            <a class="dropdown-item"
+                                href="medicine_enquiries.html?type=approved&sellerType=admin">Enquiries Approved by
+                                Customer</a>
+                            <a class="dropdown-item"
+                                href="medicine_enquiries.html?type=waiting_for_pickup&sellerType=admin">Ready to Pickup
+                                Orders</a>
+                            <a class="dropdown-item" href="medicine_enquiries.html?type=all&sellerType=admin">All
+                                Orders</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Sellers
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                                href="admin_seller_listing.html?type=pending&sellerType=seller">Sellers - Pending
+                                For Approval</a>
+                            <a class="dropdown-item"
+                                href="admin_seller_listing.html?type=approved&sellerType=seller">Approved
+                                Sellers</a>
+                            <a class="dropdown-item" href="admin_seller_listing.html?type=all&sellerType=seller">All
+                                Sellers</a>
+                            <a class="dropdown-item"
+                                href="admin_seller_listing.html?type=suspended&sellerType=seller">Suspended
+                                Sellers</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Products
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
+                            <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and
+                                Commission</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Videos
+                        </a>
+                        <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
+                            <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
+
+                        </div>
+                    </li>
+
+
+                    <button type="submit" id="btnHome" value="Home" class="btn mr-3"
+                        style="width: 100px; background-color: #e95807; color:white">Home</button>
+                    <button type="submit" id="btnLogout" value="Logout" class="btn"
+                        style="width: 100px; background-color: #e95807; color:white">
+
+                        Logout
+                    </button>
+                </ul>
+            </div>
         </div>
-      </div>
-      </nav>
-    
+    </nav>
+
 
 
     <div id="divProgress" style="display: none;">
@@ -140,122 +201,120 @@
             </div>
 
 
-                <div class="row ml-3">
+            <div class="row ml-3">
 
-                    <div class="md-6">
-                        <div class="d-flex justify-content-center">
-                            <div class=" mt-2 myBorder" style="width: 500px; height: auto;">
-                                <h3 class="d-flex justify-content-center">Manage Dashboard Groups</h3>
-                                <hr />
+                <div class="md-6">
+                    <div class="d-flex justify-content-center">
+                        <div class=" mt-2 myBorder" style="width: 500px; height: auto;">
+                            <h3 class="d-flex justify-content-center">Manage Dashboard Groups</h3>
+                            <hr />
 
-                                <div class="m-2">
+                            <div class="m-2">
 
-                                    <div class="form-group">
-                                        <label for="dashboardGroupType">Group Type</label>
-                                        <!-- <input type="text" class="form-control" id="txtState"> -->
-                                        <select name="dashboardGroupType" id="dashboardGroupType" class="form-control">
-                                            <option selected disabled hidden value=null>Select Group Type</option>
-                                            <option value="Dashboard Categories">Dashboard Categories</option>
-                                            <option value="Dashboard Products">Dashboard Products</option>
-                                        </select>
-                                    </div>
+                                <div class="form-group">
+                                    <label for="dashboardGroupType">Group Type</label>
+                                    <!-- <input type="text" class="form-control" id="txtState"> -->
+                                    <select name="dashboardGroupType" id="dashboardGroupType" class="form-control">
+                                        <option selected disabled hidden value=null>Select Group Type</option>
+                                        <option value="Dashboard Categories">Dashboard Categories</option>
+                                        <option value="Dashboard Products">Dashboard Products</option>
+                                    </select>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id= "lblDashboardGroup" for="dashboardGroup">Choose Dashboard Group</label>
-                                        <!-- <input type="text" class="form-control" id="txtState"> -->
-                                        <select name="dashboardGroup" id="dashboardGroup" class="form-control">
-                                            <option selected disabled hidden value=null>Select Group</option>
-                                            <!-- <option value="Popular Categories">Popular Categories</option>
+                                <div class="form-group">
+                                    <label id="lblDashboardGroup" for="dashboardGroup">Choose Dashboard Group</label>
+                                    <!-- <input type="text" class="form-control" id="txtState"> -->
+                                    <select name="dashboardGroup" id="dashboardGroup" class="form-control">
+                                        <option selected disabled hidden value=null>Select Group</option>
+                                        <!-- <option value="Popular Categories">Popular Categories</option>
                                             <option value="Expore Something New">Expore Something New</option>
                                             <option value="Covid-19 Supplies">Covid-19 Supplies</option>
                                             <option value="Health Concerns">Health Concerns</option>
                                             <option value="Eye Lubricants">Eye Lubricants</option>
                                             <option value="Consult Doctor">Consult Doctor</option> -->
-                                        </select>
-                                    </div>
+                                    </select>
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id = "lblTitle" for="txtGroupTitle">Group Title</label>
-                                        <input type="text" class="form-control" id="txtGroupTitle">
-                                    </div>
+                                <div class="form-group">
+                                    <label id="lblTitle" for="txtGroupTitle">Group Title</label>
+                                    <input type="text" class="form-control" id="txtGroupTitle">
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id = "lblName" for="txtItemName">Item name</label>
-                                        <input type="text" class="form-control" id="txtItemName">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label id = "lblTag" for="txtItemTag">Item Tag</label>
-                                        <input type="text" class="form-control" id="txtItemTag">
-                                    </div>
+                                <div class="form-group">
+                                    <label id="lblName" for="txtItemName">Item name</label>
+                                    <input type="text" class="form-control" id="txtItemName">
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id = "lblRating" for="txtRating">Item Rating</label>
-                                        <input type="number" class="form-control" id="txtRating">
-                                    </div>
+                                <div class="form-group">
+                                    <label id="lblTag" for="txtItemTag">Item Tag</label>
+                                    <input type="text" class="form-control" id="txtItemTag">
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id = "lblRatingCount" for="txtRatingCount">Item Rating Count</label>
-                                        <input type="number" class="form-control" id="txtRatingCount">
-                                    </div>
+                                <div class="form-group">
+                                    <label id="lblRating" for="txtRating">Item Rating</label>
+                                    <input type="number" class="form-control" id="txtRating">
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id = "lblMrp" for="txtMRP">Item MRP</label>
-                                        <input type="number" class="form-control" id="txtMRP">
-                                    </div>
+                                <div class="form-group">
+                                    <label id="lblRatingCount" for="txtRatingCount">Item Rating Count</label>
+                                    <input type="number" class="form-control" id="txtRatingCount">
+                                </div>
 
-                                    <div class="form-group">
-                                        <label id = "lblOfferPrice" for="txtOfferPrice">Item Offer Price</label>
-                                        <input type="number" class="form-control" id="txtOfferPrice">
-                                    </div>
+                                <div class="form-group">
+                                    <label id="lblMrp" for="txtMRP">Item MRP</label>
+                                    <input type="number" class="form-control" id="txtMRP">
+                                </div>
 
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <input type="file" name="inpFile" id="inpFile_CarouselImage1">
-                                            <br />
+                                <div class="form-group">
+                                    <label id="lblOfferPrice" for="txtOfferPrice">Item Offer Price</label>
+                                    <input type="number" class="form-control" id="txtOfferPrice">
+                                </div>
 
-                                            <div class="image-preview" id="imagePreview_CarouselImage1">
-                                                <img src="" alt="Image Preview" class="image-preview_image" />
-                                                <span class="image-preview_default-text">Item Image</span>
-                                            </div>
-                                            <button type="button" class="mt-2"
-                                                id="btnUploadCarouselImage1">Upload</button>
-                                            <img id="imgProgressCarouselImage1"
-                                                style="width: 75px; height: auto; display: none"
-                                                src="img_progress.gif" />
-                                            <span id="uploadMsgCarouselImage1" style="display: none;">Upload
-                                                Successful</span>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="file" name="inpFile" id="inpFile_CarouselImage1">
+                                        <br />
+
+                                        <div class="image-preview" id="imagePreview_CarouselImage1">
+                                            <img src="" alt="Image Preview" class="image-preview_image" />
+                                            <span class="image-preview_default-text">Item Image</span>
                                         </div>
+                                        <button type="button" class="mt-2" id="btnUploadCarouselImage1">Upload</button>
+                                        <img id="imgProgressCarouselImage1"
+                                            style="width: 75px; height: auto; display: none" src="img_progress.gif" />
+                                        <span id="uploadMsgCarouselImage1" style="display: none;">Upload
+                                            Successful</span>
                                     </div>
-
-
-                                    <button type="button" class="btn btn-success mt-2" id="btnSubmit">Save
-                                        Details</button>
-
                                 </div>
 
-                                <div style="width: 100%; height: auto; display: none;" class="msgBorder mt-2 mb-3"
-                                    id="msgHeader">
-                                    <image src="img_ok.png" style="width: 20px; height: 20px;" class="ml-2"
-                                        id="imgHeader" />
-                                    <span id="actionMsg">Message</span>
 
+                                <button type="button" class="btn btn-success mt-2" id="btnSubmit">Save
+                                    Details</button>
 
-
-                                </div>
                             </div>
 
-                        </div>
-                    </div>
+                            <div style="width: 100%; height: auto; display: none;" class="msgBorder mt-2 mb-3"
+                                id="msgHeader">
+                                <image src="img_ok.png" style="width: 20px; height: 20px;" class="ml-2"
+                                    id="imgHeader" />
+                                <span id="actionMsg">Message</span>
 
 
-                    <div class="md-6 ml-3">
-                        <div class="d-flex justify-content-center mt-3">
-                            <table id="tbl" style="width:500px; height:auto;">
-                            </table>
+
+                            </div>
                         </div>
+
                     </div>
                 </div>
+
+
+                <div class="md-6 ml-3">
+                    <div class="d-flex justify-content-center mt-3">
+                        <table id="tbl" style="width:500px; height:auto;">
+                        </table>
+                    </div>
+                </div>
+            </div>
 
 
 

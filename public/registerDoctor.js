@@ -1117,6 +1117,8 @@ function updateSellerDetails() {
    
       divProgress.style.display = "block";
       divContent.style.display = "none";
+
+      var consultationId = txtMerchantId.value + "_" + "con000";
    
    
       var washingtonRef = firebase.firestore().collection("seller").doc(mSeller.seller_id);

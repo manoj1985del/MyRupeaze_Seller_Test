@@ -8,6 +8,9 @@ var merchantId = getQueryVariable("merchant_id");
 var sellerName = getQueryVariable("name");
 var status = getQueryVariable("status");
 var reason = getQueryVariable("rejection_reason");
+var mSeller = null;
+
+getSellerDetails();
 
 
 
@@ -82,10 +85,39 @@ function getRejectionBody(){
 }
 
 btnUpdateApplication.addEventListener("click", function(){
-    window.location.href = "RegisterUser.html?sellerid=" + sellerId;
+
+    if(mSeller.sellerType == "doctor"){
+        window.location.href = "registerDoctor.html?sellerid=" + sellerId;
+    }
+    else if(mSeller.sellerType == "pharmacist"){
+        window.location.href = "registerPharmacist.html?sellerid=" + sellerId;
+    }
+    else{
+
+        window.location.href = "RegisterUser.html?sellerid=" + sellerId;
+    }
+    
 })
 
 
-// window.location.href = "seller_approval.html?sellerid=" + mSeller.seller_id + "&merchant_id=" + mSeller.merchant_id
-// + "&name=" + mSeller.company_name + "&status=" + mSeller.status
-// +"&rejection_reason" + mSeller.suspension_reason;
+function getSellerDetails() {
+    return new Promise((resolve, reject)=>{
+
+        var docRef = firebase.firestore().collection("seller").doc(sellerId);
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mSeller = doc.data();
+            } else {
+                mSeller = null;
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+    
+            }
+        }).catch(function (error) {
+            mSeller = null;
+            console.log("Error getting document:", error);
+        });
+
+    })
+  
+}

@@ -35,13 +35,7 @@ var txtTodaySales = document.getElementById("txtTodaySales");
 var cardPendingOrder = document.getElementById("cardPendingOrder");
 var cardUnitsToday = document.getElementById("cardUnitsToday");
 var cardSalesToday = document.getElementById("cardSalesToday");
-var cardTotalSellers = document.getElementById("cardTotalSellers");
-var hTotalSellers = document.getElementById("hTotalSellers");
-var cardPendingSellerRequest = document.getElementById("cardPendingSellerRequest");
-var hPendingSellerRequest = document.getElementById("hPendingSellerRequest");
 
-var cardTotalUsers = document.getElementById("cardTotalUsers");
-var hTotalUsers = document.getElementById("hTotalUsers");
 
 var h6CompanyName = document.getElementById("h6CompanyName");
 var spanMerchantid = document.getElementById("spanMerchantid");
@@ -52,29 +46,23 @@ var spanBankAccountNumber = document.getElementById("spanBankAccountNumber");
 
 var imgProgress = document.getElementById("imgProgress");
 
-var cardElecCommission = document.getElementById("cardElecCommission");
-var hElecCommission = document.getElementById("hElecCommission");
-var hCODCommission = document.getElementById("hCODCommission");
-var cardCODCommission = document.getElementById("cardCODCommission");
+//var cardElecCommission = document.getElementById("cardElecCommission");
+//var hElecCommission = document.getElementById("hElecCommission");
+//var hCODCommission = document.getElementById("hCODCommission");
 
-var cardPendingCODPayouts = document.getElementById("cardPendingCODPayouts");
-var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
-var cardPendingElecPayouts = document.getElementById("cardPendingElecPayouts");
-var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
 
-var cardPendingApprovalsProduct = document.getElementById("cardPendingApprovalsProduct");
-var hPendingApprovalProducts = document.getElementById("hPendingApprovalProducts");
+
+//var hPendingCODPayouts = document.getElementById("hPendingCODPayouts");
+//var hPendingElecPayouts = document.getElementById("hPendingElecPayouts");
+
+
 var linkOrderEnquiries = document.getElementById("linkOrderEnquiries");
 
 var cardPendingDoctorsRequest = document.getElementById('cardPendingDoctorsRequest');
 var hPendingDoctorsRequest = document.getElementById('hPendingDoctorsRequest');
-var cardTotalDoctors = document.getElementById('cardTotalDoctors');
-var hTotalDoctors = document.getElementById('hTotalDoctors');
 
-var cardPendingPharmacyRequest = document.getElementById('cardPendingPharmacyRequest');
-var hPendingPharmacyRequest = document.getElementById('hPendingPharmacyRequest');
-var cardTtotalPharmacies = document.getElementById('cardTtotalPharmacies');
-var hTotalPharacists = document.getElementById('hTotalPharacists');
+
+
 
 var hPendingPharmaEnquiries = document.getElementById('hPendingPharmaEnquiries');
 var cardPendingPharmaEnquiries = document.getElementById('cardPendingPharmaEnquiries');
@@ -97,6 +85,21 @@ var cardDoctorSalesToday = document.getElementById('cardDoctorSalesToday');
 var hConsultationsPendingForRefund = document.getElementById('hConsultationsPendingForRefund');
 var cardConsultationPendingForRefund = document.getElementById('cardConsultationPendingForRefund');
 
+var linkTotalUsersAssociated = document.getElementById('linkTotalUsersAssociated');
+var linkTotalSellersAssociated = document.getElementById('linkTotalSellersAssociated');
+var linkTotalPharmacistAssociated = document.getElementById('linkTotalPharmacistAssociated');
+var linkTotalDoctorsAssociated = document.getElementById('linkTotalDoctorsAssociated');
+var linkPendingSellerRequests = document.getElementById('linkPendingSellerRequests');
+var linkPendingPharmacyRequests = document.getElementById('linkPendingPharmacyRequests');
+var linkPendingDoctorRequests = document.getElementById('linkPendingDoctorRequests');
+var linkPendingApprovaForProducts = document.getElementById('linkPendingApprovaForProducts'); 
+var linkPendingPayoutMyRupeaze = document.getElementById('linkPendingPayoutMyRupeaze');
+var linkCommissionBalanceMyRupeaze = document.getElementById('linkCommissionBalanceMyRupeaze');
+var linkPendingPayoutSwasthya = document.getElementById('linkPendingPayoutSwasthya');
+var linkPendingCommissionSwasthya = document.getElementById('linkPendingCommissionSwasthya');
+
+var pharmacyOrdersMap = new Map();
+
 
 var sellerId = getQueryVariable("sellerid");
 localStorage.setItem("adminLogin", true);
@@ -117,10 +120,10 @@ var elec_payout_seller = 0;
 var cod_commission_admin = 0;
 var elec_commission_admin = 0;
 
-var btnViewMedicalDashboard = document.getElementById("btnViewMedicalDashboard"); 
-btnViewMedicalDashboard.addEventListener("click", function () {
-    window.location.href = "admin_home_medical.html?sellerid="+sellerId;
-});
+// var btnViewMedicalDashboard = document.getElementById("btnViewMedicalDashboard"); 
+// btnViewMedicalDashboard.addEventListener("click", function () {
+//     window.location.href = "admin_home_medical.html?sellerid="+sellerId;
+// });
 
 
 
@@ -128,12 +131,12 @@ Last7Days();
 getPendingProducts();
 loadSellerDetails(sellerId);
 
-loadSellers("seller", hTotalSellers, "approved");
-loadSellers("seller", hPendingSellerRequest, "pending");
-loadSellers("pharmacist", hPendingPharmacyRequest, "pending");
-loadSellers("doctor", hPendingDoctorsRequest, "pending");
-loadSellers('pharmacist', hTotalPharacists, "approved" );
-loadSellers("doctor", hTotalDoctors, "approved");
+loadSellers("seller", linkTotalSellersAssociated, "approved", true);
+loadSellers("seller", linkPendingSellerRequests, "pending", true);
+loadSellers("pharmacist", linkPendingPharmacyRequests, "pending", true);
+loadSellers("doctor", linkPendingDoctorRequests, "pending", true);
+loadSellers('pharmacist', linkTotalPharmacistAssociated, "approved", true);
+loadSellers("doctor", linkTotalDoctorsAssociated, "approved", true);
 
 loadEnquiries(0, hPendingPharmaEnquiries);
 loadEnquiries(6, hPharmaOrdersToPickup);
@@ -143,6 +146,7 @@ loadConsultationsToRefund();
 loadConsultationReceivedToday();
 
 loadTotalUsers();
+generateMedicalPayouts();
 
 
 
@@ -225,115 +229,23 @@ cardUnitsToday.addEventListener("click", function () {
 });
 
 
-//total sellers
-cardTotalSellers.addEventListener("mouseenter", function () {
-    cardTotalSellers.classList.add("cardHover");
-});
-
-cardTotalSellers.addEventListener("mouseleave", function () {
-    cardTotalSellers.classList.remove("cardHover");
-});
-
-cardTotalSellers.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=approved";
-});
-
-//pending sellers
-cardPendingSellerRequest.addEventListener("mouseenter", function () {
-    cardPendingSellerRequest.classList.add("cardHover");
-});
-
-cardPendingSellerRequest.addEventListener("mouseleave", function () {
-    cardPendingSellerRequest.classList.remove("cardHover");
-});
-
-cardPendingSellerRequest.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=pending&sellerType=seller";
-});
 
 
-//total users
-cardTotalUsers.addEventListener("mouseenter", function () {
-    cardTotalUsers.classList.add("cardHover");
-});
 
-cardTotalUsers.addEventListener("mouseleave", function () {
-    cardTotalUsers.classList.remove("cardHover");
-});
 
-cardTotalUsers.addEventListener("click", function () {
-    window.location.href = "admin_users.html";
-});
+
 
 btnUpdate.addEventListener("click", function(){
     window.location.href = "RegisterUser.html?sellerid=" + sellerId;
 })
 
-//pending for approval products
-cardPendingApprovalsProduct.addEventListener("mouseenter", function(){
-    cardPendingApprovalsProduct.classList.add("cardHover");
-})
-
-cardPendingApprovalsProduct.addEventListener("mouseleave", function(){
-    cardPendingApprovalsProduct.classList.remove("cardHover");
-})
-
-cardPendingApprovalsProduct.addEventListener("click", function(){
-    window.location.href = "admin_show_listing.html?type=pending";
-})
 
 
-//pending doctors approvals
-cardPendingDoctorsRequest.addEventListener("mouseenter", function(){
-    this.classList.add("cardHover");
-})
 
-cardPendingDoctorsRequest.addEventListener("mouseleave", function(){
-    this.classList.remove("cardHover");
-})
 
-cardPendingDoctorsRequest.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=pending&sellerType=doctor";
-});
 
-//All doctors approvals
-cardTotalDoctors.addEventListener("mouseenter", function(){
-    this.classList.add("cardHover");
-})
 
-cardTotalDoctors.addEventListener("mouseleave", function(){
-    this.classList.remove("cardHover");
-})
 
-cardTotalDoctors.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=approved&sellerType=doctor";
-});
-
-//pending pharmacies
-cardPendingPharmacyRequest.addEventListener("mouseenter", function(){
-    this.classList.add("cardHover");
-})
-
-cardPendingPharmacyRequest.addEventListener("mouseleave", function(){
-    this.classList.remove("cardHover");
-})
-
-cardPendingPharmacyRequest.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=pending&sellerType=pharmacist";
-});
-
-//total pharmacies
-cardTtotalPharmacies.addEventListener("mouseenter", function(){
-    this.classList.add("cardHover");
-})
-
-cardTtotalPharmacies.addEventListener("mouseleave", function(){
-    this.classList.remove("cardHover");
-})
-
-cardTtotalPharmacies.addEventListener("click", function () {
-    window.location.href = "admin_seller_listing.html?type=approved&sellerType=pharmacist";
-});
 
 //pending pharma enquireis
 cardPendingPharmaEnquiries.addEventListener("mouseenter", function(){
@@ -1061,7 +973,7 @@ function loadSellerDetails(sellerid) {
 
 }
 
-function loadSellers(sellerType, hCtrlHeader, status) {
+function loadSellers(sellerType, hCtrlHeader, status, isLinkCtrl) {
   
     console.log("sellertype = " + sellerType);
     firebase.firestore().collection("seller")
@@ -1069,7 +981,13 @@ function loadSellers(sellerType, hCtrlHeader, status) {
         .where("sellerType", "==", sellerType)
         .get()
         .then(function (querySnapshot) {
-            hCtrlHeader.textContent = querySnapshot.docs.length;
+            if(isLinkCtrl){
+                hCtrlHeader.textContent += " (" + querySnapshot.docs.length.toString() + ")"
+            }
+            else{
+                hCtrlHeader.textContent  = querySnapshot.docs.length;
+            }
+           
         })
         .catch(function (error) {
             console.log("Error getting documents: ", error);
@@ -1084,7 +1002,7 @@ function loadTotalUsers() {
         .where("status", "==", "approved")
         .get()
         .then(function (querySnapshot) {
-            hTotalUsers.textContent = querySnapshot.docs.length;
+            linkTotalUsersAssociated.textContent +=  " (" + querySnapshot.docs.length.toString() + ")";
         })
         .catch(function (error) {
             console.log("Error getting documents: ", error);
@@ -1211,14 +1129,21 @@ function calculatePayout() {
 
     // hCODCommission.textContent = cod_commission_admin.toFixed(2);
     // hElecCommission.textContent = elec_commission_admin.toFixed(2);
-    hPendingCODPayouts.textContent = rupeeSymbol + cod_payout_seller.toFixed(2);
-    hPendingElecPayouts.textContent = rupeeSymbol + elec_payout_seller.toFixed(2);
+    //hPendingCODPayouts.textContent = rupeeSymbol + cod_payout_seller.toFixed(2);
+    //hPendingElecPayouts.textContent = rupeeSymbol + elec_payout_seller.toFixed(2);
+
+    var totalPayout = cod_payout_seller + elec_payout_seller;
+    var totalCommission = deductionsCOD + deductionsPrepaid;
+    linkPendingPayoutMyRupeaze.textContent +=  " (" + rupeeSymbol + totalPayout.toFixed(2) + " )";
+    linkCommissionBalanceMyRupeaze.textContent += " (" + rupeeSymbol + totalCommission.toFixed(2) + " )";
+
+
     
 
-    hCODCommission.textContent = deductionsCOD.toFixed(2);
-    hElecCommission.textContent = deductionsPrepaid.toFixed(2);
-    hPendingCODPayouts.textContent = cod_payout_seller.toFixed(2);
-    hPendingElecPayouts.textContent = elec_payout_seller.toFixed(2);
+   // hCODCommission.textContent = deductionsCOD.toFixed(2);
+   // hElecCommission.textContent = deductionsPrepaid.toFixed(2);
+   // hPendingCODPayouts.textContent = cod_payout_seller.toFixed(2);
+    //hPendingElecPayouts.textContent = elec_payout_seller.toFixed(2);
 
 
 
@@ -1400,7 +1325,7 @@ function getPendingProducts(){
         .where("status", "==", "pending")
         .get()
         .then(function (querySnapshot) {
-            hPendingApprovalProducts.textContent = querySnapshot.docs.length;
+            linkPendingApprovaForProducts.textContent += " (" +  querySnapshot.docs.length + ")";
         })
         .catch(function (error) {
             console.log("Error getting documents: ", error);
@@ -1782,9 +1707,112 @@ function loadLast7DaysPharmacyEnquiries() {
 
 
     })
-
-
 }
+
+function generateMedicalPayouts(){
+    getAppInfo().then(()=>{
+        getUnsettledPharmaOrders().then(()=>{
+            getUnsettledDoctorOrders().then(()=>{
+                var mPharmaCommission = mPharmaAmount * (mAppInfo.pharma_commission / 100);
+                var mPharmaPayable = mPharmaAmount - mPharmaCommission;
+
+                var mDocCommission = mDocAmount * (mAppInfo.doctor_commission / 100);
+                var mDocPayable = mDocAmount - mDocCommission;
+
+                var netPayable = mPharmaPayable + mDocPayable;
+                var netCommission = mPharmaCommission + mDocCommission;
+
+                linkPendingPayoutSwasthya.textContent +=  " (" +  rupeeSymbol + netPayable.toFixed(2) + ")"; 
+                linkPendingCommissionSwasthya.textContent += " (" + rupeeSymbol + netCommission.toFixed(2) + ")";
+            })
+        })
+    })
+}
+
+
+var mAppInfo = null;
+function getAppInfo() {
+    return new Promise((resolve, reject)=>{
+
+        var docRef = firebase.firestore().collection("AppInfo").doc("AppInfo");
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                mAppInfo = doc.data();
+                resolve();
+            } else {
+                mAppInfo = null;
+                reject();
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+    
+            }
+        }).catch(function (error) {
+            mAppInfo = null;
+            reject();
+            console.log("Error getting document:", error);
+        });
+
+    })
+   
+}
+
+var mPharmaAmount = 0;
+
+function getUnsettledPharmaOrders() {
+
+    return new Promise((resolve, reject) => {
+        var orderList = [];
+        firebase.firestore().collection("pharmacist_requests")
+            .where("settlement_done", "==", false)
+            .where("status_code", "==", 5)
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    var order = doc.data();
+                    for(var i = 0; i < order.product_names.length; i++){
+                        if(order.available_status[i].toUpperCase() != "AVAILABLE"){
+                            continue;
+                        }
+                        mPharmaAmount += order.product_prices_total[i];
+                    }
+                    
+                });
+            }).then(() => {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+    })
+}
+
+var mDocAmount = 0;
+function getUnsettledDoctorOrders() {
+
+    return new Promise((resolve, reject) => {
+        var orderList = [];
+        firebase.firestore().collection("consultations")
+            .where("settlement_done", "==", false)
+            .where("status", "==", "completed")
+            .where("cancelled", "==", false)
+            .get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    var order = doc.data();
+                    mDocAmount += order.charges;
+                });
+            }).then(() => {
+                resolve();
+            })
+            .catch(function (error) {
+                console.log("Error getting documents: ", error);
+                reject();
+            });
+    })
+}
+
+
 
 
 

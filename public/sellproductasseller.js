@@ -1,4 +1,4 @@
-var docLimit = 25;
+
 var productList = [];
 var alreadySellingProductIds = [];
 var alreadySellingProducts = [];

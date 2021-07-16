@@ -1,5 +1,4 @@
 
-var docLimit = 25;
 
 var rupeeSymbol = "₹ ";
 

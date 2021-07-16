@@ -2,10 +2,23 @@
 var divProgress = document.getElementById("divProgress");
 var divContent = document.getElementById("divContent");
 var table = document.getElementById("tblData");
+var btnPrevious = document.getElementById('btnPrevious');
+var btnNext = document.getElementById('btnNext');
+var errorMsg = document.getElementById('errorMsg');
 var rupeeSymbol = "₹ ";
 
+
+var queryList = [];
+var pageIndex = 0;
+var lastVisibleDoc;
+var paginationFinished = false;
+var nextQuery;
+var mQuery;
+var today = new Date();
+
+
 var sellerId = getQueryVariable("sellerid");
-if(sellerId == null){
+if (sellerId == null) {
     sellerId = localStorage.getItem("sellerid");
 }
 
@@ -17,10 +30,11 @@ var mSeller = null;
 var mRedeemPoints = 0;
 
 
+
 var mType = getQueryVariable("type");
 var admin = false;
 var sellerType = getQueryVariable('sellerType');
-if(sellerType == 'admin'){
+if (sellerType == 'admin') {
     admin = true;
 }
 
@@ -30,118 +44,17 @@ getEnquiries();
 
 function getEnquiries() {
 
-    var query;
-    var today = new Date();
     today.setHours(0);
     today.setMinutes(0);
     today.setMilliseconds(0);
     today.setSeconds(0);
 
-    if (!admin) {
+    prepareQuery(true);
+    console.log("query");
+    console.log(mQuery);
+    loadEnquiry(mQuery).then(() => {
 
-        if (mType == "pending") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 0)
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "approved") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 3)
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-
-
-        }
-
-        if (mType == "waiting_for_pickup") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 6)
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-
-
-        }
-
-        if (mType == "unsettled") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("seller_id", "==", sellerId)
-                .where("settlement_done", "==", false)
-                .where("status_code", "==", 5)
-                .orderBy('timestamp', 'desc');
-
-        }
-
-        if (mType == "today_completed") {
-             query = firebase.firestore()
-                .collection('pharmacist_requests')
-                .where("seller_id", "==", sellerId)
-                .where("invoice_timestamp", ">=", today)
-                .where("cancelled", "==", false);
-        }
-
-
-
-        if (mType == "all") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-        }
-
-
-    }
-    else {
-
-        if (mType == "pending") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 0)
-                .orderBy('timestamp', 'desc');
-
-        }
-
-        if (mType == "approved") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 3)
-                .orderBy('timestamp', 'desc');
-
-        }
-
-        if (mType == "today_completed") {
-            var query = firebase.firestore()
-                .collection('pharmacist_requests')
-                .where("invoice_timestamp", ">=", today)
-                .where("cancelled", "==", false);
-        }
-
-        if (mType == "waiting_for_pickup") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 6)
-                .orderBy('timestamp', 'desc');
-
-
-        }
-
-        if (mType == "unsettled") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .where("status_code", "==", 6)
-                .where("settlement_done", "==", false)
-                .where("status_code", "==", 5)
-                .orderBy('timestamp', 'desc');
-
-        }
-
-        if (mType == "all") {
-            query = firebase.firestore().collection("pharmacist_requests")
-                .orderBy('timestamp', 'desc');
-
-        }
-
-
-    }
-
-    loadEnquiry(query).then(() => {
-
+        prepareQuery(false);
         divProgress.style.display = "none";
         divContent.style.display = "block";
         console.log(enquiryList);
@@ -152,6 +65,51 @@ function getEnquiries() {
     })
 }
 
+btnNext.addEventListener("click", function(){
+
+    console.log("page Index - " + pageIndex);
+    enquiryList = [];
+    deleteTableRows();
+    var nextQuery = queryList[pageIndex + 1];
+
+    pageIndex++;
+    if (pageIndex > 0) {
+        btnPrevious.style.display = "block";
+    }
+    else {
+        btnPrevious.style.display = "none";
+    }
+
+    loadEnquiry(nextQuery).then(() => {
+        prepareQuery(false);
+        createTable();
+        
+
+    })
+
+})
+
+btnPrevious.addEventListener("click", function () {
+    enquiryList = [];
+    deleteTableRows();
+    console.log("page Index - " + pageIndex);
+
+    var prevQuery = queryList[pageIndex - 1];
+    loadEnquiry(prevQuery).then(() => {
+        console.log("enquiry list");
+        console.log(enquiryList);
+       createTable();
+        pageIndex--;
+
+        if (pageIndex == 0) {
+            btnPrevious.style.display = "none";
+        } else {
+            btnPrevious.style.display = "block";
+        }
+    })
+
+})
+
 function loadEnquiry(query) {
 
     return new Promise((resolve, reject) => {
@@ -159,8 +117,36 @@ function loadEnquiry(query) {
         query
             .get()
             .then((querySnapshot) => {
+
+                if (querySnapshot.docs.length < docLimit) {
+                    btnNext.style.display = "none";
+                } else {
+                    btnNext.style.display = "block";
+                }
+
+                if (querySnapshot.length > 1 && querySnapshot.docs.length == 0) {
+                    //divErrorMsg.style.display = "block";
+                    errorMsg.textContent = "No further rows to display";
+
+                    //pageIndex++;
+                    //  console.log("increased page index to:" + pageIndex);
+                    btnNext.style.display = "none";
+                    return;
+                }
+
+                if (querySnapshot.docs.length == 0) {
+                    divContent.style.display = "none";
+                    divProgress.style.display = "none";
+                    errorMsg.textContent = "No Record Found";
+
+                }
+                lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+                divContent.style.display = "block";
+                divProgress.style.display = "none";
+              
                 querySnapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
+                    errorMsg.textContent = "";
                     var enquery = doc.data();
                     enquiryList.push(enquery);
                 });
@@ -460,15 +446,15 @@ function createTable() {
 
         var divCOD = document.createElement('div');
         var spanCOD = document.createElement('span');
-        if(enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6){
+        if (enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6) {
             var payByCash = "No";
             if (enquiry.COD) {
                 payByCash = "Yes";
             }
             spanCOD.textContent = payByCash;
-           
+
         }
-        else{
+        else {
             spanCOD.textContent = "-";
         }
         divCOD.appendChild(spanCOD);
@@ -476,26 +462,26 @@ function createTable() {
 
         var divPaymentId = document.createElement('div');
         var spanPaymentId = document.createElement('span');
-        if(enquiry.payment_id == null){
+        if (enquiry.payment_id == null) {
             spanPaymentId.textContent = "null";
-        }else{
+        } else {
             spanPaymentId.textContent = enquiry.payment_id;
         }
-    
-    
+
+
         divPaymentId.appendChild(spanPaymentId);
         tdPaymentId.appendChild(divPaymentId);
 
         var divWalletMoneyUsed = document.createElement('div');
         var spanWalletMoneyUsed = document.createElement('span');
-        if(enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6){
-            spanWalletMoneyUsed.textContent = rupeeSymbol +  enquiry.wallet_money_used;
-          
+        if (enquiry.status_code == 3 || enquiry.status_code == 5 || enquiry.status_code == 6) {
+            spanWalletMoneyUsed.textContent = rupeeSymbol + enquiry.wallet_money_used;
+
         }
-        else{
+        else {
             spanWalletMoneyUsed.textContent = "-";
         }
-    
+
         divWalletMoneyUsed.appendChild(spanWalletMoneyUsed);
         tdWalletMoneyUsed.appendChild(divWalletMoneyUsed);
 
@@ -546,11 +532,11 @@ function createTable() {
         divRejectEnquiry.appendChild(btnReject);
         divRejectEnquiry.style.display = "none";
         divAction.appendChild(divRejectEnquiry);
-        if(admin){
+        if (admin) {
             divAction.style.display = "none";
         }
 
-        if(enquiry.status_code == 0){
+        if (enquiry.status_code == 0) {
             divRejectEnquiry.style.display = "block";
         }
         tdAction.appendChild(divAction);
@@ -697,17 +683,17 @@ function createTable() {
 
                 var bDebit = false;
                 //if wallet moeny has been used, debit the points instead of credit
-                if(enquiry.wallet_money_used > 0){
+                if (enquiry.wallet_money_used > 0) {
                     bDebit = true;
                     total = enquiry.wallet_money_used;
-                    var pointsToDebit =  Math.ceil(enquiry.wallet_money_used * mNumberOfPointsInOneRupee);
+                    var pointsToDebit = Math.ceil(enquiry.wallet_money_used * mNumberOfPointsInOneRupee);
                     creditAndDebitPoints(enquiry.customer_id, pointsToDebit, bDebit)
 
                 }
-                else{
+                else {
                     common_CreditAndDebitPoints(total, enquiry.customer_id, bDebit);
                 }
-               
+
                 markDelivery(enquiry.doc_id);
                 addProductsToDb(enquiry)
 
@@ -872,14 +858,14 @@ function createInvoice(enquiry) {
             // gstlist.push(parseInt(product.gst));
             // priceList.push(parseInt(product.price));
             // qtyList.push(parseInt(product.qty));
-            if(enquiry.available_status[i] == "Available"){
+            if (enquiry.available_status[i] == "Available") {
                 statusList.push("success");
             }
-            else{
+            else {
                 statusList.push(enquiry.available_status[i]);
             }
         }
-        
+
 
         var pointsUsedForPurchase = enquiry.wallet_money_used * mNumberOfPointsInOneRupee;
         firebase.firestore().collection('offline_invoices').doc(newInvoiceId).set({
@@ -995,6 +981,271 @@ function getSellerDetails() {
 
     })
 
+}
+
+
+function prepareQuery(isFirst) {
+
+    if (isFirst) {
+        if (!admin) {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 0)
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);                    
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 3)
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+
+
+            }
+
+            if (mType == "waiting_for_pickup") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 6)
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+
+
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("seller_id", "==", sellerId)
+                    .where("settlement_done", "==", false)
+                    .where("status_code", "==", 5)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "today_completed") {
+                mQuery = firebase.firestore()
+                    .collection('pharmacist_requests')
+                    .where("seller_id", "==", sellerId)
+                    .where("invoice_timestamp", ">=", today)
+                    .where("cancelled", "==", false)
+                    .limit(docLimit);;
+            }
+
+
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+            }
+
+
+        }
+        else {
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 0)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 3)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "today_completed") {
+                mQuery = firebase.firestore()
+                    .collection('pharmacist_requests')
+                    .where("invoice_timestamp", ">=", today)
+                    .where("cancelled", "==", false)
+                    .limit(docLimit);;
+            }
+
+            if (mType == "waiting_for_pickup") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 6)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 6)
+                    .where("settlement_done", "==", false)
+                    .where("status_code", "==", 5)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+            }
+
+
+        }
+    }
+
+    //if next button is pressed then prepare next mQuery..
+    else{
+
+        if (!admin) {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 0)
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);                    
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 3)
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+
+            }
+
+            if (mType == "waiting_for_pickup") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 6)
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("seller_id", "==", sellerId)
+                    .where("settlement_done", "==", false)
+                    .where("status_code", "==", 5)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "today_completed") {
+                mQuery = firebase.firestore()
+                    .collection('pharmacist_requests')
+                    .where("seller_id", "==", sellerId)
+                    .where("invoice_timestamp", ">=", today)
+                    .where("cancelled", "==", false)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+            }
+
+
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+            }
+
+
+        }
+        else {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 0)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 3)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "today_completed") {
+                mQuery = firebase.firestore()
+                    .collection('pharmacist_requests')
+                    .where("invoice_timestamp", ">=", today)
+                    .where("cancelled", "==", false)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+            }
+
+            if (mType == "waiting_for_pickup") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 6)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .where("status_code", "==", 6)
+                    .where("settlement_done", "==", false)
+                    .where("status_code", "==", 5)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+            }
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("pharmacist_requests")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+            }
+
+
+        }
+    }
+
+    queryList.push(mQuery);
+
+
+
+}
+
+function deleteTableRows() {
+    //e.firstElementChild can be used. 
+    var child = table.lastElementChild;
+    while (child) {
+        table.removeChild(child);
+        child = table.lastElementChild;
+    }
 }
 
 

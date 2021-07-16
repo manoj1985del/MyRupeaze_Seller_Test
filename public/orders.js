@@ -2,7 +2,6 @@
 
 //const { DocumentReference } = require("@google-cloud/firestore");
 
-var docLimit = 25;
 var rupeeSymbol = "₹ ";
 var pendingOrders = [];
 // var users = [];

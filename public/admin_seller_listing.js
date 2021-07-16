@@ -6,7 +6,6 @@ var arrMerchantId = [];
 var arrSellerName = [];
 var arrAreaPin = [];
 
-var docLimit = 1;
 var queryList = [];
 var pageIndex = 0;
 var lastVisibleDoc;

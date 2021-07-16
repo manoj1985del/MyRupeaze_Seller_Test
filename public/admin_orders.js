@@ -1,7 +1,6 @@
 
 
 var promiseList = [];
-var docLimit = 25;
 var queryList = [];
 var pageIndex = 0;
 var lastVisibleDoc;

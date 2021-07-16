@@ -1,6 +1,11 @@
 var divProgress = document.getElementById("divProgress");
 var divContent = document.getElementById("divContent");
 var table = document.getElementById("tblData");
+var btnPrevious = document.getElementById('btnPrevious');
+var btnNext = document.getElementById('btnNext');
+var errorMsg = document.getElementById('errorMsg');
+
+
 var rupeeSymbol = "₹ ";
 
 var sellerId = localStorage.getItem("sellerid");
@@ -12,6 +17,14 @@ var mSeller = null;
 var mRedeemPoints = 0;
 
 var todayDate;
+
+var queryList = [];
+var pageIndex = 0;
+var lastVisibleDoc;
+var paginationFinished = false;
+var nextQuery;
+var mQuery;
+var today = new Date();
 
 
 var sellerType = getQueryVariable("sellerType");
@@ -26,7 +39,6 @@ getEnquiries();
 
 function getEnquiries() {
 
-    var query;
 
     var d = new Date();
     var dd = d.getDate();
@@ -39,144 +51,67 @@ function getEnquiries() {
     var yy = yyyy.slice(-2);
     todayDate = dd + '-' + month + '-' + yy;
 
-    var today = new Date();
+    //var today = new Date();
     today.setHours(0);
     today.setMinutes(0);
     today.setMilliseconds(0);
     today.setSeconds(0);
 
-    if (!admin) {
 
-        if (mType == "pending") {
-            query = firebase.firestore().collection("consultations")
-                .where("status", "==", "pending")
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "completed") {
-            query = firebase.firestore().collection("consultations")
-                .where("status", "==", "completed")
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-
-
-        }
-
-        if (mType == "today") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("seller_id", "==", sellerId)
-                .where("consultation_date", "==", todayDate)
-        }
-
-        if (mType == "receivedToday") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("seller_id", "==", sellerId)
-                .where("timestamp", ">=", today)
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "approved") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("seller_id", "==", sellerId)
-                .where("status", "==", "approved")
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "unsettled") {
-            alert(sellerId);
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("status", "==", "completed")
-                .where("seller_id", "==", sellerId)
-                .where("settlement_done", "==", false)
-                .orderBy('timestamp', 'desc');
-        }
-
-
-        if (mType == "all") {
-            query = firebase.firestore().collection("consultations")
-                .where("seller_id", "==", sellerId)
-                .orderBy('timestamp', 'desc');
-        }
-
-
-    }
-    else {
-
-        if (mType == "pending") {
-            query = firebase.firestore().collection("consultations")
-                .where("status", "==", "pending")
-                .orderBy('timestamp', 'desc');
-
-        }
-
-        if (mType == "completed") {
-            query = firebase.firestore().collection("consultations")
-                .where("status", "==", "completed")
-                .orderBy('timestamp', 'desc');
-
-        }
-
-        if (mType == "today") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("consultation_date", "==", todayDate)
-        }
-
-        if (mType == "receivedToday") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("timestamp", ">=", today)
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "approved") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("status", "==", "approved")
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "unsettled") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("status", "==", "completed")
-                .where("settlement_done", "==", false)
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "pending_refund") {
-            query = firebase.firestore()
-                .collection('consultations')
-                .where("cancelled", "==", true)
-                .where("refund_issued", "==", false)
-                .orderBy('timestamp', 'desc');
-        }
-
-        if (mType == "all") {
-            query = firebase.firestore().collection("consultations")
-                .orderBy('timestamp', 'desc');
-
-        }
-
-
-    }
-
-    loadEnquiry(query).then(() => {
+    prepareQuery(true);
+    loadEnquiry(mQuery).then(() => {
 
         divProgress.style.display = "none";
         divContent.style.display = "block";
         console.log(consultationList);
-
+        prepareQuery(false);
         createTable();
         //createTableHeaders();
 
     })
 }
+
+btnNext.addEventListener("click", function () {
+
+    console.log("page Index - " + pageIndex);
+    consultationList = [];
+    deleteTableRows();
+    var nextQuery = queryList[pageIndex + 1];
+
+    pageIndex++;
+    if (pageIndex > 0) {
+        btnPrevious.style.display = "block";
+    }
+    else {
+        btnPrevious.style.display = "none";
+    }
+
+    loadEnquiry(nextQuery).then(() => {
+        prepareQuery(false);
+        createTable();
+
+
+    })
+})
+
+btnPrevious.addEventListener("click", function () {
+    consultationList = [];
+    deleteTableRows();
+    console.log("page Index - " + pageIndex);
+
+    var prevQuery = queryList[pageIndex - 1];
+    loadEnquiry(prevQuery).then(() => {
+       createTable();
+        pageIndex--;
+
+        if (pageIndex == 0) {
+            btnPrevious.style.display = "none";
+        } else {
+            btnPrevious.style.display = "block";
+        }
+    })
+
+})
 
 function loadEnquiry(query) {
 
@@ -185,8 +120,36 @@ function loadEnquiry(query) {
         query
             .get()
             .then((querySnapshot) => {
+
+                if (querySnapshot.docs.length < docLimit) {
+                    btnNext.style.display = "none";
+                } else {
+                    btnNext.style.display = "block";
+                }
+
+                if (querySnapshot.length > 1 && querySnapshot.docs.length == 0) {
+                    //divErrorMsg.style.display = "block";
+                    errorMsg.textContent = "No further rows to display";
+
+                    //pageIndex++;
+                    //  console.log("increased page index to:" + pageIndex);
+                    btnNext.style.display = "none";
+                    return;
+                }
+
+                if (querySnapshot.docs.length == 0) {
+                    divContent.style.display = "none";
+                    divProgress.style.display = "none";
+                    errorMsg.textContent = "No Record Found";
+
+                }
+                lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+                divContent.style.display = "block";
+                divProgress.style.display = "none";
+
                 querySnapshot.forEach((doc) => {
                     // doc.data() is never undefined for query doc snapshots
+                    errorMsg.textContent = "";
                     var enquery = doc.data();
                     consultationList.push(enquery);
                 });
@@ -331,8 +294,8 @@ function createTable() {
         var divRefund = document.createElement('div');
         var spanRefund = document.createElement("span");
         spanStatus.innerHTML = consultation.status;
-        if(consultation.refund_issued){
-         
+        if (consultation.refund_issued) {
+
             spanRefund.marginTop = "10px";
             spanRefund.style.color = "#ff0000";
             spanRefund.innerHTML += "Refund Issued";
@@ -342,7 +305,7 @@ function createTable() {
         divStatus.appendChild(divStatus1);
         divStatus.appendChild(divRefund);
         tdStatus.appendChild(divStatus);
-        
+
 
 
         var divAction = document.createElement('div');
@@ -439,14 +402,14 @@ function createTable() {
             divViewPrescription.style.display = "none";
 
             if (consultation.status == "cancelled") {
-                if(consultation.refund_issued){
+                if (consultation.refund_issued) {
                     divIssueRefund.style.display = "none";
                 }
-                else{
+                else {
 
                     divIssueRefund.style.display = "block";
                 }
-              
+
             }
 
             if (consultation.status == "pending") {
@@ -709,6 +672,310 @@ function updateRefundStatus(docId) {
 
 }
 
+function prepareQuery(isFirst) {
 
+    if (isFirst) {
+
+        if (!admin) {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "pending")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+            }
+
+            if (mType == "completed") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "completed")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);;
+
+
+            }
+
+            if (mType == "today") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("seller_id", "==", sellerId)
+                    .where("consultation_date", "==", todayDate)
+                    .limit(docLimit);
+            }
+
+            if (mType == "receivedToday") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("seller_id", "==", sellerId)
+                    .where("timestamp", ">=", today)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("seller_id", "==", sellerId)
+                    .where("status", "==", "approved")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("status", "==", "completed")
+                    .where("seller_id", "==", sellerId)
+                    .where("settlement_done", "==", false)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+
+        }
+        else {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "pending")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+
+            }
+
+            if (mType == "completed") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "completed")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+
+            }
+
+            if (mType == "today") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("consultation_date", "==", todayDate)
+                    .limit(docLimit);
+            }
+
+            if (mType == "receivedToday") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("timestamp", ">=", today)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("status", "==", "approved")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("status", "==", "completed")
+                    .where("settlement_done", "==", false)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+            if (mType == "pending_refund") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("cancelled", "==", true)
+                    .where("refund_issued", "==", false)
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+            }
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .orderBy('timestamp', 'desc')
+                    .limit(docLimit);
+
+            }
+        }
+    }
+    else {
+
+        if (!admin) {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "pending")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+            }
+
+            if (mType == "completed") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "completed")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);;
+
+
+            }
+
+            if (mType == "today") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("seller_id", "==", sellerId)
+                    .where("consultation_date", "==", todayDate)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "receivedToday") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("seller_id", "==", sellerId)
+                    .where("timestamp", ">=", today)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("seller_id", "==", sellerId)
+                    .where("status", "==", "approved")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("status", "==", "completed")
+                    .where("seller_id", "==", sellerId)
+                    .where("settlement_done", "==", false)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("seller_id", "==", sellerId)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+
+        }
+        else {
+
+            if (mType == "pending") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "pending")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+            }
+
+            if (mType == "completed") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .where("status", "==", "completed")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+            }
+
+            if (mType == "today") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("consultation_date", "==", todayDate)
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "receivedToday") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("timestamp", ">=", today)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "approved") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("status", "==", "approved")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "unsettled") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("status", "==", "completed")
+                    .where("settlement_done", "==", false)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "pending_refund") {
+                mQuery = firebase.firestore()
+                    .collection('consultations')
+                    .where("cancelled", "==", true)
+                    .where("refund_issued", "==", false)
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+            }
+
+            if (mType == "all") {
+                mQuery = firebase.firestore().collection("consultations")
+                    .orderBy('timestamp', 'desc')
+                    .startAfter(lastVisibleDoc)
+                    .limit(docLimit);
+
+            }
+        }
+    }
+
+
+
+
+    queryList.push(mQuery);
+
+
+
+}
+
+function deleteTableRows() {
+    //e.firstElementChild can be used. 
+    var child = table.lastElementChild;
+    while (child) {
+        table.removeChild(child);
+        child = table.lastElementChild;
+    }
+}
 
 

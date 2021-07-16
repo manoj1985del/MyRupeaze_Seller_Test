@@ -17,7 +17,6 @@ var rupeeSymbol = "₹ ";
 var lastVisibleDoc;
 var searchByDate = false;
 
-var docLimit = 25 ;
 
 var invoiceList = [];
 var lastVisibleDoc;

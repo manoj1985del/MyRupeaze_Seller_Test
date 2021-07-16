@@ -19,8 +19,8 @@
 
   <style>
     .myBorder {
-      border: 2px black solid;
-      background-color: pink;
+      border: 1px black solid;
+      background-color: white;
     }
   </style>
 
@@ -52,6 +52,9 @@
         <ul class="navbar-nav">
 
 
+          
+         
+
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
@@ -64,6 +67,36 @@
               <a class="dropdown-item" href="admin_orders.html?type=unsettled">Unsettled Orders</a>
               <a class="dropdown-item" href="admin_orders.html?type=settled">Settled Orders</a>
               <a class="dropdown-item" href="admin_orders.html?type=waiting_for_pickup">Orders: Waiting for Pickup</a>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Consultations
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="pending_appointments.html?type=pending&sellerType=admin">Pending Appointments</a>
+              <a class="dropdown-item" href="pending_appointments.html?type=today&sellerType=admin">Appointments Scheduled Today</a>
+              <a class="dropdown-item" href="pending_appointments.html?type=receivedToday&sellerType=admin">Appointments Received Today</a>
+              <a class="dropdown-item" href="pending_appointments.html?type=unsettled&sellerType=admin">Unsettled Appointments</a>
+              <a class="dropdown-item" href="pending_appointments.html?type=pending_refund&sellerType=admin">Consultations: Pending for Refund</a>
+              <a class="dropdown-item" href="pending_appointments.html?type=all&sellerType=admin">All Appointments</a>
+            </div>
+          </li>
+
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Pharmacy Orders
+            </a>
+            <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="medicine_enquiries.html?type=pending&sellerType=admin">Pending Enquiries</a>
+              <a class="dropdown-item" href="medicine_enquiries.html?type=today_completed&sellerType=admin">Today's Orders</a>
+              <a class="dropdown-item" href="medicine_enquiries.html?type=approved&sellerType=admin">Enquiries Approved by Customer</a>
+              <a class="dropdown-item" href="medicine_enquiries.html?type=waiting_for_pickup&sellerType=admin">Ready to Pickup Orders</a>
+              <a class="dropdown-item" href="medicine_enquiries.html?type=all&sellerType=admin">All Orders</a>
             </div>
           </li>
 
@@ -123,308 +156,15 @@
 
   <div id="seller">
 
-    <div class="mt-3">
-      <div class="row">
-        <div class="col-md-2">
-          <div class="card" id="cardSalesToday">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="txtTodaySales">0</h5>
-              <p class="card-text d-flex justify-content-center">Sales Today</p>
-            </div>
-          </div>
-        </div>
+    <div class="row">
 
-        <div class="col-md-2">
-          <div class="card" id="cardUnitsToday">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="txtUnits">0</h5>
-              <p class="card-text d-flex justify-content-center">Units Today</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingSellerRequest">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingSellerRequest">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Seller Requests</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardTotalSellers">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hTotalSellers">0</h5>
-              <p class="card-text d-flex justify-content-center">Total Sellers Associated</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingOrder">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="txtPendingOrders">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Orders</p>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingCODPayouts">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingCODPayouts">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending COD Payout</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="row mt-2">
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingElecPayouts">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingElecPayouts">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Electronic Payout</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hSalesThisMonth">0</h5>
-              <p class="card-text d-flex justify-content-center">Sales This Month</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardTotalUsers">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hTotalUsers">0</h5>
-              <p class="card-text d-flex justify-content-center">Total Users Associated</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardCODCommission">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hCODCommission">0</h5>
-              <p class="card-text d-flex justify-content-center">COD Commission Balance</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardElecCommission">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hElecCommission">0</h5>
-              <p class="card-text d-flex justify-content-center">Electronic Commission Balance</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingApprovalsProduct">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingApprovalProducts">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Approvals For Products</p>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-
-      <hr />
-
-      <div class="row mt-2">
-
-        <div class="col-md-2">
-          <div class="card" id="cardPharmacySalesToday">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPharmacySalesToday">0</h5>
-              <p class="card-text d-flex justify-content-center">Pharmacy Sales Today</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardDoctorSalesToday">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hDoctorSalesToday">0</h5>
-              <p class="card-text d-flex justify-content-center">Doctor Sales Today</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingAppointments">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingAppointments">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Appointments</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardAppointmentsScheduledToday">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hAppointmentsScheduledToday">0</h5>
-              <p class="card-text d-flex justify-content-center">Appointments Scheduled Today</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingDoctorsRequest">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingDoctorsRequest">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Doctors Requests</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingPharmacyRequest">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingPharmacyRequest">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Pharmacy Requests</p>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div class="row mt-2">
-
-        <div class="col-md-2">
-          <div class="card" id="cardTtotalPharmacies">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hTotalPharacists">0</h5>
-              <p class="card-text d-flex justify-content-center">Total Pharmacies Associated</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardTotalDoctors">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hTotalDoctors">0</h5>
-              <p class="card-text d-flex justify-content-center">Total Doctors Associated</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingPharmaEnquiries">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPendingPharmaEnquiries">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Pharma Enquiries</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPharmaOrdersToPickup">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hPharmaOrdersToPickup">0</h5>
-              <p class="card-text d-flex justify-content-center">Pharma Orders To Pickup</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardConsultationPendingForRefund">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id="hConsultationsPendingForRefund">0</h5>
-              <p class="card-text d-flex justify-content-center">Consultations: Pending for Refund</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="card" id="cardPendingPharmacyRequest">
-            <div class="card-body">
-              <h5 class="card-title d-flex justify-content-center" id=" ">0</h5>
-              <p class="card-text d-flex justify-content-center">Pending Pharmacy Requests</p>
-            </div>
-          </div>
-        </div>
-
-
-        
-
-       
-
-   
-        <!-- 
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title d-flex justify-content-center">0</h5>
-          <p class="card-text d-flex justify-content-center">Sales This Month</p>
-        </div>
-      </div>
-    </div> -->
-
-
-      </div>
-
-    </div>
-
-    <div class="row ml-2">
-      <div class="col-md-3">
-        <canvas id="myChart" width="300" height="300"></canvas>
-      </div>
-
-      <div class="col-md-3">
-        <canvas id="myChart1" width="300" height="300"></canvas>
-      </div>
-
-      <div class="col-md-3">
-        <canvas id="myChartPharma" width="300" height="300"></canvas>
-      </div>
-
-      <div class="col-md-3">
-        <canvas id="myChartDoctor" width="300" height="300"></canvas>
-      </div>
-
-      <div class="card mt-4" style="width: 25rem;">
+    <div class="col-md-3 mt-3 ml-1">
+      <div class="card" style="width: 25rem;">
         <img id="imgProgress" src="img_progress.gif" style="width: 70px; height: 70px" />
         <div class="card-body">
           <h5 class="card-title">My Account</h5>
           <h6 id="h6CompanyName" class="card-subtitle mb-2 text-muted"></h6>
           <hr />
-          <!-- <span id="spanMerchantid"></span> -->
-          <!-- <br />
-      <br /> -->
-          <!-- <span id="spanGST"></span>
-      <br />
-      <br />
-      <span id="spanPANCardNumber"></span>
-      <br />
-      <br >
-      <span id="spanSellingCategory"></span>
-      <br />
-      <br />
-      <span id="spanBankAccountNumber"></span>
-      <br />
-      <br />
-      <br />
-      <br /> -->
-
-          <div>
-            <button id="btnViewMedicalDashboard">View Medical Dashboard</b>
-              <!-- <a href="admin_home_medical.html" class="card-link" style="visibility: none;">View Medical Dashboard</a> -->
-
-          </div>
 
           <div>
             <a href="misc_settings.html" class="card-link" id="btnUpdate" style="visibility: none;">Miscellenous Settings</a>
@@ -475,6 +215,226 @@
 
         </div>
       </div>
+    </div>
+    
+    <div class="mt-3 col-md-5">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card" id="cardSalesToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="txtTodaySales">0</h5>
+              <p class="card-text d-flex justify-content-center">Sales Today</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card" id="cardUnitsToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="txtUnits">0</h5>
+              <p class="card-text d-flex justify-content-center">Units Today</p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-md-3">
+          <div class="card" id="cardPendingOrder">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="txtPendingOrders">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Orders</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hSalesThisMonth">0</h5>
+              <p class="card-text d-flex justify-content-center">Sales This Month</p>
+            </div>
+          </div>
+        </div>
+
+
+
+
+      </div>
+
+      <hr />
+
+      <div class="row mt-2">
+
+        <div class="col-md-3">
+          <div class="card" id="cardPharmacySalesToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPharmacySalesToday">0</h5>
+              <p class="card-text d-flex justify-content-center">Pharmacy Sales Today</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card" id="cardDoctorSalesToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hDoctorSalesToday">0</h5>
+              <p class="card-text d-flex justify-content-center">Doctor Sales Today</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card" id="cardPendingAppointments">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingAppointments">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Appointments</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card" id="cardAppointmentsScheduledToday">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hAppointmentsScheduledToday">0</h5>
+              <p class="card-text d-flex justify-content-center">Appointments Scheduled Today</p>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+      </div>
+
+      <div class="row mt-2">
+
+        <div class="col-md-3">
+          <div class="card" id="cardPendingPharmaEnquiries">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPendingPharmaEnquiries">0</h5>
+              <p class="card-text d-flex justify-content-center">Pending Pharma Enquiries</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card" id="cardPharmaOrdersToPickup">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hPharmaOrdersToPickup">0</h5>
+              <p class="card-text d-flex justify-content-center">Pharma Orders To Pickup</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card" id="cardConsultationPendingForRefund">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-center" id="hConsultationsPendingForRefund">0</h5>
+              <p class="card-text d-flex justify-content-center">Consultations: Pending for Refund</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card mt-3" style="width: 25rem;">
+      <div class="card-body">
+        <h5 class="card-title">Quick Stats</h5>
+        <hr />
+
+        <div id="divAssociations">
+          <h6>Associations</h6>
+          <hr />
+         <div>
+           <a href="admin_users.html" class="card-link" id="linkTotalUsersAssociated" style="visibility: none;">Total Users Associated</a>
+         </div>
+
+         <div>
+          <a href="admin_seller_listing.html?type=approved" class="card-link" id="linkTotalSellersAssociated" style="visibility: none;">Total Sellers Associated</a>
+        </div>
+
+        <div>
+          <a href="admin_seller_listing.html?type=approved&sellerType=pharmacist" class="card-link" id="linkTotalPharmacistAssociated" style="visibility: none;">Total Pharmacies Associated</a>
+        </div>
+
+        <div>
+          <a href="admin_seller_listing.html?type=approved&sellerType=doctor" class="card-link" id="linkTotalDoctorsAssociated" style="visibility: none;">Total Doctors Associated</a>
+        </div>
+   
+        </div>
+
+        <div id="divPendingRequests" class="mt-2">
+          <h6>Pending Requests</h6>
+          <hr />
+         <div>
+           <a href="admin_seller_listing.html?type=pending&sellerType=seller" class="card-link" id="linkPendingSellerRequests" style="visibility: none;">Pending Seller Requests</a>
+         </div>
+
+         <div>
+          <a href="admin_seller_listing.html?type=pending&sellerType=pharmacist" class="card-link" id="linkPendingPharmacyRequests" style="visibility: none;">Pending Pharmacies Requests</a>
+        </div>
+
+        <div>
+          <a href="admin_seller_listing.html?type=pending&sellerType=doctor" class="card-link" id="linkPendingDoctorRequests" style="visibility: none;">Pending Doctors Requests</a>
+        </div>
+
+        <div>
+          <a href="admin_show_listing.html?type=pending" class="card-link" id="linkPendingApprovaForProducts" style="visibility: none;">Pending Approval For Products</a>
+        </div>
+   
+        </div>
+
+        <div id="divPayoutAndCommission" class="mt-2">
+          <h6>Payouts and Commission</h6>
+          <hr />
+         <div>
+           <a href="#" class="card-link" id="linkPendingPayoutMyRupeaze" style="visibility: none;">Pending Payout: My Rupeaze</a>
+         </div>
+
+         <div>
+          <a href="#" class="card-link" id="linkCommissionBalanceMyRupeaze" style="visibility: none;">Commission Balance: My Rupeaze</a>
+        </div>
+
+        <div>
+          <a href="#" class="card-link" id="linkPendingPayoutSwasthya" style="visibility: none;">Pending Payout : Swasthya</a>
+        </div>
+
+        <div>
+          <a href="#" class="card-link" id="linkPendingCommissionSwasthya" style="visibility: none;">Commission Balance: Swasthya</a>
+        </div>
+   
+        </div>
+
+
+      </div>
+
+
+    
+
+  </div>
+
+    <div class="row ml-2">
+      <div class="col-md-3">
+        <canvas id="myChart" width="400" height="300"></canvas>
+      </div>
+
+      <div class="col-md-3">
+        <canvas id="myChart1" width="400" height="300"></canvas>
+      </div>
+
+      <div class="col-md-3">
+        <canvas id="myChartPharma" width="400" height="300"></canvas>
+      </div>
+
+      <div class="col-md-3">
+        <canvas id="myChartDoctor" width="400" height="300"></canvas>
+      </div>
+
+
     </div>
 
     <div class="row ml-2">

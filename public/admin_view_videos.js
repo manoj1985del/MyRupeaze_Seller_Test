@@ -1,7 +1,7 @@
 
 
 
-var docLimit = 25;
+
 var lastVisibleDoc;
 var paginationFinished = false;
 

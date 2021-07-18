@@ -100,7 +100,6 @@ loadEnquiries(6, hWaitingForPickup);
 loadLast7DaysOrder().then(() => {
     loadLast7DaysPharmacyEnquiries().then(() => {
         // console.log("orders finally fetched");
-        console.log(last7DayOrderMap);
     })
 
 });
@@ -409,15 +408,21 @@ function loadUnitsChart() {
 function loadLast7DaysPharmacyEnquiries() {
     return new Promise((resolve, reject) => {
         var index = 0;
-        var qty = 0;
-        var sales = 0;
+      
 
 
+
+        console.log(ordersLast7Days);
+        console.log("length = " + ordersLast7Days.length);
         for (var i = 0; i < ordersLast7Days.length; i++) {
+            console.log("value of i = " + i.toString());
+            var qty = 0;
+            var sales = 0;
             var order = ordersLast7Days[i];
             console.log(order);
 
             var orderDate = order.invoice_timestamp.toDate();
+            console.log("order date" + orderDate);
             var dd = orderDate.getDate();
             var mm = orderDate.getMonth() + 1;
             if (dd < 10) {
@@ -425,15 +430,14 @@ function loadLast7DaysPharmacyEnquiries() {
             }
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
-            for (var i = 0; i < order.product_names.length; i++) {
-                if(order.available_status[i].toUpperCase() != "AVAILABLE"){
+            for (var j = 0; j < order.product_names.length; j++) {
+                if(order.available_status[j].toUpperCase() != "AVAILABLE"){
                     continue;
                 }
-                qty += order.product_qty[i];
-                sales += order.product_prices_total[i];
-
+                qty += order.product_qty[j];
+                sales += order.product_prices_total[j];
             }
-
+            
             var mapQty = mapUnits7Days.get(formattedDay);
             mapQty += qty;
 
@@ -441,6 +445,7 @@ function loadLast7DaysPharmacyEnquiries() {
             mapSales += sales;
             mapUnits7Days.set(formattedDay, mapQty);
             mapSales7Days.set(formattedDay, mapSales);
+            
         }
 
 
@@ -453,7 +458,6 @@ function loadLast7DaysPharmacyEnquiries() {
             last7DaySales.push(sale);
 
         }
-
         loadSalesChart();
         loadUnitsChart();
         resolve();
@@ -464,122 +468,7 @@ function loadLast7DaysPharmacyEnquiries() {
 
 }
 
-async function loadLast7DaysOrderMap() {
-    return new Promise((resolve, reject) => {
-        var index = 0;
-        var qty = 0;
-        var sales = 0;
 
-        console.log("orders in last 7 days");
-        console.log(ordersLast7Days);
-        for (var i = 0; i < ordersLast7Days.length; i++) {
-            var order = ordersLast7Days[i];
-
-
-            mapProductsForLast7DaysOrder(order, last7DayOrderMap).then(() => {
-                index++;
-
-                if (index == ordersLast7Days.length) {
-                    for (var ele of last7DayOrderMap.entries()) {
-                        qty = 0;
-                        sales = 0;
-                        var or = ele[0];
-                        var orderDate = or.order_date.toDate();
-                        var dd = orderDate.getDate();
-                        var mm = orderDate.getMonth() + 1;
-                        if (dd < 10) {
-                            dd = '0' + dd;
-                        }
-                        var formattedDay = dd + "-" + getMonthNmae(mm);
-                        //  console.log("formattedDay - " + formattedDay);
-
-                        var productList = ele[1];
-
-                        for (var i = 0; i < productList.length; i++) {
-                            var product = productList[i];
-                            qty += product.Qty;
-                            //  console.log("qty - " + qty);
-                            sales += product.Offer_Price * product.Qty;
-                            // console.log(sales);
-                        }
-                        var mapQty = mapUnits7Days.get(formattedDay);
-                        mapQty += qty;
-
-                        var mapSales = mapSales7Days.get(formattedDay);
-                        mapSales += sales;
-                        mapUnits7Days.set(formattedDay, mapQty);
-                        mapSales7Days.set(formattedDay, mapSales);
-                    }
-
-                    for (var unit of mapUnits7Days.values()) {
-                        last7DayUnits.push(unit);
-
-                    }
-
-                    for (var sale of mapSales7Days.values()) {
-                        last7DaySales.push(sale);
-
-                    }
-
-                    loadSalesChart();
-                    loadUnitsChart();
-                    resolve();
-                }
-            })
-
-        }
-
-
-    })
-
-
-}
-
-
-// function loadLast7DaysOrder() {
-
-//     console.log("now here");
-
-//     return new Promise((resolve, reject) => {
-
-//         var tomorrow = new Date();
-//         var initialDate = new Date();
-//         var today = new Date();
-//         tomorrow.setDate(today.getDate() + 1);
-//         initialDate.setDate(today.getDate() - 6);
-
-//         initialDate.setHours(0);
-//         initialDate.setMinutes(0);
-//         initialDate.setMilliseconds(0);
-//         initialDate.setSeconds(0);
-
-
-//         console.log("going to fetch last 7 days order");
-//         var query = firebase.firestore()
-//             .collection('orders')
-//             .where("seller_id", "==", sellerId)
-//             .where("order_date", ">=", initialDate)
-//             .where("order_date", "<", tomorrow)
-//             .where("cancelled", "==", false);
-
-//         query.get()
-//             .then(function (snapshot) {
-//                 console.log("docs count -" + snapshot.docs.length);
-//                 snapshot.forEach(function (doc) {
-
-//                     var order = doc.data();
-//                     ordersLast7Days.push(order);
-
-//                 })
-//             }).then(function () {
-//                 resolve();
-
-//             })
-
-//     })
-
-
-// }
 
 function loadLast7DaysOrder() {
 
@@ -613,6 +502,8 @@ function loadLast7DaysOrder() {
 
                 })
             }).then(function () {
+                console.log("order Last 7 days");
+                console.log(ordersLast7Days);
                 resolve();
 
             })
@@ -660,7 +551,6 @@ function loadTodayOrders() {
                         continue;
                     }
 
-                    console.log(order.available_status);
                     if(order.available_status[i].toUpperCase() != "AVAILABLE"){
                         continue;
                     }
@@ -1284,10 +1174,6 @@ function getThisMonthOrders() {
         lastDay.setMilliseconds(0);
         lastDay.setSeconds(50);
 
-        console.log(firstDay);
-        console.log(lastDay);
-
-
 
         var query = firebase.firestore()
             .collection('pharmacist_requests')
@@ -1301,7 +1187,6 @@ function getThisMonthOrders() {
                 snapshot.forEach(function (doc) {
 
                     var order = doc.data();
-                    console.log("order = " + order);
                     currentMonthOrders.push(order);
 
                 })
@@ -1349,8 +1234,6 @@ function getAmountForMonth() {
 
 
 function getAmountForMonthForEnquiries() {
-    console.log("current month orders");
-    console.log(currentMonthOrders);
     var finalAmount = 0;
 
     for (var i = 0; i < currentMonthOrders.length; i++) {
@@ -1375,7 +1258,6 @@ function getActiveEnquiries() {
         .where("status_code", "==", 0)
         .get()
         .then(function (querySnapshot) {
-            console.log("doc length =" + querySnapshot.docs.length);
             enquiryCount = querySnapshot.docs.length;
         }).then(() => {
             linkOrderEnquiries.innerHTML = "Order Enquiries <b>(" + enquiryCount.toString() + ")</b>";

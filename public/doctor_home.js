@@ -442,8 +442,10 @@ function loadLast7DaysPharmacyEnquiries() {
         var qty = 0;
         var sales = 0;
 
-
+        console.log("order Last 7 days");
+        console.log(ordersLast7Days);
         for (var i = 0; i < ordersLast7Days.length; i++) {
+         
             var consultation = ordersLast7Days[i];
           
 
@@ -455,8 +457,8 @@ function loadLast7DaysPharmacyEnquiries() {
             }
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
-            qty += 1;
-            sales += consultation.charges;
+            qty = 1;
+            sales = consultation.charges;
 
             // for (var i = 0; i < order.product_names.length; i++) {
             //     qty += order.product_qty[i];

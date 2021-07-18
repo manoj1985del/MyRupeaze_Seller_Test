@@ -71,7 +71,9 @@ var cardPharmaOrdersToPickup = document.getElementById('cardPharmaOrdersToPickup
 var hPharmaOrdersToPickup = document.getElementById('hPharmaOrdersToPickup');
 
 var cardPharmacySalesToday = document.getElementById('cardPharmacySalesToday');
+var cardPharmacyUnitsToday = document.getElementById('cardPharmacyUnitsToday');
 var hPharmacySalesToday = document.getElementById('hPharmacySalesToday');
+var hPharmacyUnitsToday = document.getElementById('hPharmacyUnitsToday');
  
 var cardAppointmentsScheduledToday = document.getElementById('cardAppointmentsScheduledToday');
 var hAppointmentsScheduledToday = document.getElementById('hAppointmentsScheduledToday'); 
@@ -285,6 +287,20 @@ cardPharmacySalesToday.addEventListener("mouseleave", function(){
 cardPharmacySalesToday.addEventListener("click", function () {
     window.location.href = "medicine_enquiries.html?type=today_completed&sellerType=admin";
 });
+
+//pending pharma enquireis
+cardPharmacyUnitsToday.addEventListener("mouseenter", function(){
+    this.classList.add("cardHover");
+})
+
+cardPharmacyUnitsToday.addEventListener("mouseleave", function(){
+    this.classList.remove("cardHover");
+})
+
+cardPharmacyUnitsToday.addEventListener("click", function () {
+    window.location.href = "medicine_enquiries.html?type=today_completed&sellerType=admin";
+});
+
 
 
 //pending pharma enquireis
@@ -1374,7 +1390,7 @@ function loadEnquiries(status_code, hElement) {
 
 function loadTodayPharmacyOrders() {
 
-    var totalOrders = 0;
+    var totalUnits = 0;
     var totalSales = 0;
 
     var today = new Date();
@@ -1394,7 +1410,7 @@ function loadTodayPharmacyOrders() {
             if (snapshot.docs.length == 0 || snapshot.docs.length == undefined) {
                // txtTodayUnits.textContent = totalOrders.toString();
                 hPharmacySalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
-
+                hPharmacyUnitsToday.textContent = numberWithCommas(totalUnits);
             }
             snapshot.forEach(function (doc) {
                 var order = doc.data();
@@ -1407,11 +1423,11 @@ function loadTodayPharmacyOrders() {
                         continue;
                     }
 
-                   // totalOrders += parseFloat(order.product_qty[i]);
+                    totalUnits += parseFloat(order.product_qty[i]);
                     totalSales += parseFloat(order.product_prices_total[i]);
                 }
                 hPharmacySalesToday.textContent = rupeeSymbol + numberWithCommas(totalSales);
-               // txtTodayUnits.textContent = totalOrders.toString();
+                hPharmacyUnitsToday.textContent = totalUnits.toString();
 
             })
         })
@@ -1585,8 +1601,8 @@ function loadLast7DaysDoctorConsultation() {
             }
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
-            qty += 1;
-            sales += consultation.charges;
+            qty = 1;
+            sales = consultation.charges;
 
           
 
@@ -1658,12 +1674,13 @@ function loadLast7DaysOrderPharma() {
 
 function loadLast7DaysPharmacyEnquiries() {
     return new Promise((resolve, reject) => {
-        var index = 0;
-        var qty = 0;
-        var sales = 0;
+      
 
 
         for (var i = 0; i < pharmaOrdersLast7Days.length; i++) {
+            var index = 0;
+            var qty = 0;
+            var sales = 0;
             var order = pharmaOrdersLast7Days[i];
             console.log(order);
 
@@ -1675,12 +1692,12 @@ function loadLast7DaysPharmacyEnquiries() {
             }
             var formattedDay = dd + "-" + getMonthNmae(mm);
 
-            for (var i = 0; i < order.product_names.length; i++) {
-                if(order.available_status[i].toUpperCase() != "AVAILABLE"){
+            for (var j = 0; j < order.product_names.length; j++) {
+                if(order.available_status[j].toUpperCase() != "AVAILABLE"){
                     continue;
                 }
-                qty += order.product_qty[i];
-                sales += order.product_prices_total[i];
+                qty += order.product_qty[j];
+                sales += order.product_prices_total[j];
 
             }
 

@@ -53,6 +53,9 @@
       <ul class="navbar-nav">
 
 
+          
+         
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
@@ -71,14 +74,81 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
+            Consultations
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="pending_appointments.html?type=pending&sellerType=admin">Pending Appointments</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=today&sellerType=admin">Appointments Scheduled Today</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=receivedToday&sellerType=admin">Appointments Received Today</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=unsettled&sellerType=admin">Unsettled Appointments</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=pending_refund&sellerType=admin">Consultations: Pending for Refund</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=all&sellerType=admin">All Appointments</a>
+          </div>
+        </li>
+
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Pharmacy Orders
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="medicine_enquiries.html?type=pending&sellerType=admin">Pending Enquiries</a>
+            <a class="dropdown-item" href="medicine_enquiries.html?type=today_completed&sellerType=admin">Today's Orders</a>
+            <a class="dropdown-item" href="medicine_enquiries.html?type=approved&sellerType=admin">Enquiries Approved by Customer</a>
+            <a class="dropdown-item" href="medicine_enquiries.html?type=waiting_for_pickup&sellerType=admin">Ready to Pickup Orders</a>
+            <a class="dropdown-item" href="medicine_enquiries.html?type=all&sellerType=admin">All Orders</a>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
             Sellers
           </a>
           <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="admin_seller_listing.html?type=pending">Sellers - Pending For Approval</a>
-            <a class="dropdown-item" href="admin_seller_listing.html?type=approved">Approved Sellers</a>
-            <a class="dropdown-item" href="admin_seller_listing.html?type=all">All Sellers</a>
-            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended">Suspended Sellers</a>
-           
+            <a class="dropdown-item" href="admin_seller_listing.html?type=pending&sellerType=seller">Sellers - Pending
+              For Approval</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=approved&sellerType=seller">Approved
+              Sellers</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=all&sellerType=seller">All Sellers</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended&sellerType=seller">Suspended
+              Sellers</a>
+
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Pharmacists
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="admin_seller_listing.html?type=pending&sellerType=pharmacist">Pharmacists - Pending
+              For Approval</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=approved&sellerType=pharmacist">Approved
+              Pharmacists</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=all&sellerType=pharmacist">All Pharmacists</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended&sellerType=pharmacist">Suspended
+              Pharmacists</a>
+
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Doctors
+          </a>
+          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="admin_seller_listing.html?type=pending&sellerType=doctor">Doctors - Pending
+              For Approval</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=approved&sellerType=doctor">Approved
+              Doctors</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=all&sellerType=doctor">All Doctors</a>
+            <a class="dropdown-item" href="admin_seller_listing.html?type=suspended&sellerType=doctor">Suspended
+              Doctors</a>
+
           </div>
         </li>
 
@@ -90,7 +160,7 @@
           <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="admin_show_listing.html">Show Products</a>
             <a class="dropdown-item" href="admin_category_and_discounts.html">Categories and Commission</a>
-           
+
           </div>
         </li>
 
@@ -102,16 +172,18 @@
           <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="admin_add_videos.html">Add Videos</a>
             <a class="dropdown-item" href="admin_view_videos.html">Show Videos</a>
-           
+
           </div>
         </li>
 
 
-        <button type="submit" id="btnHome" value="Home" class="btn mr-3" style="width: 100px; background-color: #e95807; color:white">Home</button>
-        <button type="submit" id="btnLogout" value="Logout" class="btn" style="width: 100px; background-color: #e95807; color:white">
-         
+        <button type="submit" id="btnHome" value="Home" class="btn mr-3"
+          style="width: 100px; background-color: #e95807; color:white">Home</button>
+        <button type="submit" id="btnLogout" value="Logout" class="btn"
+          style="width: 100px; background-color: #e95807; color:white">
+
           Logout
-        </button> 
+        </button>
       </ul>
     </div>
   </div>

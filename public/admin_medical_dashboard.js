@@ -47,6 +47,28 @@ var mSelectedGroup = null;
 var fileCarousel_Img1;
 var url_Carousel_Img1 = null;
 
+var optionDefault = document.createElement("option");
+optionDefault.text = "Select Group";
+optionDefault.value = null;
+
+var option1 = document.createElement("option");
+option1.text = "Group 1";
+
+var option2 = document.createElement("option");
+option2.text = "Group 4";
+
+var option3 = document.createElement("option");
+option3.text = "Group 6";
+
+var option4 = document.createElement("option");
+option4.text = "Group 2";
+
+var option5 = document.createElement("option");
+option5.text = "Group 3";
+
+var option6 = document.createElement("option");
+option6.text = "Group 5";
+
 divProgress.style.display = "none";
 divContent.style.display = "block";
 
@@ -82,87 +104,103 @@ cmbDashboardGroup.addEventListener("change", function () {
     loadSubCategories(cmbDashboardGroup.value);
 });
 
-function loadDashboardGroup(value){
-    if(value == "Dashboard Categories"){
-        if(categoriesAdded == false){
+function loadDashboardGroup(value) {
+    if (value == "Dashboard Categories") {
 
-            categoriesAdded = true;
+        categoriesAdded = true;
 
-            cmbDashboardGroup.style.display = "block";
-            txtGroupTitle.style.display = "block";
-            txtItemName.style.display = "block";
-            txtItemTag.style.display = "block";
+        cmbDashboardGroup.style.display = "block";
+        txtGroupTitle.style.display = "block";
+        txtItemName.style.display = "block";
+        txtItemTag.style.display = "block";
 
-            lblDashboardGroup.style.display = "block";
-            lblTitle.style.display = "block";
-            lblName.style.display = "block";
-            lblTag.style.display = "block";
 
-            txtRating.style.display = "none";
-            txtRatingCount.style.display = "none";
-            txtMRP.style.display = "none";
-            txtOfferPrice.style.display = "none";
+        lblDashboardGroup.style.display = "block";
+        lblTitle.style.display = "block";
+        lblName.style.display = "block";
+        lblTag.style.display = "block";
 
-            lblRating.style.display = "none";
-            lblRatingCount.style.display = "none";
-            lblMrp.style.display = "none";
-            lblOfferPrice.style.display = "none";
+        txtRating.style.display = "none";
+        txtRatingCount.style.display = "none";
+        txtMRP.style.display = "none";
+        txtOfferPrice.style.display = "none";
 
-            var option1 = document.createElement("option");
-            option1.text = "Group 1";
-            cmbDashboardGroup.add(option1)
+        lblRating.style.display = "none";
+        lblRatingCount.style.display = "none";
+        lblMrp.style.display = "none";
+        lblOfferPrice.style.display = "none";
 
-            var option2 = document.createElement("option");
-            option2.text = "Group 4";
-            cmbDashboardGroup.add(option2)
+        txtGroupTitle.value = "";
+        txtItemName.value = "";
+        txtItemTag.value = "";
 
-            var option3 = document.createElement("option");
-            option3.text = "Group 6";
-            cmbDashboardGroup.add(option3);
+        addCategoryGroupOptions();
 
-            btnSubmit.disabled = false;
-
-        }
+        btnSubmit.disabled = false;
     }
-    else if(value == "Dashboard Products"){
-        if(productsAdded == false){
+    else if (value == "Dashboard Products") {
 
-            productsAdded = true;
+        productsAdded = true;
 
-            cmbDashboardGroup.style.display = "block";
-            txtGroupTitle.style.display = "block";
-            txtItemName.style.display = "block";
-            txtItemTag.style.display = "block";
-            txtRating.style.display = "block";
-            txtRatingCount.style.display = "block";
-            txtMRP.style.display = "block";
-            txtOfferPrice.style.display = "block";
+        cmbDashboardGroup.style.display = "block";
+        txtGroupTitle.style.display = "block";
+        txtItemName.style.display = "block";
+        txtItemTag.style.display = "block";
+        txtRating.style.display = "block";
+        txtRatingCount.style.display = "block";
+        txtMRP.style.display = "block";
+        txtOfferPrice.style.display = "block";
 
-            lblDashboardGroup.style.display = "block";
-            lblTitle.style.display = "block";
-            lblName.style.display = "block";
-            lblTag.style.display = "block";
-            lblRating.style.display = "block";
-            lblRatingCount.style.display = "block";
-            lblMrp.style.display = "block";
-            lblOfferPrice.style.display = "block";
+        lblDashboardGroup.style.display = "block";
+        lblTitle.style.display = "block";
+        lblName.style.display = "block";
+        lblTag.style.display = "block";
+        lblRating.style.display = "block";
+        lblRatingCount.style.display = "block";
+        lblMrp.style.display = "block";
+        lblOfferPrice.style.display = "block";
 
-            var option4 = document.createElement("option");
-            option4.text = "Group 2";
-            cmbDashboardGroup.add(option4)
+        txtGroupTitle.value = "";
+        txtItemName.value = "";
+        txtItemTag.value = "";
+        txtRating.value = "";
+        txtRatingCount.value = "";
+        txtMRP.value = "";
+        txtOfferPrice.value = "";
 
-            var option5 = document.createElement("option");
-            option5.text = "Group 3";
-            cmbDashboardGroup.add(option5);
+        addProductGroupOptions();
 
-            var option6 = document.createElement("option");
-            option6.text = "Group 5";
-            cmbDashboardGroup.add(option6)
+        btnSubmit.disabled = false;
 
-            btnSubmit.disabled = false;
-            
-        }
     }
+}
+
+function addCategoryGroupOptions() {
+
+    var length = cmbDashboardGroup.options.length;
+    for (i = length - 1; i >= 0; i--) {
+        cmbDashboardGroup.options[i] = null;
+    }
+
+    cmbDashboardGroup.add(optionDefault);
+    cmbDashboardGroup.add(option1);
+    cmbDashboardGroup.add(option2);
+    cmbDashboardGroup.add(option3);
+
+}
+
+function addProductGroupOptions() {
+
+    var length = cmbDashboardGroup.options.length;
+    for (i = length - 1; i >= 0; i--) {
+        cmbDashboardGroup.options[i] = null;
+    }
+
+    cmbDashboardGroup.add(optionDefault);
+    cmbDashboardGroup.add(option4);
+    cmbDashboardGroup.add(option5);
+    cmbDashboardGroup.add(option6);
+
 }
 
 
@@ -176,37 +214,42 @@ btnUploadCarouselImage1.addEventListener("click", function () {
     uploadFile(fileCarousel_Img1, imgProgressCarouselImage1, uploadMsgCarouselImage1, url_Carousel_Img1, cmbDashboardGroup.value, txtItemName.value, txtItemTag.value);
 });
 
-btnSubmit.addEventListener("click", function(){
+btnSubmit.addEventListener("click", function () {
 
-    if(url_Carousel_Img1 != null){
+    if(cmbDashboardGroup.value == "null"){
+        alert("Group not selected");
+        return;
+    }
+
+    if (url_Carousel_Img1 != null) {
         arrImages.push(imgUrl);
         arrItemNames.push(txtItemName.value);
         arrItemTags.push(txtItemTag.value);
 
-        if(cmbGroupType.value == "Dashboard Products"){
+        if (cmbGroupType.value == "Dashboard Products") {
             arrItemRating.push(txtRating.value);
             arrItemRatingCount.push(txtRatingCount.value);
             arrItemMRP.push(txtMRP.value);
             arrOfferPrice.push(txtOfferPrice.value);
         }
 
-        if(arrImages.length == 1){
-            if(cmbGroupType.value == "Dashboard Categories"){
-                
+        if (arrImages.length == 1) {
+            if (cmbGroupType.value == "Dashboard Categories") {
+
                 saveGroupCategory();
             }
-            else{
-               
+            else {
+
                 saveGroupProduct();
 
             }
         }
-        else{
-            if(cmbGroupType.value == "Dashboard Categories"){
+        else {
+            if (cmbGroupType.value == "Dashboard Categories") {
                 updateGroupCategory();
-                
+
             }
-            else{
+            else {
                 updateGroupProduct();
             }
         }
@@ -284,7 +327,7 @@ function saveImageAtFirebase(file, groupname) {
         firebase.storage().ref(imagePath).put(file).then(function () {
             firebase.storage().ref(imagePath).getDownloadURL().then(function (url) {
                 imgUrl = url;
-                
+
                 console.log("resolving");
                 resolve();
             });
@@ -311,7 +354,7 @@ function loadSubCategories(group) {
             mSelectedGroup = doc.data();
 
             for (var i = 0; i < mSelectedGroup.item_name.length; i++) {
-                if(cmbGroupType.value == "Dashboard Products"){
+                if (cmbGroupType.value == "Dashboard Products") {
                     arrItemNames.push(mSelectedGroup.item_name[i]);
                     arrItemTags.push(mSelectedGroup.item_tag[i]);
                     arrImages.push(mSelectedGroup.img_url[i]);
@@ -321,7 +364,7 @@ function loadSubCategories(group) {
                     arrOfferPrice.push(mSelectedGroup.item_offer_price[i]);
                     drawTable();
                 }
-                else{
+                else {
                     arrItemNames.push(mSelectedGroup.item_name[i]);
                     arrItemTags.push(mSelectedGroup.item_tag[i]);
                     arrImages.push(mSelectedGroup.img_url[i]);
@@ -329,7 +372,7 @@ function loadSubCategories(group) {
                 }
             }
 
-            if(arrItemNames.length == 0){
+            if (arrItemNames.length == 0) {
                 deleteTableRows();
             }
 
@@ -353,7 +396,7 @@ function deleteTableRows() {
 }
 
 function createTableHeaders() {
-    if(cmbGroupType.value == "Dashboard Products"){
+    if (cmbGroupType.value == "Dashboard Products") {
         var tr = document.createElement('tr');
 
         var imageHeader = document.createElement("th");
@@ -373,7 +416,7 @@ function createTableHeaders() {
         mrpHeader.innerHTML = "Item MRP";
         offerPriceHeader.innerHTML = "Offer Price";
         actionHeader.innerHTML = "Action";
-    
+
         tr.appendChild(imageHeader);
         tr.appendChild(nameHeader);
         tr.appendChild(tagHeader);
@@ -385,18 +428,18 @@ function createTableHeaders() {
         tr.appendChild(actionHeader);
         table.appendChild(tr);
     }
-    else{
+    else {
         var tr = document.createElement('tr');
         var imageHeader = document.createElement("th");
         var nameHeader = document.createElement('th');
         var tagHeader = document.createElement('th');
         var actionHeader = document.createElement('th');
-    
+
         imageHeader.innerHTML = "Image";
         nameHeader.innerHTML = "Item Name";
         tagHeader.innerHTML = "Item Tag";
         actionHeader.innerHTML = "Action";
-    
+
         tr.appendChild(imageHeader);
         tr.appendChild(nameHeader);
         tr.appendChild(tagHeader);
@@ -416,7 +459,7 @@ function drawTable() {
         var itemName = arrItemNames[i];
         var itemTag = arrItemTags[i];
 
-        if(cmbGroupType.value == "Dashboard Products"){
+        if (cmbGroupType.value == "Dashboard Products") {
             var imgUrl = arrImages[i];
             var itemName = arrItemNames[i];
             var itemTag = arrItemTags[i];
@@ -433,7 +476,7 @@ function drawTable() {
         var tdItemTag = document.createElement('td');
         var tdAction = document.createElement('td');
 
-        if(cmbGroupType.value == "Dashboard Products"){
+        if (cmbGroupType.value == "Dashboard Products") {
 
             var tdItemRating = document.createElement('td');
             var tdRatingCount = document.createElement('td');
@@ -459,7 +502,7 @@ function drawTable() {
         spanItemTag.innerHTML = itemTag;
         divItemTag.appendChild(spanItemTag);
 
-        if(cmbGroupType.value == "Dashboard Products"){
+        if (cmbGroupType.value == "Dashboard Products") {
 
             var divItemRating = document.createElement('div');
             var spanItemRating = document.createElement("span");
@@ -483,7 +526,7 @@ function drawTable() {
 
         }
 
-       
+
 
         var divAction = document.createElement("div");
         var divDelete = document.createElement("div");
@@ -494,7 +537,7 @@ function drawTable() {
         divDelete.appendChild(btnDeleteListing);
         divAction.appendChild(divDelete);
 
-        if(cmbGroupType.value == "Dashboard Products"){
+        if (cmbGroupType.value == "Dashboard Products") {
             tdImage.appendChild(divImage);
             tdItemName.appendChild(divItemName);
             tdItemTag.appendChild(divItemTag);
@@ -504,15 +547,15 @@ function drawTable() {
             tdOfferPrice.appendChild(divOfferPrice);
             tdAction.appendChild(divAction);
         }
-        else{
+        else {
             tdImage.appendChild(divImage);
             tdItemName.appendChild(divItemName);
             tdItemTag.appendChild(divItemTag);
             tdAction.appendChild(divAction);
-    
+
         }
 
-        if(cmbGroupType.value == "Dashboard Products"){
+        if (cmbGroupType.value == "Dashboard Products") {
             tr.appendChild(tdImage);
             tr.appendChild(tdItemName);
             tr.appendChild(tdItemTag);
@@ -522,7 +565,7 @@ function drawTable() {
             tr.appendChild(tdOfferPrice);
             tr.appendChild(tdAction);
         }
-        else{
+        else {
             tr.appendChild(tdImage);
             tr.appendChild(tdItemName);
             tr.appendChild(tdItemTag);
@@ -531,13 +574,13 @@ function drawTable() {
 
         table.appendChild(tr);
 
-        btnDeleteListing.addEventListener("click", function(){
+        btnDeleteListing.addEventListener("click", function () {
             if (confirm("You are going to delete an Item. Do you wish to continue?")) {
                 var index = parseInt(this.id);
 
-        
 
-                if(cmbGroupType.value == "Dashboard Products"){
+
+                if (cmbGroupType.value == "Dashboard Products") {
                     arrItemNames.splice(index, 1);
                     arrItemTags.splice(index, 1);
                     arrImages.splice(index, 1);
@@ -551,7 +594,7 @@ function drawTable() {
                     console.log(arrOfferPrice);
                     updateGroupProduct();
                 }
-                else{
+                else {
                     arrItemNames.splice(index, 1);
                     arrItemTags.splice(index, 1);
                     arrImages.splice(index, 1);

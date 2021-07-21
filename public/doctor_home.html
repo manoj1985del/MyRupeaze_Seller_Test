@@ -51,29 +51,18 @@
 
       <ul class="navbar-nav">
 
-        <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Listings
-          </a>
-          <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="AddListing.html">Add New Product</a>
-            <a class="dropdown-item" href="showListing.html">Show Listing</a>
-          </div>
-        </li>
-
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
-            Orders
+            Consultations
           </a>
           <div class="dropdown-menu smallFont" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="orders.html?type=pending">Pending Orders</a>
-            <a class="dropdown-item" href="orders.html?type=today">Today Orders</a>
-            <a class="dropdown-item" href="orders.html?type=all">Order History</a>
-            <a class="dropdown-item" href="orders.html?type=unsettled">Unsettled Orders</a>
-            <a class="dropdown-item" href="orders.html?type=settled">Settled History</a>
-           
+            <a class="dropdown-item" href="pending_appointments.html?type=pending&sellerType=admin">Pending Appointments</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=today&sellerType=admin">Appointments Scheduled Today</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=receivedToday&sellerType=admin">Appointments Received Today</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=unsettled&sellerType=admin">Unsettled Appointments</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=pending_refund&sellerType=admin">Consultations: Pending for Refund</a>
+            <a class="dropdown-item" href="pending_appointments.html?type=all&sellerType=admin">All Appointments</a>
           </div>
         </li>
 

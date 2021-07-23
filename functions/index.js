@@ -407,6 +407,72 @@ exports.createOrder = functions.firestore
 
     });
 
+
+    exports.sendFcmWhenConsulationStatusChanges = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onUpdate((change, context) => {
+        // Get an object representing the document
+        // e.g. {'name': 'Marie', 'age': 66}
+       const consultation = change.after.data();
+       var consultation_status = consultation.status;
+        var totalAmount  = 100;
+    //    for(var i = 0; i < enquiry.product_prices_total.length; i++){
+    //         totalAmount += enquiry.product_prices_total[i];
+    //    }
+
+       var status;
+       
+       if (consultation_status === "pending") {
+        status = "Consultation created. Doctor will confirm it soon";
+       }
+
+    if (consultation_status === "approved") {
+        status = "consultation accepted by doctor";
+       
+    }
+
+    if (consultation_status === "cancelled") {
+        status = "consultation cancelled by doctor";
+       
+    }
+
+    if (consultation_status === "completed") {
+        status = "consultation accepted by doctor";
+       
+    }
+
+
+   
+
+    
+        const fcm = consultation.fcm;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err)=>{
+                console.log("Error occured", err)
+                return null;
+            });
+
+        return null;
+
+    });
+
 //  exports.app = functions.https.onRequest(app);
 
 

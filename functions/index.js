@@ -45,7 +45,7 @@ app.get('/timestamp', (request, response) => {
 app.post('/sendMail/:to/:subject', (req, res) => {
     //response.send('This is a test message');
 
-    
+
     const mailOptions = {
         from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
         to: req.params.to, //Getting recipient's email by query string
@@ -124,7 +124,7 @@ app.post("/payments/:id/refund", (req, res) => {
     instance.payments.refund(id, params).then((data) => {
         res.send({ "sub": data, "status": "success" });
         return null;
-    }).catch((err)=>{
+    }).catch((err) => {
         console.log("Error occured", err)
         return null;
     });
@@ -206,7 +206,7 @@ exports.createOrder = functions.firestore
 
             }
             return null;
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log("Error occured", err)
             return null;
         });
@@ -218,16 +218,16 @@ exports.createOrder = functions.firestore
     });
 
 
-    exports.sendFcmForNewOrder = functions.firestore
+exports.sendFcmForNewOrder = functions.firestore
     .document('orders/{order_id}')
     .onCreate((snap, context) => {
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
         const order = snap.data();
         var status = "Your Order with order id - " + order.order_id + " has been recieved. Seller has to confirm this order."
-        
+
         console.log("sending status - " + status);
-       
+
         const fcm = order.fcm;
 
         let payload = {
@@ -248,7 +248,7 @@ exports.createOrder = functions.firestore
                 console.log("Successfully sent message: ", response);
                 return null;
             })
-            .catch((err)=>{
+            .catch((err) => {
                 console.log("Error occured", err)
                 return null;
             });
@@ -258,16 +258,16 @@ exports.createOrder = functions.firestore
 
     });
 
-    exports.sendFcmWhenOrderStatusChanges = functions.firestore
+exports.sendFcmWhenOrderStatusChanges = functions.firestore
     .document('orders/{order_id}')
     .onUpdate((change, context) => {
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
         const order = change.after.data();
-       // var status = order.Status;
+        // var status = order.Status;
         var status = "Order-  " + order.order_id + " : " + order.Status;
         console.log("sending status - " + status);
-       
+
         const fcm = order.fcm;
 
         let payload = {
@@ -287,7 +287,7 @@ exports.createOrder = functions.firestore
                 console.log("Successfully sent message: ", response);
                 return null;
             })
-            .catch((err)=>{
+            .catch((err) => {
                 console.log("Error occured", err)
                 return null;
             });
@@ -297,15 +297,15 @@ exports.createOrder = functions.firestore
     });
 
 
-    exports.sendFcmForNewOfflineRequest = functions.firestore
+exports.sendFcmForNewOfflineRequest = functions.firestore
     .document('offline_requests/{doc_id}')
     .onCreate((snap, context) => {
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
         const enquiry = snap.data();
         var status = "Your Enquiry has been sent to seller : " + enquiry.company_name;
-        
-       
+
+
         const fcm = enquiry.fcm;
 
         let payload = {
@@ -325,7 +325,7 @@ exports.createOrder = functions.firestore
                 console.log("Successfully sent message: ", response);
                 return null;
             })
-            .catch((err)=>{
+            .catch((err) => {
                 console.log("Error occured", err)
                 return null;
             });
@@ -335,50 +335,50 @@ exports.createOrder = functions.firestore
 
     });
 
-    exports.sendFcmWhenEnquirytatusChanges = functions.firestore
+exports.sendFcmWhenEnquirytatusChanges = functions.firestore
     .document('offline_requests/{doc_id}')
     .onUpdate((change, context) => {
         // Get an object representing the document
         // e.g. {'name': 'Marie', 'age': 66}
         const enquiry = change.after.data();
-       var status_code = enquiry.status_code;
-        var totalAmount  = 0;
-       for(var i = 0; i < enquiry.product_prices_total.length; i++){
+        var status_code = enquiry.status_code;
+        var totalAmount = 0;
+        for (var i = 0; i < enquiry.product_prices_total.length; i++) {
             totalAmount += enquiry.product_prices_total[i];
-       }
+        }
 
-       var status;
-       
-       if (status_code === 1) {
-        status = "Enquiry Status: Accepted by Seller (" + enquiry.company_name + ") and Pending for your Confirmation. Total Value: " + totalAmount.toString();
-       }
+        var status;
 
-    if (enquiry.status_code === 2) {
-        status = "Enquiry Status: Enquiry Rejected by Seller (" + enquiry.company_name + ")";
-       
-    }
+        if (status_code === 1) {
+            status = "Enquiry Status: Accepted by Seller (" + enquiry.company_name + ") and Pending for your Confirmation. Total Value: " + totalAmount.toString();
+        }
 
-    if (enquiry.status_code === 3) {
-        
-        status = "Enquiry Accepted by customer. Total Value: " + totalAmount.toString();
-     
-    }
+        if (enquiry.status_code === 2) {
+            status = "Enquiry Status: Enquiry Rejected by Seller (" + enquiry.company_name + ")";
 
-    if (enquiry.status_code === 4) {
-        status = "Enquiry Rejected by customer";
+        }
 
-    }
+        if (enquiry.status_code === 3) {
 
-    if (enquiry.status_code === 5) {
-       status = "Offline Order Delivery Completed"
+            status = "Enquiry Accepted by customer. Total Value: " + totalAmount.toString();
 
-    }
+        }
 
-    if (enquiry.status_code === 6) {
-        status = "Enquiry Status: Order ready to pickup from store";
-    }
+        if (enquiry.status_code === 4) {
+            status = "Enquiry Rejected by customer";
 
-    
+        }
+
+        if (enquiry.status_code === 5) {
+            status = "Offline Order Delivery Completed"
+
+        }
+
+        if (enquiry.status_code === 6) {
+            status = "Enquiry Status: Order ready to pickup from store";
+        }
+
+
         const fcm = enquiry.fcm;
 
         let payload = {
@@ -398,73 +398,7 @@ exports.createOrder = functions.firestore
                 console.log("Successfully sent message: ", response);
                 return null;
             })
-            .catch((err)=>{
-                console.log("Error occured", err)
-                return null;
-            });
-
-        return null;
-
-    });
-
-
-    exports.sendFcmWhenConsulationStatusChanges = functions.firestore
-    .document('consultations/{consultation_id}')
-    .onUpdate((change, context) => {
-        // Get an object representing the document
-        // e.g. {'name': 'Marie', 'age': 66}
-       const consultation = change.after.data();
-       var consultation_status = consultation.status;
-        var totalAmount  = 100;
-    //    for(var i = 0; i < enquiry.product_prices_total.length; i++){
-    //         totalAmount += enquiry.product_prices_total[i];
-    //    }
-
-       var status;
-       
-       if (consultation_status === "pending") {
-        status = "Consultation created. Doctor will confirm it soon";
-       }
-
-    if (consultation_status === "approved") {
-        status = "consultation accepted by doctor";
-       
-    }
-
-    if (consultation_status === "cancelled") {
-        status = "consultation cancelled by doctor";
-       
-    }
-
-    if (consultation_status === "completed") {
-        status = "consultation accepted by doctor";
-       
-    }
-
-
-   
-
-    
-        const fcm = consultation.fcm;
-
-        let payload = {
-            notification: {
-                title: "My Rupeaze",
-                body: status
-            }
-        };
-
-        let options = {
-            priority: "high",
-            timeToLive: 60 * 60 * 24
-        };
-
-        admin.messaging().sendToDevice(fcm, payload, options)
-            .then(function (response) {
-                console.log("Successfully sent message: ", response);
-                return null;
-            })
-            .catch((err)=>{
+            .catch((err) => {
                 console.log("Error occured", err)
                 return null;
             });
@@ -536,7 +470,7 @@ exports.orderCancelled = functions.firestore
 
         }
 
-        if(pickup_status === "rejected"){
+        if (pickup_status === "rejected") {
 
             let reason = order.pickup_rejection_reason;
 
@@ -586,7 +520,7 @@ exports.orderCancelled = functions.firestore
 
         }
 
-        if(pickup_status === "attempted delivery failed"){
+        if (pickup_status === "attempted delivery failed") {
 
             let reason = order.cancellation_reason;
 
@@ -636,7 +570,7 @@ exports.orderCancelled = functions.firestore
 
 
         }
-        
+
 
 
 
@@ -767,8 +701,915 @@ exports.orderReturned = functions.firestore
         return null;
     });
 
+exports.createConsultation = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onCreate((snap, context) => {
+
+        const consultation = snap.data();
+        var consultation_id = consultation.consultation_id;
+        var fcm = consultation.fcm_medical;
+
+        const db = admin.firestore();
+        let documentRef = db.doc('seller/' + consultation.seller_id);
+
+        documentRef.get().then((documentSnapshot) => {
+            if (documentSnapshot.exists) {
+                var seller = documentSnapshot.data();
+                console.log(seller.email);
+
+                var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                    + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                    + "<p> This is to inform you that you have received a new consultation request with consultation id: " + consultation_id + ". You are requested to confirm the consultation from your seller portal as soon as possible.</p>"
+                    + "<p>In case of any questions please feel free to revert us back. </p>"
+                    + "<p>Keep Selling with us!!</p>"
+                    + "<p>With Kind Regards,<br/>"
+                    + "My Rupeaze - Swasthya Team </p>";
+
+                const mailOptions = {
+                    from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                    to: seller.email, //Getting recipient's email by query string
+                    subject: "My Rupeaze - Swasthya: New Consultation Received (Consultation Id: " + consultation_id + ")",
+                    html: msg
+                };
+
+                //Returning result
+                return transporter.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                        return res.send(err.toString());
+                    }
+                    return res.send('Email sent succesfully');
+                });
+            }
+            return null;
+        }).catch((err) => {
+            console.log("Error occured", err)
+            return null;
+        });
+        return null;
+    });
+
+exports.createConsultationCustomer = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onCreate((snap, context) => {
+
+        const consultation = snap.data();
+        var consultation_id = consultation.consultation_id;
+
+        const db = admin.firestore();
+        let documentRef = db.doc('users/' + consultation.customer_id);
+
+        documentRef.get().then((documentSnapshot) => {
+            if (documentSnapshot.exists) {
+                var user = documentSnapshot.data();
+                console.log(user.Email);
+
+                var msg = "<h3>Hello " + user.Name + "</h3>"
+                    + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                    + "<p> We have received your consultation request with consultation id: " + consultation_id + " with Dr " + consultation.seller_name + ". Consultation Charges are " + consultation.charges.toString() + ". We will let you know as soon as the Consultation is confirmed by Dr. " + consultation.seller_name
+                    + "<p>In case of any questions please feel free to revert us back. </p>"
+                    + "<p>Keep Shopping with us!!</p>"
+                    + "<p>With Kind Regards,<br/>"
+                    + "My Rupeaze - Swasthya Team </p>";
+
+                const mailOptions = {
+                    from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                    to: user.Email, //Getting recipient's email by query string
+                    subject: "My Rupeaze - Swasthya: New Consultation Received (Consultation Id: " + consultation_id + ")",
+                    html: msg
+                };
+
+                //Returning result
+                return transporter.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                        return res.send(err.toString());
+                    }
+                    return res.send('Email sent succesfully');
+                });
+            }
+            return null;
+        }).catch((err) => {
+            console.log("Error occured", err)
+            return null;
+        });
+        return null;
+    });
+
+exports.sendFcmForNewConsultation = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onCreate((snap, context) => {
+        // Get an object representing the document
+        // e.g. {'name': 'Marie', 'age': 66}
+        const consultation = snap.data();
+        status = "Appointment Status: Appointment created with Dr. " + consultation.seller_name + " and waiting for Doctor Confirmation. Consultation Charges: " + consultation.charges.toString() + ", Consultation Id : " + consultation.consultation_id;
+
+        console.log("sending status - " + status);
+
+        const fcm = consultation.fcm_medical;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze - Swasthya",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("sent to fcm - " + fcm);
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+
+        return null;
+
+    });
 
 
+exports.sendFcmWhenConsulationStatusChanges = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onUpdate((change, context) => {
+        const consultation = change.after.data();
+        var consultation_status = consultation.status;
+
+        var status;
+
+        if (consultation_status === "approved") {
+            status = "Appointment Status: Your appointment is confirmed with Dr. " + consultation.seller_name + " at " + consultation.slot + " on " + consultation.consultation_date + ". Your Consultation Id is " + consultation.consultation_id;
+        }
+
+        if (consultation_status === "cancelled") {
+            status = "Appointment Status: Your appointment with Dr. " + consultation.seller_name + " at " + consultation.slot + " on " + consultation.consultation_date + " has been cancelled.";
+        }
+
+        if (consultation_status === "completed") {
+            status = "Appointment Status: Your appointment with Dr. " + consultation.seller_name + " is completed";
+        }
+
+        const fcm = consultation.fcm_medical;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze - Swasthya",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+
+        return null;
+
+    });
+
+
+
+exports.consultationCancelled = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onUpdate((change, context) => {
+        // Get an object representing the document
+        // e.g. {'name': 'Marie', 'age': 66}
+        const consultation = change.after.data();
+        let consultationId = consultation.consultation_id;
+        let consultation_status = consultation.status;
+        var cancelled_by = consultation.cancelled_by;
+        var sellerid = consultation.seller_id;
+        var customerId = consultation.customer_id;
+
+
+        if (consultation_status === "cancelled") {
+
+            const db = admin.firestore();
+
+            if (cancelled_by === "customer") {
+
+                let documentRef = db.doc('seller/' + sellerid);
+
+                documentRef.get().then((documentSnapshot) => {
+                    if (documentSnapshot.exists) {
+                        var seller = documentSnapshot.data();
+                        console.log(seller.email);
+
+                        var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                            + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                            + "<p> This is to inform you that your consultation at " + consultation.slot + " on " + consultation.consultation_date + " with Consultation Id: " + consultationId + " has been cancelled by customer.</p>"
+                            + "<p>In case of any questions please feel free to revert us back. </p>"
+                            + "<p>Keep Selling with us!!</p>"
+                            + "<p>With Kind Regards,<br/>"
+                            + "My Rupeaze - Swasthya Team </p>";
+
+                        const mailOptions = {
+                            from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                            to: seller.email, //Getting recipient's email by query string
+                            subject: "My Rupeaze: Consultation Cancelled (Consultation Id: " + consultationId + ")",
+                            html: msg
+                        };
+
+                        //Returning result
+                        return transporter.sendMail(mailOptions, (err, info) => {
+                            if (err) {
+                                return res.send(err.toString());
+                            }
+                            console.log("EMail sent");
+                            return res.send('Email sent succesfully');
+                        });
+
+
+                    }
+                    return null;
+                }).catch((error) => {
+                    console.error('Error writing new message to database', error);
+                    return null;
+                });
+            }
+
+            if (cancelled_by === "doctor") {
+                let documentRef = db.doc('users/' + customerId);
+
+                documentRef.get().then((documentSnapshot) => {
+                    if (documentSnapshot.exists) {
+                        var customer = documentSnapshot.data();
+
+                        var msg = "<h3>Hello " + customer.Name + "</h3>"
+                            + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                            + "<p> This is to inform you that your consultation at " + consultation.slot + " on " + consultation.consultation_date + " with Consultation Id: " + consultationId + " has been cancelled by doctor.</p>"
+                            + "<p>In case of any questions please feel free to revert us back. </p>"
+                            + "<p>Keep Selling with us!!</p>"
+                            + "<p>With Kind Regards,<br/>"
+                            + "My Rupeaze - Swasthya Team </p>";
+
+                        const mailOptions = {
+                            from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                            to: customer.Email, //Getting recipient's email by query string
+                            subject: "My Rupeaze: Consultation Cancelled (Consultation Id: " + consultationId + ")",
+                            html: msg
+                        };
+
+                        //Returning result
+                        return transporter.sendMail(mailOptions, (err, info) => {
+                            if (err) {
+                                return res.send(err.toString());
+                            }
+                            console.log("EMail sent");
+                            return res.send('Email sent succesfully');
+                        });
+
+
+                    }
+                    return null;
+                }).catch((error) => {
+                    console.error('Error writing new message to database', error);
+                    return null;
+                });
+            }
+
+        }
+
+        return null;
+    });
+
+exports.consultationConfirmed = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onUpdate((change, context) => {
+        const consultation = change.after.data();
+        let consultationId = consultation.consultation_id;
+        let consultation_status = consultation.status;
+        var customerId = consultation.customer_id;
+
+
+        if (consultation_status === "approved") {
+
+            const db = admin.firestore();
+
+            let documentRef = db.doc('users/' + customerId);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var customer = documentSnapshot.data();
+                    console.log(customer.email);
+
+                    var msg = "<h3>Hello " + customer.Name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that your appointment is confirmed with Dr. " + consultation.seller_name + " at " + consultation.slot + " on " + consultation.consultation_date + ". Your Consultation Id is " + consultation.consultation_id + "</p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep shopping with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: customer.Email, //Getting recipient's email by query string
+                        subject: "My Rupeaze - Swasthya: Consultation Confirmed (Consultation Id: " + consultationId + ")",
+                        html: msg
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        console.log("EMail sent");
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((error) => {
+                console.error('Error writing new message to database', error);
+                return null;
+            });
+
+        }
+
+        return null;
+    });
+
+
+exports.consultationCompleted = functions.firestore
+    .document('consultations/{consultation_id}')
+    .onUpdate((change, context) => {
+        const consultation = change.after.data();
+        let consultationId = consultation.consultation_id;
+        let consultation_status = consultation.status;
+        var customerId = consultation.customer_id;
+
+
+        if (consultation_status === "completed") {
+
+            const db = admin.firestore();
+
+            let documentRef = db.doc('users/' + customerId);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var customer = documentSnapshot.data();
+                    console.log(customer.email);
+
+                    var msg = "<h3>Hello " + customer.Name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that your consultation at " + consultation.slot + " on " + consultation.consultation_date + " with Consultation Id: " + consultationId + " with Dr. " + consultation.seller_name + " is completed successfully. Your Consultation Id is " + consultationId + "</p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep shopping with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: customer.Email, //Getting recipient's email by query string
+                        subject: "My Rupeaze - Swasthya: Consultation Completed (Consultation Id: " + consultationId + ")",
+                        html: msg
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        console.log("EMail sent");
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((error) => {
+                console.error('Error writing new message to database', error);
+                return null;
+            });
+
+        }
+
+        return null;
+    });
+
+
+exports.createPharmaEnquiry = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onCreate((snap, context) => {
+        const enquiry = snap.data();
+        var sellerid = enquiry.seller_id;
+
+        const db = admin.firestore();
+        let documentRef = db.doc('seller/' + sellerid);
+
+        documentRef.get().then((documentSnapshot) => {
+            if (documentSnapshot.exists) {
+                var seller = documentSnapshot.data();
+                console.log(seller.email);
+
+                var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                    + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                    + "<p> This is to inform you that you have received a Pharmacy Enquiry with id: " + enquiry.doc_id + ". You are requested to accept the request and prepare estimate from your seller portal as soon as possible.</p>"
+                    + "<p>In case of any questions please feel free to revert us back. </p>"
+                    + "<p>Keep Selling with us!!</p>"
+                    + "<p>With Kind Regards,<br/>"
+                    + "My Rupeaze - Swasthya Team </p>";
+
+                const mailOptions = {
+                    from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                    to: seller.email, //Getting recipient's email by query string
+                    subject: "My Rupeaze: New Pharamcy Request Received (Id: " + enquiry.doc_id + ")",
+                    html: msg
+
+                };
+
+                //Returning result
+                return transporter.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                        return res.send(err.toString());
+                    }
+                    return res.send('Email sent succesfully');
+                });
+
+
+            }
+            return null;
+        }).catch((err) => {
+            console.log("Error occured", err)
+            return null;
+        });
+        return null;
+
+    });
+
+exports.createPharmaEnquiryCustomer = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onCreate((snap, context) => {
+        const enquiry = snap.data();
+        var customerId = enquiry.customer_id;
+
+        const db = admin.firestore();
+        let documentRef = db.doc('users/' + customerId);
+
+        documentRef.get().then((documentSnapshot) => {
+            if (documentSnapshot.exists) {
+                var customer = documentSnapshot.data();
+
+                var msg = "<h3>Hello " + customer.Name + "</h3>"
+                    + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                    + "<p> This is to inform you that we have received your Pharmacy Enquiry with id: " + enquiry.doc_id + ". Your Enquiry has been sent to Pharmacy (" + enquiry.company_name + ") and waiting for Pharmacy Confirmation.</p>"
+                    + "<p>In case of any questions please feel free to revert us back. </p>"
+                    + "<p>Keep Shopping with us!!</p>"
+                    + "<p>With Kind Regards,<br/>"
+                    + "My Rupeaze - Swasthya Team </p>";
+
+                const mailOptions = {
+                    from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                    to: customer.Email, //Getting recipient's email by query string
+                    subject: "My Rupeaze: New Pharamcy Request Received (Id: " + enquiry.doc_id + ")",
+                    html: msg
+
+                };
+
+                //Returning result
+                return transporter.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                        return res.send(err.toString());
+                    }
+                    return res.send('Email sent succesfully');
+                });
+
+
+            }
+            return null;
+        }).catch((err) => {
+            console.log("Error occured", err)
+            return null;
+        });
+        return null;
+
+    });
+
+
+
+exports.sendFcmForNewPharmaEnquiry = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onCreate((snap, context) => {
+        // Get an object representing the document
+        // e.g. {'name': 'Marie', 'age': 66}
+        const enquiry = snap.data();
+        var status = "Enquiry Status: Your Enquiry has been sent to Pharmacy (" + enquiry.company_name + ") and waiting for Pharmacy Confirmation";
+
+        const fcm = enquiry.fcm_medical;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze - Swasthya",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+
+        return null;
+
+    });
+
+
+
+exports.sendFcmWhenPharmaEnquiryStatusChanges = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onUpdate((change, context) => {
+        const enquiry = change.after.data();
+        var enquiry_status = enquiry.status_code;
+
+        var totalAmount = 0;
+        for (var i = 0; i < enquiry.product_prices_total.length; i++) {
+            totalAmount += enquiry.product_prices_total[i];
+        }
+
+        var strTotalAmount = totalAmount.toString();
+
+        var status;
+
+        if (enquiry_status === 1) {
+            status = "Enquiry Status: Accepted by Pharmacy (" + enquiry.company_name + ") and Pending for your Confirmation.";
+        }
+
+        if (enquiry_status === 2) {
+            status = "Enquiry Status: Enquiry Rejected by Pharmacy (" + enquiry.company_name + ")";
+        }
+
+        if (enquiry_status === 3) {
+            status = "Enquiry Status: Enquiry Accepted by customer. Total Value: " + strTotalAmount + ".";
+        }
+
+        if (enquiry_status === 4) {
+            status = "Enquiry Status: Enquiry Rejected by customer";
+        }
+
+        if (enquiry_status === 5) {
+            status = "Enquiry Status: Offline Order Delivery Completed"
+        }
+
+        if (enquiry_status === 6) {
+            status = "Enquiry Status: Order ready to pickup from store";
+        }
+
+        const fcm = enquiry.fcm_medical;
+
+        let payload = {
+            notification: {
+                title: "My Rupeaze - Swasthya",
+                body: status
+            }
+        };
+
+        let options = {
+            priority: "high",
+            timeToLive: 60 * 60 * 24
+        };
+
+        admin.messaging().sendToDevice(fcm, payload, options)
+            .then(function (response) {
+                console.log("Successfully sent message: ", response);
+                return null;
+            })
+            .catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+
+        return null;
+
+    });
+
+
+exports.pharmaEnquiryAccepted = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onUpdate((change, context) => {
+        const enquiry = change.after.data();
+        var enquiry_status = enquiry.status_code;
+
+        var totalAmount = 0;
+        for (var i = 0; i < enquiry.product_prices_total.length; i++) {
+            totalAmount += enquiry.product_prices_total[i];
+        }
+
+        var strTotalAmount = totalAmount.toString();
+
+        const db = admin.firestore();
+
+        if (enquiry_status === 1) {
+
+            let documentRef = db.doc('users/' + enquiry.customer_id);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var customer = documentSnapshot.data();
+
+                    var msg = "<h3>Hello " + customer.Name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that your pharmacy request has been accepted by the Pharmacy (" + enquiry.company_name + " ) and you are requested to accept the order as soon as possible. Enquiry id: " + enquiry.doc_id + ", Total Amount: " + totalAmount.toString() + "</p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep Shopping with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: customer.Email, //Getting recipient's email by query string
+                        subject: "My Rupeaze - Swasthya: Your Pharmacy Request accepted by Pharmacy (Id: " + enquiry.doc_id + ")",
+                        html: msg
+
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+        }
+
+        if (enquiry_status === 3) {
+            let documentRef = db.doc('seller/' + enquiry.seller_id);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var seller = documentSnapshot.data();
+                    console.log(seller.email);
+
+                    var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that Pharmacy Request with Id: " + enquiry.doc_id + " has been accepted by the customer. Tota Value: " + totalAmount.toString() + ".</p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep Selling with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: seller.email, //Getting recipient's email by query string
+                        subject: "My Rupeaze - Swasthya: Pharmacy Request Accepted by Customer (Id: " + enquiry.doc_id + ")",
+                        html: msg
+
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+        }
+
+
+        return null;
+
+    });
+
+
+exports.pharmaEnquiryRejected = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onUpdate((change, context) => {
+        const enquiry = change.after.data();
+        var enquiry_status = enquiry.status_code;
+
+        var totalAmount = 0;
+        for (var i = 0; i < enquiry.product_prices_total.length; i++) {
+            totalAmount += enquiry.product_prices_total[i];
+        }
+
+        const db = admin.firestore();
+
+        if (enquiry_status === 2) {
+
+            let documentRef = db.doc('users/' + enquiry.customer_id);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var customer = documentSnapshot.data();
+
+                    var msg = "<h3>Hello " + customer.Name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that your pharmacy request with Id: " + enquiry.doc_id + " has been rejected by the Pharmacy (" + enquiry.company_name + " )</p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep Shopping with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: customer.Email, //Getting recipient's email by query string
+                        subject: "My Rupeaze: Your Pharmacy Request is rejected by Pharmacy (Id: " + enquiry.doc_id + ")",
+                        html: msg
+
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+        }
+
+        if (enquiry_status === 4) {
+            let documentRef = db.doc('seller/' + enquiry.seller_id);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var seller = documentSnapshot.data();
+                    console.log(seller.email);
+
+                    var msg = "<h3>Hello " + seller.company_name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that Pharmacy Request with Id: " + enquiry.doc_id + " has been rejected by the customer. </p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep Selling with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: seller.email, //Getting recipient's email by query string
+                        subject: "My Rupeaze: Pharmacy Request rejected by Customer (Id: " + enquiry.doc_id + ")",
+                        html: msg
+
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+        }
+
+
+        return null;
+
+    });
+
+exports.pharmaEnquiryDelivery = functions.firestore
+    .document('pharmacist_requests/{doc_id}')
+    .onUpdate((change, context) => {
+        const enquiry = change.after.data();
+        var enquiry_status = enquiry.status_code;
+
+        var totalAmount = 0;
+        for (var i = 0; i < enquiry.product_prices_total.length; i++) {
+            totalAmount += enquiry.product_prices_total[i];
+        }
+
+        const db = admin.firestore();
+
+        if (enquiry_status === 5) {
+
+            let documentRef = db.doc('users/' + enquiry.customer_id);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var customer = documentSnapshot.data();
+
+                    var msg = "<h3>Hello " + customer.Name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that your pharmacy order has been delivered successfully. </p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep Shopping with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: customer.Email, //Getting recipient's email by query string
+                        subject: "My Rupeaze: Your Pharmacy Request accepted by Pharmacy (Id: " + enquiry.doc_id + ")",
+                        html: msg
+
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+        }
+
+        if (enquiry_status === 6) {
+            let documentRef = db.doc('users/' + enquiry.customer_id);
+
+            documentRef.get().then((documentSnapshot) => {
+                if (documentSnapshot.exists) {
+                    var customer = documentSnapshot.data();
+
+                    var msg = "<h3>Hello " + customer.Name + "</h3>"
+                        + "<p>Greetings from My Rupeaze - Swasthya!!</p>"
+                        + "<p> This is to inform you that your pharmacy order is ready to pickup from store. </p>"
+                        + "<p>In case of any questions please feel free to revert us back. </p>"
+                        + "<p>Keep Shopping with us!!</p>"
+                        + "<p>With Kind Regards,<br/>"
+                        + "My Rupeaze - Swasthya Team </p>";
+
+                    const mailOptions = {
+                        from: 'My Rupeaze <texpediscia@gmail.com>', //sender email
+                        to: customer.Email, //Getting recipient's email by query string
+                        subject: "My Rupeaze: Your Pharmacy Request accepted by Pharmacy (Id: " + enquiry.doc_id + ")",
+                        html: msg
+
+                    };
+
+                    //Returning result
+                    return transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            return res.send(err.toString());
+                        }
+                        return res.send('Email sent succesfully');
+                    });
+
+
+                }
+                return null;
+            }).catch((err) => {
+                console.log("Error occured", err)
+                return null;
+            });
+        }
+
+
+        return null;
+
+    });
 
 
 // // Create and Deploy Your First Cloud Functions

@@ -524,6 +524,7 @@ function cancelAppointment(docId) {
     consultationRef.update({
         status: "cancelled",
         cancelled: true,
+        cancelled_by: "doctor",
         refund_issued: false,
     })
         .then(function () {
